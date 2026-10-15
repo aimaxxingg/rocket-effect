@@ -16,8 +16,8 @@
     <a class="left" href="./">Rocket Effect Agency</a>
     <a class="center" href="work.html">work</a>
     <nav class="right">
-      <a href="mailto:hello@rocketeffect.agency">email</a>
-      <a href="https://instagram.com/" target="_blank" rel="noopener">ig</a>
+      <a href="mailto:info@wavefoundation.co">email</a>
+      <a href="https://www.instagram.com/rocket.effect" target="_blank" rel="noopener">ig</a>
     </nav>
   </header>
 
@@ -30,7 +30,13 @@
     import { buildWordSVG } from './assets/blobfont.js';
     const track = document.getElementById('marquee');
     // Two identical halves so translateX(-50%) loops seamlessly.
-    for (let i = 0; i < 4; i++) track.appendChild(buildWordSVG('Rocket Effect'));
+    for (let i = 0; i < 4; i++) {
+      const link = document.createElement('a');
+      link.href = 'work.html';
+      link.setAttribute('aria-label', 'Rocket Effect — work');
+      link.appendChild(buildWordSVG('Rocket Effect'));
+      track.appendChild(link);
+    }
   </script>
 </body>
 </html>
