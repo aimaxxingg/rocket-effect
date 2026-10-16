@@ -17,8 +17,8 @@
     <a class="center" href="#work" data-open="work" data-word>work</a>
     <nav class="right">
       <a href="#about" data-open="about" data-word>about</a>
-      <a href="mailto:info@wavefoundation.co" data-word>email</a>
-      <a href="https://www.instagram.com/rocket.effect" target="_blank" rel="noopener" data-word>ig</a>
+      <a href="mailto:info@wavefoundation.co" id="email-link" data-word>email</a>
+      <a href="https://www.instagram.com/rocket.effect" id="ig-link" target="_blank" rel="noopener" data-word>ig</a>
     </nav>
   </header>
 
@@ -52,7 +52,24 @@
 
   <script type="module">
     import { buildWordSVG } from './assets/blobfont.js';
-    import { tabs, projects, about } from './assets/projects.js';
+
+    // All content (texts, tabs, projects) lives in content.json, edited from /admin.
+    // ?preview shows the unsaved draft from the admin panel (this browser only).
+    let content;
+    if (new URLSearchParams(location.search).has('preview')) {
+      try { content = JSON.parse(localStorage.getItem('re-admin-draft')); } catch {}
+    }
+    content ||= await fetch('content.json', { cache: 'no-cache' }).then((r) => r.json());
+    const { site = {}, hero = [], tabs = [], projects = [], about = [] } = content;
+    const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    if (site.title) document.title = site.title;
+    if (site.description) document.querySelector('meta[name=description]').content = site.description;
+    if (site.email) document.getElementById('email-link').href = 'mailto:' + site.email;
+    if (site.instagram) document.getElementById('ig-link').href = site.instagram;
+    document.querySelectorAll('.hero-word').forEach((a, i) => {
+      if (hero[i]) a.setAttribute('aria-label', hero[i]); else a.remove();
+    });
 
     const word = (text) => buildWordSVG(text, { line: true });
 
@@ -91,7 +108,7 @@
     let activeTab = tabs[0];
     let closeTimer;
 
-    aboutEl.innerHTML = about.map((p) => `<p>${p}</p>`).join('');
+    aboutEl.innerHTML = about.map((p) => `<p>${esc(p)}</p>`).join('');
 
     // Phones: tabs stacked down the left side of the folder.
     // Set to false to go back to tabs along the top on phones too.
@@ -226,7 +243,7 @@
         const pos = narrow ? { x: i % 2 ? 28 : 5, y: 5 + i * 26, w: 66 } : p;
         card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${p.r}; --z:${i + 1}`;
         card.setAttribute('aria-label', p.title);
-        card.innerHTML = `<img src="${p.img}" alt="" draggable="false"><span class="caption">${p.title}</span>`;
+        card.innerHTML = `<img src="${esc(p.img)}" alt="" draggable="false"><span class="caption">${esc(p.title)}</span>`;
         card.project = p;
         makeDraggable(card);
         return card;
@@ -270,15 +287,14 @@
 
     // --- Project detail ------------------------------------------------------
     function openDetail(p) {
-      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
       detail.innerHTML = `
         <button class="back" type="button" aria-label="back"></button>
-        <div class="detail-media"><img src="${p.img}" alt="${esc(p.title)}"></div>
+        <div class="detail-media"><img src="${esc(p.img)}" alt="${esc(p.title)}"></div>
         <div class="detail-info">
           <p class="meta">${esc(p.tab)} · ${esc(p.client)} · ${esc(p.year)}</p>
           <h2>${esc(p.title)}</h2>
           <p>${esc(p.text)}</p>
-          ${p.link ? `<a class="detail-link" href="${p.link.href}" target="_blank" rel="noopener">${esc(p.link.label)} ↗</a>` : ''}
+          ${p.link?.href ? `<a class="detail-link" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label || 'link')} ↗</a>` : ''}
         </div>`;
       detail.querySelector('.back').appendChild(word('back'));
       detail.hidden = false;
