@@ -108,8 +108,8 @@ body.folder-open .hero { opacity: 0; }
 @keyframes folder-in { from { opacity: 0; transform: translateY(60px) scale(0.96); } to { opacity: 1; transform: none; } }
 @keyframes folder-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(80px) scale(0.98); } }
 
-/* Folder pieces are cut straight out of the reference photo (assets/folder/).
-   Sizes are in photo pixels (--u). A tab = mirrored side | middle | side.
+/* Folder: tab outlines traced from the reference photo, filled with the photo's
+   own paper (assets/folder/paper.jpg), no strokes. Sizes in photo pixels (--u).
    Back tabs sit under the sheet (left ones over right ones); the active tab is
    the front sheet's own tab and runs into it. */
 .tabs {
@@ -117,7 +117,6 @@ body.folder-open .hero { opacity: 0; }
   display: flex;
   align-items: flex-start;
   height: calc(var(--u) * 51);
-  padding-left: calc(var(--u) * 3);   /* the sheet image has 4 photo px of margin before its edge */
 }
 .tab {
   position: relative;
@@ -129,42 +128,9 @@ body.folder-open .hero { opacity: 0; }
   cursor: pointer;
   color: var(--ink);
 }
-/* left side (the right side piece mirrored) | middle | right side.
-   The side pieces include some flat top, so on narrow tabs they simply overlap. */
-.tab .cap, .tab .mid {
-  position: absolute;
-  top: 0;
-  height: calc(var(--u) * 52);
-  pointer-events: none;
-}
-.tab .cap { width: calc(var(--u) * 90); background: url("folder/back-r.png") 0 0 / auto 100% no-repeat; }
-.tab .cap.r { right: 0; }
-.tab .cap.l {
-  left: 0;
-  transform: scaleX(-1);
-  /* soften the join with the middle piece */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 calc(var(--u) * 10));
-          mask-image: linear-gradient(to right, transparent, #000 calc(var(--u) * 10));
-}
-.tab .mid {
-  left: calc(var(--u) * 80);
-  right: calc(var(--u) * 89);
-  background: url("folder/back-m.png") right top / auto 100% repeat-x;
-}
-.tab.active .cap, .tab.active .mid {
-  height: calc(var(--u) * 55);
-  /* the front tab's foot melts into the sheet */
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--u) * 3), transparent);
-          mask-image: linear-gradient(to bottom, #000 calc(100% - var(--u) * 3), transparent);
-}
-.tab.active .cap.l {
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 calc(var(--u) * 10)), linear-gradient(to bottom, #000 calc(100% - var(--u) * 3), transparent);
-  -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(to right, transparent, #000 calc(var(--u) * 10)), linear-gradient(to bottom, #000 calc(100% - var(--u) * 3), transparent);
-          mask-composite: intersect;
-}
-.tab.active .cap { width: calc(var(--u) * 96); background-image: url("folder/front-r.png"); }
-.tab.active .mid { left: calc(var(--u) * 86); right: calc(var(--u) * 95); background-image: url("folder/front-m.png"); }
+.tab > svg.shape { position: absolute; left: 0; top: 0; overflow: visible; }
+/* a soft hint of depth between overlapping tabs (no outlines) */
+.tab:not(.active) > svg.shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)); }
 .tab .blobword {
   position: absolute;
   left: 50%;
@@ -175,33 +141,19 @@ body.folder-open .hero { opacity: 0; }
   aspect-ratio: var(--ratio);
   fill: #3b3f3e; stroke: #3b3f3e;
 }
-.tab:not(.active):hover .cap, .tab:not(.active):hover .mid { filter: brightness(1.04); }
+.tab:not(.active):hover > svg.shape { opacity: 0.93; }
 .back-tabs { position: absolute; left: 0; right: 0; top: 0; z-index: 0; pointer-events: none; }
-.back-tabs .green {
-  position: absolute;
-  top: calc(var(--u) * -18);
-  height: calc(var(--u) * 62);
-  background: url("folder/green.png") 0 0 / 100% 100% no-repeat;
-}
+.back-tabs svg { position: absolute; top: calc(var(--u) * -18); overflow: visible; }
 
 .sheet {
   position: relative;
   z-index: 20;
   flex: 1;
-  background: url("folder/sheet.png") center top / 100% auto repeat-y;
+  /* tile size: keep in sync with TILE in index.html */
+  background: #b3b9b7 url("folder/paper.jpg") 0 0 / 742px 297px repeat;
+  /* soft paper side edges only: nothing along the top, so the tabs run into the body */
+  box-shadow: -0.5px 0 1px rgba(30, 38, 36, 0.22), 0.5px 0 1px rgba(30, 38, 36, 0.22);
   overflow: hidden;
-}
-/* The folder's top edge, where the back tabs tuck in. It breaks under the
-   active tab (--gap-l / --gap-r are set by the script). */
-.sheet::before {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; top: 0;
-  height: calc(var(--u) * 3);
-  background: url("folder/edge-line.png") 0 0 / 100% 100% no-repeat;
-  -webkit-mask-image: linear-gradient(to right, #000 var(--gap-l), transparent calc(var(--gap-l) + var(--u) * 6), transparent calc(var(--gap-r) - var(--u) * 6), #000 var(--gap-r));
-          mask-image: linear-gradient(to right, #000 var(--gap-l), transparent calc(var(--gap-l) + var(--u) * 6), transparent calc(var(--gap-r) - var(--u) * 6), #000 var(--gap-r));
-  pointer-events: none;
 }
 
 /* Cards: freeform, draggable */
@@ -310,8 +262,7 @@ body.folder-open .hero { opacity: 0; }
     transform-origin: 0 0;
     transform: translateY(var(--len)) rotate(-90deg);
   }
-  .folder.side-tabs .sheet { margin-left: calc(var(--u) * 51); }
-  .folder.side-tabs .sheet::before { display: none; }
+  .folder.side-tabs .sheet { margin-left: calc(var(--u) * 51); box-shadow: 0.5px 0 1px rgba(30, 38, 36, 0.22); }
   .board.dimmed { display: none; }
   .sheet:has(.detail:not([hidden])) { overflow: auto; }
   .detail { position: relative; grid-template-columns: 1fr; padding: 56px 18px 40px; gap: 22px; }
