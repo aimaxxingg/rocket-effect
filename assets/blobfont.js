@@ -105,7 +105,61 @@ function dotsAlong(x1, y1, x2, y2) {
 
 // opts.line: use full line bounds (incl. descenders) so words of a text line align.
 // opts.letters: put each letter in its own <g class="ch"> (for per-letter animation).
+// The real typeface: MD Thermochrome (trial), served from Cargo's server, not from this repo.
+// Swap the URL for the bought font file once the licence is purchased.
+// If it fails to load, the hand-drawn dot lettering below is used instead.
+export const FONT_URL = 'https://freight.cargo.site/m/H2858262038431257716614798771322/MDThermochrome0.3-Black-Trial.woff2';
+let font = null;   // { family, size, ctx } once loaded
+
+export async function loadFont(url = FONT_URL, timeout = 4000) {
+  try {
+    const face = new FontFace('Thermochrome', `url(${url})`);
+    await Promise.race([face.load(), new Promise((_, no) => setTimeout(() => no(new Error('timeout')), timeout))]);
+    document.fonts.add(face);
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = '100px Thermochrome';
+    // size the font so its tall letters (k, b) reach the same top and baseline as the dot lettering
+    const asc = ctx.measureText('k').actualBoundingBoxAscent / 100;
+    font = { family: 'Thermochrome', size: (6 - LINE_TOP) * YS / asc, ctx };
+  } catch { font = null; }
+  return !!font;
+}
+
+function buildWordFont(text, opts) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  const g = document.createElementNS(NS, 'g');
+  const { ctx, size, family } = font;
+  ctx.font = `100px ${family}`;
+  const k = size / 100;
+  const base = 6 * YS;
+  const wordM = ctx.measureText(text);
+  const left = Math.min(0, -wordM.actualBoundingBoxLeft * k);
+  [...text].forEach((ch, i) => {
+    if (ch === ' ') return;
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', (ctx.measureText(text.slice(0, i)).width * k).toFixed(3));
+    t.setAttribute('y', base);
+    t.textContent = ch;
+    if (opts.letters) t.setAttribute('class', 'ch');
+    g.appendChild(t);
+  });
+  g.setAttribute('font-family', family);
+  g.setAttribute('font-size', size.toFixed(3));
+  const width = Math.max(wordM.width, wordM.actualBoundingBoxRight) * k - left + 0.1;
+  const top = LINE_TOP * YS - R - 0.05;
+  const height = (opts.line ? LINE_BOTTOM : 6) * YS + R + 0.05 - top;
+  svg.setAttribute('viewBox', `${left} ${top} ${width} ${height}`);
+  svg.setAttribute('class', 'blobword fontword');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.style.setProperty('--ratio', (width / height).toFixed(4));
+  svg.style.setProperty('--vbh', height.toFixed(3));
+  svg.appendChild(g);
+  return svg;
+}
+
 export function buildWordSVG(text, opts = {}) {
+  if (font) return buildWordFont(text, opts);
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
   const g = document.createElementNS(NS, 'g');

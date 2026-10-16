@@ -173,6 +173,7 @@ legend { font-size: 13px; color: var(--muted); padding: 0 6px; }
 .hw svg { display: block; width: 100%; height: auto; aspect-ratio: var(--ratio); }
 .blobword { fill: var(--ink); stroke: var(--ink); stroke-width: 2; stroke-linecap: round; overflow: visible; }
 .blobword circle { stroke: none; }
+.blobword text { stroke: none; }
 
 .hw .ch { opacity: 0; }
 .hw .ch.on { opacity: 1; }

@@ -2,7 +2,7 @@
 // content.json plus any new images to the GitHub repo in one commit (GitHub Pages
 // then rebuilds the site). Without a token everything works except publishing.
 
-import { buildWordSVG } from '../assets/blobfont.js';
+import { buildWordSVG, loadFont } from '../assets/blobfont.js';
 import { animateLetters, ANIM_DEFAULT, EASINGS } from '../assets/hero-anim.js';
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -565,6 +565,9 @@ $('#anim-reset').addEventListener('click', () => {
   content.heroAnim = { ...ANIM_DEFAULT };
   changed(); renderAnim(); playAnim();
 });
+
+// the site's typeface, so the home page preview looks like the real thing
+loadFont().then((ok) => { if (ok && content) renderHome(); });
 
 // Tabs -------------------------------------------------------------------------
 function renderTabs() {

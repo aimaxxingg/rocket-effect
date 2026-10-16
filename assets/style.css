@@ -102,6 +102,7 @@ a { color: inherit; text-decoration: none; }
   display: block;
 }
 .blobword circle { stroke: none; }
+.blobword text { stroke: none; }
 
 /* Hero: three words spread over the page, switched on/off like lights. */
 .hero {

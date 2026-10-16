@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=5">
+  <link rel="stylesheet" href="assets/style.css?v=6">
 </head>
 <body>
   <header class="nav">
@@ -66,7 +66,7 @@
   </div>
 
   <script type="module">
-    import { buildWordSVG } from './assets/blobfont.js';
+    import { buildWordSVG, loadFont } from './assets/blobfont.js';
     import { animateLetters } from './assets/hero-anim.js';
 
     // All content (texts, tabs, projects) lives in content.json, edited from /admin.
@@ -75,7 +75,9 @@
     if (new URLSearchParams(location.search).has('preview')) {
       try { content = JSON.parse(localStorage.getItem('re-admin-draft')); } catch {}
     }
+    const fontReady = loadFont();
     content ||= await fetch('content.json', { cache: 'no-cache' }).then((r) => r.json());
+    await fontReady;
     const { site = {}, hero = [], heroLayout = {}, heroAnim = {}, tabs = [], projects = [], about = [] } = content;
     const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
