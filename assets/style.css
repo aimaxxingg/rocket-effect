@@ -187,7 +187,16 @@ body.folder-open .hero { opacity: 0; }
   aspect-ratio: var(--ratio);
   fill: #3b3f3e; stroke: #3b3f3e;
 }
-.tab:not(.active):hover > svg.shape { opacity: 0.93; }
+/* the open tab stands out: it casts a shadow on the tabs around it (nothing below, so it still
+   runs into the sheet), while the tabs behind it sit a little darker */
+.tab.active > svg.shape {
+  filter: drop-shadow(0 -1px 2px rgba(30, 38, 36, 0.22)) drop-shadow(0 -3px 9px rgba(30, 38, 36, 0.3));
+  clip-path: inset(-40px -40px 0 -40px);
+}
+.tab:not(.active) > svg.shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)) brightness(0.9); }
+.tab:not(.active) .blobword { opacity: 0.6; }
+.tab:not(.active):hover > svg.shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)) brightness(0.96); }
+.tab:not(.active):hover .blobword { opacity: 0.85; }
 .back-tabs { position: absolute; left: 0; right: 0; top: 0; z-index: 0; pointer-events: none; }
 .back-tabs svg { position: absolute; top: calc(var(--u) * -18); overflow: visible; }
 
