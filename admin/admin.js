@@ -44,7 +44,7 @@ function normalize(c) {
 
 // --- GitHub API ----------------------------------------------------------------
 async function gh(path, { method = 'GET', body } = {}) {
-  const res = await fetch(`https://api.github.com/repos/${conn.repo}/${path}`, {
+  const res = await fetch(`https://api.github.com/repos/${conn.repo}${path ? "/" + path : ""}`, {
     method,
     headers: {
       Accept: 'application/vnd.github+json',
@@ -54,8 +54,10 @@ async function gh(path, { method = 'GET', body } = {}) {
     },
     body: body ? JSON.stringify(body) : undefined,
     cache: 'no-store',
-  }).catch(() => {
-    throw new Error('Can’t reach api.github.com (check the connection; a VPN may be needed)');
+  }).catch((e) => {
+    throw new Error(e.message === 'Failed to fetch'
+      ? 'Can’t reach api.github.com (check the connection; a VPN may be needed)'
+      : e.message);
   });
   if (res.status === 401 && conn.token) signOut('Your token has expired. Enter a new one.');
   if (!res.ok) {
@@ -591,7 +593,13 @@ $('#btn-preview').addEventListener('click', () => {
 
 // Sign in -------------------------------------------------------------------------
 // The panel opens only after a token with write access to the repo is entered.
+// GitHub tokens are only letters, digits and _; copying through chat or notes apps
+// can add invisible characters (or Persian digits) that break the request.
+const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩';
+const cleanToken = (t) => t.replace(/[۰-۹٠-٩]/g, (d) => PERSIAN_DIGITS.indexOf(d) % 10).replace(/[^A-Za-z0-9_]/g, '');
+
 async function signIn(token, remember) {
+  if (!/^(github_pat_|gh[pousr]_)\w{20,}$/.test(token)) throw new Error('That doesn’t look like a GitHub token. Copy it again from GitHub and paste it here.');
   conn.token = token;
   const repo = await gh('');
   if (!repo.permissions?.push) throw new Error('This token can’t write to the site.');
@@ -611,7 +619,7 @@ function signOut(msg) {
 }
 $('#login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const token = $('#tok').value.trim();
+  const token = cleanToken($('#tok').value);
   if (!token) return;
   const btn = $('#login-form button');
   btn.disabled = true;
@@ -621,7 +629,9 @@ $('#login-form').addEventListener('submit', async (e) => {
     await openApp();
   } catch (err) {
     conn.token = '';
-    $('#login-msg').textContent = err.status === 401 ? 'Invalid or expired token.' : 'Couldn’t sign in: ' + err.message;
+    $('#login-msg').textContent = err.status === 401 ? 'GitHub rejected this token (wrong, expired or deleted).'
+      : err.status === 403 || err.status === 404 ? 'This token has no access to the rocket-effect repository.'
+      : 'Couldn’t sign in: ' + err.message;
   } finally {
     btn.disabled = false;
   }
@@ -679,7 +689,7 @@ async function openApp() {
   if (!saved) return signOut();
   $('#login-msg').textContent = 'Signing in…';
   try {
-    await signIn(saved, true);
+    await signIn(cleanToken(saved), true);
     await openApp();
   } catch (e) {
     signOut(e.status === 401 ? 'Your token has expired. Enter a new one.' : 'Couldn’t sign in: ' + e.message);
