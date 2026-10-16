@@ -1,49 +1,49 @@
 <!doctype html>
-<html lang="fa" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>پنل مدیریت · rocket effect</title>
+  <title>Admin · rocket effect</title>
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&family=Inter+Tight:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
   <header class="top">
-    <div class="brand">rocket effect <span>پنل مدیریت</span></div>
+    <div class="brand">rocket effect <span>admin</span></div>
     <div class="status" id="status"></div>
     <div class="actions">
-      <button type="button" id="btn-preview" class="ghost">پیش‌نمایش</button>
-      <button type="button" id="btn-discard" class="ghost">دور ریختن تغییرات</button>
-      <button type="button" id="btn-publish" class="primary">انتشار روی سایت</button>
+      <button type="button" id="btn-preview" class="ghost">Preview</button>
+      <button type="button" id="btn-discard" class="ghost">Discard changes</button>
+      <button type="button" id="btn-publish" class="primary">Publish to site</button>
     </div>
   </header>
 
   <div class="wrap">
     <nav class="side" id="side">
-      <button type="button" data-sec="projects" class="on">پروژه‌ها</button>
-      <button type="button" data-sec="layout">چیدمان کارت‌ها</button>
-      <button type="button" data-sec="tabs">تب‌های پوشه</button>
-      <button type="button" data-sec="about">درباره (about)</button>
-      <button type="button" data-sec="general">عمومی</button>
-      <button type="button" data-sec="history">تاریخچه نسخه‌ها</button>
-      <button type="button" data-sec="connect">اتصال به گیت‌هاب</button>
-      <a class="site-link" href="../" target="_blank" rel="noopener">باز کردن سایت ↗</a>
+      <button type="button" data-sec="projects" class="on">Projects</button>
+      <button type="button" data-sec="layout">Card layout</button>
+      <button type="button" data-sec="tabs">Folder tabs</button>
+      <button type="button" data-sec="about">About</button>
+      <button type="button" data-sec="general">General</button>
+      <button type="button" data-sec="history">History</button>
+      <button type="button" data-sec="connect">GitHub connection</button>
+      <a class="site-link" href="../" target="_blank" rel="noopener">Open site ↗</a>
     </nav>
 
     <main class="main">
       <!-- Projects -->
       <section data-sec="projects">
         <div class="sec-head">
-          <h2>پروژه‌ها</h2>
+          <h2>Projects</h2>
           <div class="row">
-            <label>تب:
+            <label>Tab
               <select id="proj-filter"></select>
             </label>
-            <button type="button" id="proj-add" class="primary">+ پروژه جدید</button>
+            <button type="button" id="proj-add" class="primary">+ New project</button>
           </div>
         </div>
         <div class="proj-grid" id="proj-list"></div>
@@ -52,89 +52,89 @@
       <!-- Layout -->
       <section data-sec="layout" hidden>
         <div class="sec-head">
-          <h2>چیدمان کارت‌ها</h2>
+          <h2>Card layout</h2>
           <div class="row">
-            <label>تب:
+            <label>Tab
               <select id="lay-tab"></select>
             </label>
           </div>
         </div>
-        <p class="hint">کارت‌ها رو بکش تا جاشون عوض شه. گوشه‌ی پایین کارت رو بکش تا اندازه‌اش عوض شه. با انتخاب یه کارت، چرخشش رو از پایین تنظیم کن. (روی گوشی کارت‌ها خودکار زیر هم چیده میشن.)</p>
+        <p class="hint">Drag a card to move it. Drag its bottom corner to resize it. Select a card to set its rotation below. (On phones the cards stack automatically.)</p>
         <div class="stage-wrap"><div class="stage" id="stage"></div></div>
         <div class="lay-ctrl" id="lay-ctrl" hidden>
           <strong id="lay-name"></strong>
-          <label>چرخش <input type="range" id="lay-r" min="-15" max="15" step="0.5"> <output id="lay-r-out"></output>°</label>
-          <label>عرض <input type="range" id="lay-w" min="8" max="90" step="0.5"> <output id="lay-w-out"></output>%</label>
-          <button type="button" id="lay-front" class="ghost">بیار جلو</button>
+          <label>Rotation <input type="range" id="lay-r" min="-15" max="15" step="0.5"> <output id="lay-r-out"></output>°</label>
+          <label>Width <input type="range" id="lay-w" min="8" max="90" step="0.5"> <output id="lay-w-out"></output>%</label>
+          <button type="button" id="lay-front" class="ghost">Bring to front</button>
         </div>
       </section>
 
       <!-- Tabs -->
       <section data-sec="tabs" hidden>
-        <div class="sec-head"><h2>تب‌های پوشه</h2></div>
-        <p class="hint">ترتیب تب‌ها همون ترتیب روی پوشه‌ست. اسم تب رو عوض کنی، پروژه‌هاش هم خودکار منتقل میشن. (حروف کوچیک انگلیسی بهترن، چون با فونت سایت کشیده میشن.)</p>
+        <div class="sec-head"><h2>Folder tabs</h2></div>
+        <p class="hint">Tabs appear on the folder in this order. Renaming a tab moves its projects with it. (Lowercase works best, since tabs are drawn in the site lettering.)</p>
         <ul class="list" id="tab-list"></ul>
-        <div class="row"><input id="tab-new" placeholder="اسم تب جدید" dir="auto"><button type="button" id="tab-add" class="primary">+ اضافه کن</button></div>
+        <div class="row"><input id="tab-new" placeholder="New tab name"><button type="button" id="tab-add" class="primary">+ Add</button></div>
       </section>
 
       <!-- About -->
       <section data-sec="about" hidden>
-        <div class="sec-head"><h2>متن درباره (about)</h2></div>
-        <p class="hint">هر کادر یه پاراگرافه.</p>
+        <div class="sec-head"><h2>About text</h2></div>
+        <p class="hint">Each box is one paragraph.</p>
         <div id="about-list"></div>
-        <button type="button" id="about-add" class="ghost">+ پاراگراف جدید</button>
+        <button type="button" id="about-add" class="ghost">+ New paragraph</button>
       </section>
 
       <!-- General -->
       <section data-sec="general" hidden>
-        <div class="sec-head"><h2>عمومی</h2></div>
+        <div class="sec-head"><h2>General</h2></div>
         <div class="form">
-          <label>عنوان سایت (تب مرورگر)<input data-bind="site.title" dir="auto"></label>
-          <label>توضیح سایت (برای گوگل)<textarea data-bind="site.description" rows="2" dir="auto"></textarea></label>
-          <label>ایمیل (لینک email بالای سایت)<input data-bind="site.email" dir="ltr" type="email"></label>
-          <label>لینک اینستاگرام (لینک ig)<input data-bind="site.instagram" dir="ltr" type="url"></label>
+          <label>Site title (browser tab)<input data-bind="site.title"></label>
+          <label>Site description (for search engines)<textarea data-bind="site.description" rows="2"></textarea></label>
+          <label>Email (the “email” link in the header)<input data-bind="site.email" type="email"></label>
+          <label>Instagram link (the “ig” link)<input data-bind="site.instagram" type="url"></label>
           <fieldset>
-            <legend>کلمه‌های صفحه اول (که روشن و خاموش میشن)</legend>
-            <label>کلمه ۱<input data-bind="hero.0" dir="auto"></label>
-            <label>کلمه ۲<input data-bind="hero.1" dir="auto"></label>
-            <label>کلمه ۳<input data-bind="hero.2" dir="auto"></label>
+            <legend>Home page words (they switch on and off)</legend>
+            <label>Word 1<input data-bind="hero.0"></label>
+            <label>Word 2<input data-bind="hero.1"></label>
+            <label>Word 3<input data-bind="hero.2"></label>
           </fieldset>
         </div>
       </section>
 
       <!-- History -->
       <section data-sec="history" hidden>
-        <div class="sec-head"><h2>تاریخچه نسخه‌ها</h2><button type="button" id="hist-load" class="ghost">به‌روزرسانی</button></div>
-        <p class="hint">هر بار که «انتشار» می‌زنی یه نسخه ثبت میشه. با «برگرد به این نسخه» محتوای اون نسخه توی پنل بار میشه؛ بعد اگه خوب بود انتشارش بده.</p>
+        <div class="sec-head"><h2>History</h2><button type="button" id="hist-load" class="ghost">Refresh</button></div>
+        <p class="hint">Every publish saves a version. “Restore this version” loads it into the panel; publish it if it looks right.</p>
         <ul class="list" id="hist-list"></ul>
         <div class="row">
-          <button type="button" id="btn-export" class="ghost">دانلود فایل محتوا (backup)</button>
-          <label class="ghost file-btn">بارگذاری فایل backup<input type="file" id="btn-import" accept="application/json,.json" hidden></label>
+          <button type="button" id="btn-export" class="ghost">Download content (backup)</button>
+          <label class="ghost file-btn">Load a backup file<input type="file" id="btn-import" accept="application/json,.json" hidden></label>
         </div>
       </section>
 
       <!-- Connect -->
       <section data-sec="connect" hidden>
-        <div class="sec-head"><h2>اتصال به گیت‌هاب</h2></div>
+        <div class="sec-head"><h2>GitHub connection</h2></div>
         <div class="conn-state" id="conn-state"></div>
         <ol class="steps">
-          <li>این صفحه رو باز کن: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">ساخت توکن گیت‌هاب ↗</a></li>
-          <li>یه اسم بده (مثلاً rocket-admin) و تاریخ انقضا انتخاب کن.</li>
-          <li>Repository access ← <b>Only select repositories</b> ← ریپو <b dir="ltr">rocket-effect</b>.</li>
-          <li>Permissions ← Repository permissions ← <b>Contents</b> رو بذار روی <b>Read and write</b>.</li>
-          <li>Generate token رو بزن، توکن رو کپی کن و اینجا بذار.</li>
+          <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">New fine-grained token ↗</a> on GitHub.</li>
+          <li>Give it a name (e.g. rocket-admin) and pick an expiry.</li>
+          <li>Repository access → <b>Only select repositories</b> → <b>rocket-effect</b>.</li>
+          <li>Permissions → Repository permissions → set <b>Contents</b> to <b>Read and write</b>.</li>
+          <li>Click Generate token, copy it and paste it here.</li>
         </ol>
         <div class="form">
-          <label>توکن<input type="password" id="tok" dir="ltr" autocomplete="off" placeholder="github_pat_…"></label>
-          <label>ریپو<input id="repo" dir="ltr" value="aimaxxingg/rocket-effect"></label>
-          <label>برنچ<input id="branch" dir="ltr" value="main"></label>
-          <label class="check"><input type="checkbox" id="remember" checked> روی این دستگاه یادم بمونه</label>
+          <label>Token<input type="password" id="tok" autocomplete="off" placeholder="github_pat_…"></label>
+          <label>Repository<input id="repo" value="aimaxxingg/rocket-effect"></label>
+          <label>Branch<input id="branch" value="main"></label>
+          <label class="check"><input type="checkbox" id="remember" checked> Remember on this device</label>
           <div class="row">
-            <button type="button" id="btn-connect" class="primary">اتصال</button>
-            <button type="button" id="btn-logout" class="ghost">خروج و پاک کردن توکن</button>
+            <button type="button" id="btn-connect" class="primary">Connect</button>
+            <button type="button" id="btn-logout" class="ghost">Disconnect and forget token</button>
           </div>
         </div>
-        <p class="hint">توکن فقط توی همین مرورگر می‌مونه و جز به خود گیت‌هاب جایی فرستاده نمیشه. بدون توکن هم می‌تونی ویرایش و پیش‌نمایش کنی، فقط انتشار نیاز به اتصال داره.</p>
+        <p class="hint">The token stays in this browser and is only sent to GitHub. You can edit and preview without it; only publishing needs a connection.</p>
       </section>
     </main>
   </div>
@@ -142,33 +142,33 @@
   <!-- Project editor -->
   <dialog id="dlg" class="dlg">
     <form method="dialog" id="pform">
-      <div class="dlg-head"><h3 id="dlg-title">ویرایش پروژه</h3><button type="button" class="x" data-close aria-label="بستن">×</button></div>
+      <div class="dlg-head"><h3 id="dlg-title">Edit project</h3><button type="button" class="x" data-close aria-label="Close">×</button></div>
       <div class="dlg-body">
         <div class="img-pick">
           <div class="img-prev" id="p-img-prev"></div>
-          <label class="ghost file-btn">آپلود عکس جدید<input type="file" id="p-img-file" accept="image/*" hidden></label>
-          <button type="button" class="ghost" id="p-img-lib">انتخاب از عکس‌های قبلی</button>
+          <label class="ghost file-btn">Upload new image<input type="file" id="p-img-file" accept="image/*" hidden></label>
+          <button type="button" class="ghost" id="p-img-lib">Choose an existing image</button>
           <div class="img-lib" id="p-img-libbox" hidden></div>
         </div>
         <div class="form">
-          <label>تب<select name="tab" id="p-tab"></select></label>
-          <label>عنوان<input name="title" dir="auto" required></label>
+          <label>Tab<select name="tab" id="p-tab"></select></label>
+          <label>Title<input name="title" required></label>
           <div class="two">
-            <label>کلاینت<input name="client" dir="auto"></label>
-            <label>سال<input name="year" dir="ltr"></label>
+            <label>Client<input name="client"></label>
+            <label>Year<input name="year"></label>
           </div>
-          <label>توضیحات<textarea name="text" rows="5" dir="auto"></textarea></label>
+          <label>Description<textarea name="text" rows="5"></textarea></label>
           <div class="two">
-            <label>لینک (اختیاری)<input name="linkHref" dir="ltr" type="url" placeholder="https://"></label>
-            <label>متن لینک<input name="linkLabel" dir="auto" placeholder="view on instagram"></label>
+            <label>Link (optional)<input name="linkHref" type="url" placeholder="https://"></label>
+            <label>Link text<input name="linkLabel" placeholder="view on instagram"></label>
           </div>
         </div>
       </div>
       <div class="dlg-foot">
-        <button type="button" class="danger" id="p-del">حذف پروژه</button>
+        <button type="button" class="danger" id="p-del">Delete project</button>
         <span class="grow"></span>
-        <button type="button" class="ghost" data-close>انصراف</button>
-        <button type="submit" class="primary">ثبت</button>
+        <button type="button" class="ghost" data-close>Cancel</button>
+        <button type="submit" class="primary">Save</button>
       </div>
     </form>
   </dialog>

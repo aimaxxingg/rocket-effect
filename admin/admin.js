@@ -5,7 +5,6 @@
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const fa = (n) => String(n).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
 
 const STATE_KEY = 're-admin-state';    // unsaved work, survives reloads
 const DRAFT_KEY = 're-admin-draft';    // content for the site's ?preview
@@ -56,7 +55,7 @@ async function gh(path, { method = 'GET', body } = {}) {
     body: body ? JSON.stringify(body) : undefined,
     cache: 'no-store',
   }).catch(() => {
-    throw new Error('به api.github.com وصل نمیشه (اینترنت یا فیلتر؛ اگه لازمه VPN روشن کن)');
+    throw new Error('Can’t reach api.github.com (check the connection; a VPN may be needed)');
   });
   if (!res.ok) {
     let msg = res.status + '';
@@ -87,15 +86,15 @@ async function loadLibrary() {
 
 // One commit: new images + content.json (+ optional removal of unused images).
 async function publish() {
-  if (!connected()) { toast('برای انتشار اول به گیت‌هاب وصل شو.', true); showSec('connect'); return; }
+  if (!connected()) { toast('Connect to GitHub first to publish.', true); showSec('connect'); return; }
   const btn = $('#btn-publish');
   btn.disabled = true;
-  btn.textContent = 'در حال انتشار…';
+  btn.textContent = 'Publishing…';
   try {
     // someone else (or another tab) published since we loaded?
     const now = await gh(`contents/content.json?ref=${encodeURIComponent(conn.branch)}`).catch((e) => (e.status === 404 ? null : Promise.reject(e)));
     if (now && remoteSha && now.sha !== remoteSha &&
-        !confirm('محتوای سایت از وقتی پنل رو باز کردی عوض شده (از جای دیگه). تغییرات تو روش نوشته بشه؟')) return;
+        !confirm('The site content was changed elsewhere since you opened the panel. Overwrite it with your changes?')) return;
 
     const ref = await gh(`git/ref/heads/${encodeURIComponent(conn.branch)}`);
     const head = await gh(`git/commits/${ref.object.sha}`);
@@ -131,12 +130,12 @@ async function publish() {
     clearState();
     await loadLibrary();
     renderAll();
-    toast('منتشر شد ✓  حدود یک دقیقه دیگه روی سایت دیده میشه.', false, 6000);
+    toast('Published ✓  It will be live on the site in about a minute.', false, 6000);
   } catch (e) {
-    toast('انتشار نشد: ' + e.message, true, 8000);
+    toast('Publish failed: ' + e.message, true, 8000);
   } finally {
     btn.disabled = false;
-    btn.textContent = 'انتشار روی سایت';
+    btn.textContent = 'Publish to site';
     updateStatus();
   }
 }
@@ -158,8 +157,8 @@ function updateStatus() {
   const s = $('#status');
   const d = dirty();
   s.classList.toggle('dirty', d);
-  s.textContent = (connected() ? '● وصل به گیت‌هاب' : '○ وصل نیست (فقط پیش‌نمایش)') +
-    (d ? ' · تغییرات منتشر نشده داری' : ' · همه‌چی منتشر شده');
+  s.textContent = (connected() ? '● Connected to GitHub' : '○ Not connected (preview only)') +
+    (d ? ' · Unpublished changes' : ' · Everything is published');
   $('#btn-discard').disabled = !d;
 }
 addEventListener('beforeunload', (e) => { if (dirty()) e.preventDefault(); });
@@ -179,7 +178,7 @@ $('#side').addEventListener('click', (e) => {
 
 function tabOptions(sel, withAll) {
   const cur = sel.value;
-  sel.innerHTML = (withAll ? '<option value="">همه</option>' : '') +
+  sel.innerHTML = (withAll ? '<option value="">All</option>' : '') +
     content.tabs.map((t) => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
   if ([...sel.options].some((o) => o.value === cur)) sel.value = cur;
 }
@@ -204,12 +203,12 @@ function renderProjects() {
       <div class="thumb" data-edit style="background-image:url('${esc(imgURL(p.img))}')"></div>
       <div class="info" data-edit><b>${esc(p.title)}</b><small>${esc(p.client)} · ${esc(p.year)}</small>${f ? '' : `<span class="tag">${esc(p.tab)}</span>`}</div>
       <div class="tools">
-        <button type="button" data-move="-1" title="قبلی">→</button>
-        <button type="button" data-move="1" title="بعدی">←</button>
-        <button type="button" data-dup>کپی</button>
-        <button type="button" data-edit>ویرایش</button>
+        <button type="button" data-move="-1" title="Earlier">←</button>
+        <button type="button" data-move="1" title="Later">→</button>
+        <button type="button" data-dup>Duplicate</button>
+        <button type="button" data-edit>Edit</button>
       </div>
-    </div>`).join('') : '<div class="empty">پروژه‌ای نیست. «+ پروژه جدید» رو بزن.</div>';
+    </div>`).join('') : '<div class="empty">No projects yet. Click “+ New project”.</div>';
 }
 $('#proj-filter').addEventListener('change', renderProjects);
 $('#proj-list').addEventListener('click', (e) => {
@@ -236,7 +235,7 @@ $('#proj-list').addEventListener('click', (e) => {
   }
 });
 $('#proj-add').addEventListener('click', () => {
-  if (!content.tabs.length) { toast('اول یه تب بساز.', true); showSec('tabs'); return; }
+  if (!content.tabs.length) { toast('Create a tab first.', true); showSec('tabs'); return; }
   editProject(-1);
 });
 
@@ -262,7 +261,7 @@ function editProject(i) {
   setPrev(p.img);
   $('#p-img-libbox').hidden = true;
   $('#p-del').hidden = i < 0;
-  $('#dlg-title').textContent = i < 0 ? 'پروژه جدید' : 'ویرایش پروژه';
+  $('#dlg-title').textContent = i < 0 ? 'New project' : 'Edit project';
   dlg.showModal();
 }
 dlg.addEventListener('click', (e) => {
@@ -289,10 +288,10 @@ pform.addEventListener('submit', (e) => {
   if (editing >= 0) content.projects[editing] = p; else content.projects.push(p);
   dlg.close();
   changed(); renderProjects();
-  toast('ثبت شد. برای اینکه روی سایت بیاد «انتشار» رو بزن.');
+  toast('Saved. Click “Publish to site” to make it live.');
 });
 $('#p-del').addEventListener('click', () => {
-  if (!confirm('این پروژه حذف بشه؟')) return;
+  if (!confirm('Delete this project?')) return;
   content.projects.splice(editing, 1);
   dlg.close();
   changed(); renderProjects();
@@ -301,7 +300,7 @@ $('#p-img-lib').addEventListener('click', () => {
   const box = $('#p-img-libbox');
   box.hidden = !box.hidden;
   box.innerHTML = library.length ? library.map((p) => `<button type="button" data-p="${esc(p)}" title="${esc(p)}" style="background-image:url('${esc(imgURL(p))}')"></button>`).join('')
-    : '<small>عکسی پیدا نشد.</small>';
+    : '<small>No images found.</small>';
 });
 $('#p-img-libbox').addEventListener('click', (e) => {
   const b = e.target.closest('[data-p]');
@@ -319,7 +318,7 @@ $('#p-img-file').addEventListener('change', async (e) => {
     setPrev(path);
     changed();
   } catch (err) {
-    toast('این عکس خونده نشد: ' + err.message, true);
+    toast('Couldn’t read this image: ' + err.message, true);
   }
 });
 
@@ -359,7 +358,7 @@ function renderStage() {
   stage.innerHTML = items.map(([p, i], k) => `
     <div class="sc${i === selCard ? ' sel' : ''}" data-i="${i}" style="left:${p.x}%;top:${p.y}%;width:${p.w}%;rotate:${p.r}deg;z-index:${k + 1}">
       <img src="${esc(imgURL(p.img))}" alt=""><span>${esc(p.title)}</span><i class="grip"></i>
-    </div>`).join('') || '<div class="empty">این تب پروژه‌ای نداره.</div>';
+    </div>`).join('') || '<div class="empty">This tab has no projects.</div>';
   renderLayCtrl();
 }
 function renderLayCtrl() {
@@ -433,10 +432,10 @@ function renderTabs() {
     const n = content.projects.filter((p) => p.tab === t).length;
     return `<li data-i="${i}">
       <input value="${esc(t)}" dir="auto" data-rename>
-      <span class="n">${fa(n)} پروژه</span>
-      <button type="button" data-move="-1" title="بالا">↑</button>
-      <button type="button" data-move="1" title="پایین">↓</button>
-      <button type="button" data-del class="danger">حذف</button>
+      <span class="n">${n} project${n === 1 ? '' : 's'}</span>
+      <button type="button" data-move="-1" title="Up">↑</button>
+      <button type="button" data-move="1" title="Down">↓</button>
+      <button type="button" data-del class="danger">Delete</button>
     </li>`;
   }).join('');
 }
@@ -444,7 +443,7 @@ $('#tab-list').addEventListener('change', (e) => {
   if (!e.target.matches('[data-rename]')) return;
   const i = +e.target.closest('li').dataset.i;
   const old = content.tabs[i], name = e.target.value.trim().toLowerCase();
-  if (!name || (name !== old && content.tabs.includes(name))) { toast('اسم تکراری یا خالیه.', true); e.target.value = old; return; }
+  if (!name || (name !== old && content.tabs.includes(name))) { toast('That name is empty or already used.', true); e.target.value = old; return; }
   content.tabs[i] = name;
   content.projects.forEach((p) => { if (p.tab === old) p.tab = name; });
   changed(); renderAll();
@@ -460,7 +459,7 @@ $('#tab-list').addEventListener('click', (e) => {
   } else if (e.target.closest('[data-del]')) {
     const t = content.tabs[i];
     const n = content.projects.filter((p) => p.tab === t).length;
-    if (!confirm(n ? `تب «${t}» و ${fa(n)} پروژه‌اش حذف بشن؟` : `تب «${t}» حذف بشه؟`)) return;
+    if (!confirm(n ? `Delete the tab “${t}” and its ${n} project${n === 1 ? '' : 's'}?` : `Delete the tab “${t}”?`)) return;
     content.tabs.splice(i, 1);
     content.projects = content.projects.filter((p) => p.tab !== t);
     changed(); renderAll();
@@ -468,7 +467,7 @@ $('#tab-list').addEventListener('click', (e) => {
 });
 $('#tab-add').addEventListener('click', () => {
   const name = $('#tab-new').value.trim().toLowerCase();
-  if (!name || content.tabs.includes(name)) { toast('اسم تکراری یا خالیه.', true); return; }
+  if (!name || content.tabs.includes(name)) { toast('That name is empty or already used.', true); return; }
   content.tabs.push(name);
   $('#tab-new').value = '';
   changed(); renderAll();
@@ -481,9 +480,9 @@ function renderAbout() {
     <div class="para" data-i="${i}">
       <textarea rows="3" dir="auto">${esc(t)}</textarea>
       <div class="btns">
-        <button type="button" data-move="-1" title="بالا">↑</button>
-        <button type="button" data-move="1" title="پایین">↓</button>
-        <button type="button" data-del class="danger" title="حذف">×</button>
+        <button type="button" data-move="-1" title="Up">↑</button>
+        <button type="button" data-move="1" title="Down">↓</button>
+        <button type="button" data-del class="danger" title="Delete">×</button>
       </div>
     </div>`).join('');
 }
@@ -500,7 +499,7 @@ $('#about-list').addEventListener('click', (e) => {
     if (j < 0 || j >= content.about.length) return;
     [content.about[i], content.about[j]] = [content.about[j], content.about[i]];
   } else if (e.target.closest('[data-del]')) {
-    if (!confirm('این پاراگراف حذف بشه؟')) return;
+    if (!confirm('Delete this paragraph?')) return;
     content.about.splice(i, 1);
   } else return;
   changed(); renderAbout();
@@ -529,29 +528,29 @@ $('section[data-sec=general]').addEventListener('input', (e) => {
 // History ----------------------------------------------------------------------
 async function loadHistory() {
   const ul = $('#hist-list');
-  if (!connected()) { ul.innerHTML = '<li><span class="meta">برای دیدن تاریخچه اول به گیت‌هاب وصل شو.</span></li>'; return; }
-  ul.innerHTML = '<li><span class="meta">در حال بارگذاری…</span></li>';
+  if (!connected()) { ul.innerHTML = '<li><span class="meta">Connect to GitHub to see the history.</span></li>'; return; }
+  ul.innerHTML = '<li><span class="meta">Loading…</span></li>';
   try {
     const commits = await gh(`commits?path=content.json&sha=${encodeURIComponent(conn.branch)}&per_page=30`);
     ul.innerHTML = commits.map((c, k) => `
-      <li><span class="meta">${new Date(c.commit.author.date).toLocaleString('fa-IR')}${k === 0 ? ' · <b>نسخه فعلی سایت</b>' : ''}
+      <li><span class="meta">${new Date(c.commit.author.date).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}${k === 0 ? ' · <b>current version</b>' : ''}
         <small dir="ltr">${esc(c.commit.message.split('\n')[0])}</small></span>
-        ${k === 0 ? '' : `<button type="button" data-sha="${c.sha}">برگرد به این نسخه</button>`}</li>`).join('');
+        ${k === 0 ? '' : `<button type="button" data-sha="${c.sha}">Restore this version</button>`}</li>`).join('');
   } catch (e) {
-    ul.innerHTML = `<li><span class="meta">خطا: ${esc(e.message)}</span></li>`;
+    ul.innerHTML = `<li><span class="meta">Error: ${esc(e.message)}</span></li>`;
   }
 }
 $('#hist-load').addEventListener('click', loadHistory);
 $('#hist-list').addEventListener('click', async (e) => {
   const b = e.target.closest('[data-sha]'); if (!b) return;
-  if (dirty() && !confirm('تغییرات منتشرنشده‌ات جایگزین میشن. ادامه؟')) return;
+  if (dirty() && !confirm('This replaces your unpublished changes. Continue?')) return;
   try {
     const { content: c } = await fetchRemoteContent(b.dataset.sha);
     content = normalize(c);
     pending = {};
     changed(); renderAll();
-    toast('اون نسخه بار شد. اگه خوبه «انتشار» رو بزن.', false, 5000);
-  } catch (err) { toast('خطا: ' + err.message, true); }
+    toast('That version is loaded. If it looks right, click “Publish to site”.', false, 5000);
+  } catch (err) { toast('Error: ' + err.message, true); }
 });
 $('#btn-export').addEventListener('click', () => {
   const a = document.createElement('a');
@@ -565,17 +564,17 @@ $('#btn-import').addEventListener('change', async (e) => {
   if (!f) return;
   try {
     const c = JSON.parse(await f.text());
-    if (!Array.isArray(c.projects) || !Array.isArray(c.tabs)) throw new Error('فایل محتوای سایت نیست');
+    if (!Array.isArray(c.projects) || !Array.isArray(c.tabs)) throw new Error('Not a site content file');
     content = normalize(c);
     changed(); renderAll();
-    toast('فایل بار شد. اگه خوبه «انتشار» رو بزن.');
-  } catch (err) { toast('خطا: ' + err.message, true); }
+    toast('File loaded. If it looks right, click “Publish to site”.');
+  } catch (err) { toast('Error: ' + err.message, true); }
 });
 
 // Top bar -------------------------------------------------------------------------
 $('#btn-publish').addEventListener('click', publish);
 $('#btn-discard').addEventListener('click', () => {
-  if (!confirm('همه‌ی تغییرات منتشرنشده دور ریخته بشن؟')) return;
+  if (!confirm('Discard all unpublished changes?')) return;
   content = normalize(JSON.parse(baseJSON));
   pending = {};
   clearState();
@@ -586,7 +585,7 @@ $('#btn-preview').addEventListener('click', () => {
   const c = structuredClone(content);
   c.projects.forEach((p) => { if (pending[p.img]) p.img = pending[p.img].dataUrl; });
   try { localStorage.setItem(DRAFT_KEY, JSON.stringify(c)); }
-  catch { toast('عکس‌های جدید برای پیش‌نمایش خیلی بزرگن؛ پیش‌نمایش بدون اون‌ها باز میشه.', true);
+  catch { toast('New images are too big for the preview; it opens without them.', true);
     c.projects.forEach((p) => { if (p.img.startsWith('data:')) p.img = PROTECTED_IMAGES[0]; });
     try { localStorage.setItem(DRAFT_KEY, JSON.stringify(c)); } catch {} }
   const tab = $('#lay-tab').value;
@@ -594,10 +593,10 @@ $('#btn-preview').addEventListener('click', () => {
 });
 
 // Connect ---------------------------------------------------------------------
-function renderConn(user) {
+function renderConn() {
   const el = $('#conn-state');
   el.className = 'conn-state ' + (connected() ? 'ok' : 'no');
-  el.textContent = connected() ? `وصل شدی ✓ ${user ? '(' + user + ')' : ''} · ریپو ${conn.repo} · برنچ ${conn.branch}` : 'وصل نیستی.';
+  el.textContent = connected() ? `Connected ✓ · repo ${conn.repo} · branch ${conn.branch}` : 'Not connected.';
   $('#repo').value = conn.repo;
   $('#branch').value = conn.branch;
   $('#tok').value = '';
@@ -605,19 +604,19 @@ function renderConn(user) {
 $('#btn-connect').addEventListener('click', async () => {
   const token = $('#tok').value.trim();
   const next = { token: token || conn.token, repo: $('#repo').value.trim(), branch: $('#branch').value.trim() || 'main' };
-  if (!next.token) { toast('توکن رو بذار.', true); return; }
+  if (!next.token) { toast('Paste a token.', true); return; }
   const old = conn;
   conn = next;
   try {
     const repo = await gh('');
-    if (!repo.permissions?.push) throw new Error('این توکن اجازه‌ی نوشتن روی ریپو رو نداره (Contents: Read and write)');
+    if (!repo.permissions?.push) throw new Error('This token can’t write to the repo (needs Contents: Read and write)');
     if ($('#remember').checked) localStorage.setItem(CONN_KEY, JSON.stringify(conn)); else localStorage.removeItem(CONN_KEY);
     await reloadFromRemote(true);
     renderConn();
-    toast('وصل شد ✓');
+    toast('Connected ✓');
   } catch (e) {
     conn = old;
-    toast('اتصال نشد: ' + e.message, true, 7000);
+    toast('Couldn’t connect: ' + e.message, true, 7000);
   }
   updateStatus();
 });
@@ -625,7 +624,7 @@ $('#btn-logout').addEventListener('click', () => {
   conn = { ...conn, token: '' };
   try { localStorage.removeItem(CONN_KEY); } catch {}
   renderConn(); updateStatus();
-  toast('توکن پاک شد.');
+  toast('Token removed.');
 });
 
 // Load the published content; keep unsaved work if there is any.
@@ -652,14 +651,14 @@ async function reloadFromRemote(keepWork) {
   try {
     await reloadFromRemote(false);
   } catch (e) {
-    toast('محتوا بار نشد: ' + e.message, true, 8000);
+    toast('Couldn’t load content: ' + e.message, true, 8000);
     if (!content) return;
   }
   // unsaved work from last time?
   try {
     const s = JSON.parse(localStorage.getItem(STATE_KEY));
     if (s && (json(s.content) !== baseJSON || Object.keys(s.pending || {}).length)) {
-      if (confirm('تغییرات منتشرنشده از دفعه‌ی قبل پیدا شد. ادامه‌شون بدم؟')) {
+      if (confirm('Found unpublished changes from last time. Keep them?')) {
         content = normalize(s.content);
         pending = s.pending || {};
         await loadLibrary();
@@ -670,7 +669,7 @@ async function reloadFromRemote(keepWork) {
   // publish option: remove images nobody uses
   const opt = document.createElement('label');
   opt.className = 'check';
-  opt.innerHTML = '<input type="checkbox" id="opt-clean"> موقع انتشار عکس‌های بی‌استفاده هم از سایت پاک بشن';
+  opt.innerHTML = '<input type="checkbox" id="opt-clean"> When publishing, also delete images no project uses';
   $('section[data-sec=history] .row').after(opt);
   let sec = 'projects';
   try { sec = sessionStorage.getItem('re-admin-sec') || sec; } catch {}
