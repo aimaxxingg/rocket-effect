@@ -65,6 +65,13 @@
       track.appendChild(link);
     }
 
+    // Header links drawn in the same lettering (text kept as aria-label).
+    document.querySelectorAll('.nav a').forEach((a) => {
+      const label = a.textContent.trim();
+      a.setAttribute('aria-label', label);
+      a.replaceChildren(buildWordSVG(label, { line: true }));
+    });
+
     // --- Work overlay -------------------------------------------------------
     const overlay = document.getElementById('work');
     let closeTimer;

@@ -37,8 +37,42 @@ const GLYPHS = {
   f: { w: 2.5, s: [
     [0.6, -0.3, 0.6, 6], [1.3, -1, 2.5, -1], [0, 1.1, 2.3, 1.1],
   ] },
+  A: { w: 3, s: [
+    [0.7, 0, 2.3, 0], [0, 0.7, 0, 6], [3, 0.7, 3, 6], [0, 3.4, 3, 3.4],
+  ] },
+  a: { w: 3, s: [
+    [0.7, X, 2.3, X], [0.7, 6, 2.3, 6], [0, X + 0.7, 0, 5.3], [3, X, 3, 6],
+  ] },
+  g: { w: 3, s: [
+    [0.7, X, 2.3, X], [0.7, 5.4, 2.3, 5.4], [0, X + 0.7, 0, 4.7], [3, X, 3, 7.3], [0.3, 8, 2.3, 8],
+  ] },
+  y: { w: 3, s: [
+    [0, X, 0, 4.7], [0.7, 5.4, 2.3, 5.4], [3, X, 3, 7.3], [0.3, 8, 2.3, 8],
+  ] },
+  n: { w: 3, s: [
+    [0, X, 0, 6], [0.7, X, 2.3, X], [3, X + 0.7, 3, 6],
+  ] },
+  m: { w: 4.4, s: [
+    [0, X, 0, 6], [0.6, X, 1.6, X], [2.2, X + 0.7, 2.2, 6], [2.8, X, 3.8, X], [4.4, X + 0.7, 4.4, 6],
+  ] },
+  w: { w: 4, s: [
+    [0, X, 0, 5.3], [2, X + 1.2, 2, 5.3], [4, X, 4, 5.3], [0.6, 6, 1.4, 6], [2.6, 6, 3.4, 6],
+  ] },
+  r: { w: 2.5, s: [
+    [0, X, 0, 6], [0.7, X, 2.1, X], [2.5, X + 0.6, 2.5, X + 0.8],
+  ] },
+  i: { w: 0, s: [
+    [0, X, 0, 6], [0, -1.3, 0, -1.3],
+  ] },
+  l: { w: 1.3, s: [
+    [0, -1.3, 0, 5.3], [0.7, 6, 1.3, 6],
+  ] },
   ' ': { w: 0.9, s: [] },
 };
+
+// Fixed vertical bounds (ascender to descender) so separate words line up.
+const LINE_TOP = -1.3;
+const LINE_BOTTOM = 8;
 
 function dotsAlong(x1, y1, x2, y2) {
   const len = Math.hypot(x2 - x1, y2 - y1);
@@ -51,7 +85,8 @@ function dotsAlong(x1, y1, x2, y2) {
   return out;
 }
 
-export function buildWordSVG(text) {
+// opts.line: use full line bounds (incl. descenders) so words of a text line align.
+export function buildWordSVG(text, opts = {}) {
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
   const g = document.createElementNS(NS, 'g');
@@ -83,12 +118,13 @@ export function buildWordSVG(text) {
   }
 
   const width = cursor - TRACK + 2 * R;
-  const top = -1.3 * YS - R - 0.05;
-  const height = 6 * YS + R + 0.05 - top;
+  const top = LINE_TOP * YS - R - 0.05;
+  const height = (opts.line ? LINE_BOTTOM : 6) * YS + R + 0.05 - top;
   svg.setAttribute('viewBox', `${-R} ${top} ${width} ${height}`);
   svg.setAttribute('class', 'blobword');
   svg.setAttribute('aria-hidden', 'true');
   svg.style.setProperty('--ratio', (width / height).toFixed(4));
+  svg.style.setProperty('--vbh', height.toFixed(3));
   svg.appendChild(g);
   return svg;
 }
