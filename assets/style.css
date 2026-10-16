@@ -108,7 +108,8 @@ body.folder-open .hero { opacity: 0; }
 @keyframes folder-in { from { opacity: 0; transform: translateY(60px) scale(0.96); } to { opacity: 1; transform: none; } }
 @keyframes folder-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(80px) scale(0.98); } }
 
-/* Tabs: real file-folder dividers (SVG shapes, paper texture sampled from the reference).
+/* Tabs and sheet are cut straight from the reference photo (text removed):
+   tab.png = left cap | middle | right cap, stretched with border-image.
    The active tab belongs to the front sheet; the others sit behind its top edge. */
 .tabs {
   position: relative;
@@ -124,35 +125,40 @@ body.folder-open .hero { opacity: 0; }
   border: 0;
   padding: 0;
   background: none;
+  border-image: url("tab.png") 0 140 fill / 0 calc(var(--tab-h) * 1.4) stretch;
   cursor: pointer;
-  margin-right: calc(var(--tab-h) * -0.5);
+  margin-right: calc(var(--tab-h) * -1.2);
   color: var(--ink);
 }
-.tab > svg.shape { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.tab.active { border-image-source: url("tab-active.png"); translate: 0 2px; }
 .tab .blobword {
   position: relative;
   height: calc(var(--tab-h) * 0.34);
   width: auto;
   aspect-ratio: var(--ratio);
   margin: 0 auto;
-  translate: 0 6%;
+  translate: 0 4%;
   fill: #3d4241; stroke: #3d4241;
 }
-.tab:not(.active):hover > svg.shape { filter: brightness(1.04); }
+.tab:not(.active):hover { filter: brightness(1.04); }
 .back-tabs { position: absolute; left: 0; right: 0; top: 0; height: var(--tab-h); z-index: 0; pointer-events: none; }
-.back-tabs svg { position: absolute; bottom: calc(var(--tab-h) * 0.32); overflow: visible; }
+.back-tabs .green {
+  position: absolute;
+  top: calc(var(--tab-h) * -0.36);
+  height: calc(var(--tab-h) * 0.8);
+  border-image: url("tab-green.png") 0 50 fill / 0 calc(var(--tab-h) * 0.5) stretch;
+}
 
 .sheet {
   position: relative;
   z-index: 2;
   flex: 1;
-  background: #b3b9b7 url("paper.jpg") 0 0 / 380px 380px;
-  border-radius: 4px 10px 0 0;
+  background: #b2b8b6 url("sheet.jpg") center top / 100% auto repeat-y;
+  border-radius: 2px 3px 0 0;
   box-shadow:
-    inset 0 1.5px 0 rgba(52, 58, 57, 0.55),
-    inset 1px 0 0 rgba(52, 58, 57, 0.25),
-    inset -1px 0 0 rgba(52, 58, 57, 0.35),
-    inset 0 3px 0 rgba(255, 255, 255, 0.18),
+    inset 0 1.5px 0 rgba(60, 66, 65, 0.4),
+    inset 1px 0 0 rgba(60, 66, 65, 0.18),
+    inset -1px 0 0 rgba(60, 66, 65, 0.25),
     0 20px 60px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }

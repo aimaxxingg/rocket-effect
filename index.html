@@ -31,22 +31,6 @@
   </main>
 
   <!-- Folder overlay: used for work (tabs per category) and about. -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <!-- paper texture sampled from the reference folder -->
-      <pattern id="paper" patternUnits="userSpaceOnUse" width="380" height="380">
-        <image href="assets/paper.jpg" width="380" height="380"/>
-      </pattern>
-      <pattern id="paper-green" patternUnits="userSpaceOnUse" width="380" height="380">
-        <image href="assets/paper-green.jpg" width="380" height="380"/>
-      </pattern>
-      <linearGradient id="tab-shade" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0.35" stop-color="#1e2322" stop-opacity="0"/>
-        <stop offset="1" stop-color="#1e2322" stop-opacity="0.12"/>
-      </linearGradient>
-    </defs>
-  </svg>
-
   <div class="overlay" id="overlay" aria-hidden="true">
     <div class="folder" id="folder">
       <div class="back-tabs" id="back-tabs"></div>
@@ -102,34 +86,12 @@
 
     aboutEl.innerHTML = about.map((p) => `<p>${p}</p>`).join('');
 
-    // File-folder tab outline: flared feet, steep S-curved sides, rounded shoulders.
-    function tabPath(w, h) {
-      // foot flare -> sloped side -> big rounded shoulder (traced from the reference folder)
-      const s = h * 0.9;
-      const L = `M0,${h} C${s * 0.34},${h} ${s * 0.36},${h * 0.62} ${s * 0.5},${h * 0.36} C${s * 0.62},${h * 0.12} ${s * 0.78},0 ${s * 1.05},0`;
-      const R = `L${w - s * 1.05},0 C${w - s * 0.78},0 ${w - s * 0.62},${h * 0.12} ${w - s * 0.5},${h * 0.36} C${w - s * 0.36},${h * 0.62} ${w - s * 0.34},${h} ${w},${h}`;
-      return L + ' ' + R;
-    }
-    function tabShape(w, h, { fill = 'url(#paper)', shade = false, stroke = 'rgba(52,58,57,0.55)' } = {}) {
-      const d = tabPath(w, h);
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('class', 'shape');
-      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      svg.setAttribute('width', w);
-      svg.setAttribute('height', h);
-      svg.innerHTML =
-        `<path d="${d} Z" fill="${fill}"/>` +
-        (shade ? `<path d="${d} Z" fill="url(#tab-shade)"/>` : '') +
-        `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="1.2"/>`;
-      return svg;
-    }
-
     function renderTabs(labels, active) {
       tabsEl.replaceChildren();
       // layout sizes, unaffected by the open animation's scale
       const h = tabsEl.offsetHeight;
       const fw = folderEl.offsetWidth;
-      const overlap = h * 0.5;
+      const overlap = h * 1.2;   // keep in sync with .tab margin-right
       // Tabs share the folder width like real dividers (one lone tab takes ~30%).
       const even = labels.length > 1 ? (fw + overlap * (labels.length - 1)) / labels.length : fw * 0.3;
       labels.forEach((label) => {
@@ -144,18 +106,17 @@
         const text = word(label);
         b.appendChild(text);
         tabsEl.appendChild(b);
-        const need = parseFloat(getComputedStyle(text).width) + h * 1.5;
-        const w = Math.round(Math.max(even, need));
-        b.style.width = w + 'px';
-        b.prepend(tabShape(w, h, { shade: !isActive }));
+        const need = Math.max(parseFloat(getComputedStyle(text).width) + h * 2, h * 3);
+        b.style.width = Math.round(Math.max(even, need)) + 'px';
       });
       // Pale green tabs of the folders further back, peeking out above.
       backTabs.replaceChildren(
-        ...[[0.03, 0.3], [0.5, 0.28]].map(([x, wr]) => {
-          const w = Math.round(fw * wr);
-          const svg = tabShape(w, h, { fill: 'url(#paper-green)', stroke: 'rgba(90,100,80,0.35)' });
-          svg.style.left = Math.round(fw * x) + 'px';
-          return svg;
+        ...[[0.045, 0.28], [0.6, 0.27]].map(([x, wr]) => {
+          const g = document.createElement('span');
+          g.className = 'green';
+          g.style.left = Math.round(fw * x) + 'px';
+          g.style.width = Math.round(fw * wr) + 'px';
+          return g;
         }),
       );
     }
