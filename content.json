@@ -10,6 +10,7 @@
     "desktop": [{ "x": 4, "y": 20, "w": 36.1 }, { "x": 60.4, "y": 50, "w": 35.6 }],
     "phone": [{ "x": 5, "y": 30, "w": 60 }, { "x": 35.8, "y": 50, "w": 59.2 }]
   },
+  "heroAnim": { "enabled": true, "fade": 0.6, "step": 140, "holdOn": 1500, "holdOff": 750, "easing": "soft", "order": "sequence", "offOrder": "same" },
   "tabs": ["press release", "digital ads", "content seeding", "art", "pr"],
   "projects": [
     { "tab": "press release", "img": "assets/work/placeholder.png", "title": "Project one", "client": "Client", "year": "2026", "text": "Project description goes here: the brief, what we did and the results.", "x": 6, "y": 10, "w": 34, "r": -3 },

@@ -3,6 +3,7 @@
 // then rebuilds the site). Without a token everything works except publishing.
 
 import { buildWordSVG } from '../assets/blobfont.js';
+import { animateLetters, ANIM_DEFAULT, EASINGS } from '../assets/hero-anim.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -43,6 +44,7 @@ const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(
 function normalize(c) {
   c.site ||= {};
   c.hero ||= [];
+  c.heroAnim = { ...ANIM_DEFAULT, ...c.heroAnim };
   c.heroLayout ||= {};
   for (const dev of ['desktop', 'phone']) {
     c.heroLayout[dev] ||= [];
@@ -456,10 +458,12 @@ function renderHome() {
     el.dataset.i = i;
     const l = layout[i];
     el.style.cssText = `left:${l.x}%; top:${l.y}%; width:${l.w}%`;
-    el.appendChild(buildWordSVG(word, { line: true }));
+    el.appendChild(buildWordSVG(word, { line: true, letters: true }));
     return el;
   }));
   renderHomeCtrl();
+  renderAnim();
+  playAnim();
 }
 function renderHomeCtrl() {
   const l = content.heroLayout[homeDev][homeSel];
@@ -511,6 +515,41 @@ $('#home-w').addEventListener('input', (e) => {
 $('#home-reset').addEventListener('click', () => {
   content.heroLayout[homeDev] = content.hero.map((_, i) => ({ ...HERO_DEFAULT[homeDev][i % 2] }));
   changed(); renderHome();
+});
+
+
+// Letter animation settings, played live on the preview above.
+let stopAnim = () => {};
+function playAnim() {
+  stopAnim();
+  const letters = $$('#hstage .ch');
+  const play = $('#anim-play').checked;
+  stopAnim = animateLetters(letters, play ? content.heroAnim : { ...content.heroAnim, enabled: false });
+}
+function renderAnim() {
+  const a = content.heroAnim;
+  $('[data-anim=easing]').innerHTML = Object.keys(EASINGS).map((k) => `<option value="${k}">${k}</option>`).join('');
+  $$('[data-anim]').forEach((el) => {
+    const k = el.dataset.anim;
+    if (el.type === 'checkbox') el.checked = !!a[k]; else el.value = a[k];
+  });
+  $$('[data-out]').forEach((o) => { o.textContent = a[o.dataset.out]; });
+}
+$('#anim').addEventListener('input', (e) => {
+  const el = e.target.closest('[data-anim]');
+  if (!el) return;
+  const k = el.dataset.anim;
+  content.heroAnim[k] = el.type === 'checkbox' ? el.checked : el.type === 'range' ? +el.value : el.value;
+  const o = $(`[data-out="${k}"]`);
+  if (o) o.textContent = content.heroAnim[k];
+  changed();
+  clearTimeout(playAnim.t);
+  playAnim.t = setTimeout(playAnim, 200);   // restart once the slider settles
+});
+$('#anim-play').addEventListener('change', playAnim);
+$('#anim-reset').addEventListener('click', () => {
+  content.heroAnim = { ...ANIM_DEFAULT };
+  changed(); renderAnim(); playAnim();
 });
 
 // Tabs -------------------------------------------------------------------------

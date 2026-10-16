@@ -51,6 +51,7 @@
 
   <script type="module">
     import { buildWordSVG } from './assets/blobfont.js';
+    import { animateLetters } from './assets/hero-anim.js';
 
     // All content (texts, tabs, projects) lives in content.json, edited from /admin.
     // ?preview shows the unsaved draft from the admin panel (this browser only).
@@ -59,7 +60,7 @@
       try { content = JSON.parse(localStorage.getItem('re-admin-draft')); } catch {}
     }
     content ||= await fetch('content.json', { cache: 'no-cache' }).then((r) => r.json());
-    const { site = {}, hero = [], heroLayout = {}, tabs = [], projects = [], about = [] } = content;
+    const { site = {}, hero = [], heroLayout = {}, heroAnim = {}, tabs = [], projects = [], about = [] } = content;
     const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
     if (site.title) document.title = site.title;
@@ -96,18 +97,7 @@
     }
     placeHero();
     phoneHero.addEventListener('change', placeHero);
-    const STEP = 140, HOLD = 1500;   // ms between letters, ms fully lit / dark
-    let lit = 0, dir = 1;
-    function tick() {
-      if (dir > 0) letters[lit++].classList.add('on');
-      else letters[letters.length - lit--].classList.remove('on');
-      let wait = STEP;
-      if (lit === letters.length && dir > 0) { dir = -1; wait = HOLD; }
-      else if (lit === 0 && dir < 0) { dir = 1; wait = HOLD / 2; }
-      setTimeout(tick, wait);
-    }
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) letters.forEach((l) => l.classList.add('on'));
-    else tick();
+    animateLetters(letters, heroAnim);
 
     // --- Folder overlay ------------------------------------------------------
     const overlay = document.getElementById('overlay');

@@ -68,6 +68,23 @@
           <label>Size <input type="range" id="home-w" min="8" max="96" step="0.5"> <output id="home-w-out"></output>%</label>
           <button type="button" id="home-reset" class="ghost">Reset this layout</button>
         </div>
+        <fieldset class="anim" id="anim">
+          <legend>Letter animation</legend>
+          <label class="check"><input type="checkbox" data-anim="enabled"> Animate the letters (off = always fully shown)</label>
+          <div class="anim-grid">
+            <label>Fade length <output data-out="fade"></output> s<input type="range" data-anim="fade" min="0.05" max="2" step="0.05"></label>
+            <label>Delay between letters <output data-out="step"></output> ms<input type="range" data-anim="step" min="0" max="500" step="10"></label>
+            <label>Stay lit <output data-out="holdOn"></output> ms<input type="range" data-anim="holdOn" min="0" max="6000" step="100"></label>
+            <label>Stay dark <output data-out="holdOff"></output> ms<input type="range" data-anim="holdOff" min="0" max="6000" step="100"></label>
+            <label>Fade curve<select data-anim="easing"></select></label>
+            <label>Order<select data-anim="order"><option value="sequence">Left to right</option><option value="random">Random</option></select></label>
+            <label>Switch off<select data-anim="offOrder"><option value="same">Same order as on</option><option value="reverse">Reverse order</option></select></label>
+          </div>
+          <div class="row">
+            <label class="check"><input type="checkbox" id="anim-play" checked> Play in the preview above</label>
+            <button type="button" id="anim-reset" class="ghost">Reset animation</button>
+          </div>
+        </fieldset>
       </section>
 
       <!-- Projects -->
