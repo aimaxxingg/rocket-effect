@@ -4,7 +4,8 @@
   --gutter: 16px;
   --nav-size: clamp(16px, 1.15vw, 22px);
   --nav-unit: clamp(1.3px, 0.095vw, 2.4px); /* header lettering: px per grid unit */
-  --tab-h: clamp(46px, 5.2vw, 76px);
+  /* tab height = 7.26% of the folder width, as in the reference */
+  --tab-h: clamp(40px, calc(min(1240px, 100vw - 48px) * 0.0726), 90px);
   --ease: cubic-bezier(.24, 1, .29, 1);
 }
 
@@ -108,13 +109,13 @@ body.folder-open .hero { opacity: 0; }
 @keyframes folder-in { from { opacity: 0; transform: translateY(60px) scale(0.96); } to { opacity: 1; transform: none; } }
 @keyframes folder-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(80px) scale(0.98); } }
 
-/* Tabs and sheet are cut straight from the reference photo (text removed):
-   tab.png = left cap | middle | right cap, stretched with border-image.
-   The active tab belongs to the front sheet; the others sit behind its top edge. */
+/* Tabs: outline traced from the reference photo, filled with the photo's own paper
+   (assets/sheet.jpg, text removed). The active tab belongs to the front sheet;
+   the others sit behind its top edge. */
 .tabs {
   position: relative;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   height: var(--tab-h);
   margin-bottom: -2px;
 }
@@ -125,29 +126,22 @@ body.folder-open .hero { opacity: 0; }
   border: 0;
   padding: 0;
   background: none;
-  border-image: url("tab.png") 0 140 fill / 0 calc(var(--tab-h) * 1.4) stretch;
   cursor: pointer;
-  margin-right: calc(var(--tab-h) * -1.2);
   color: var(--ink);
 }
-.tab.active { border-image-source: url("tab-active.png"); translate: 0 2px; }
+.tab > svg.shape { position: absolute; left: 0; top: 0; overflow: visible; }
 .tab .blobword {
   position: relative;
-  height: calc(var(--tab-h) * 0.34);
+  height: calc(var(--tab-h) * 0.3);
   width: auto;
   aspect-ratio: var(--ratio);
   margin: 0 auto;
-  translate: 0 4%;
-  fill: #3d4241; stroke: #3d4241;
+  translate: 0 8%;
+  fill: #3a3f3e; stroke: #3a3f3e;
 }
-.tab:not(.active):hover { filter: brightness(1.04); }
+.tab:not(.active):hover > svg.shape { filter: brightness(1.04); }
 .back-tabs { position: absolute; left: 0; right: 0; top: 0; height: var(--tab-h); z-index: 0; pointer-events: none; }
-.back-tabs .green {
-  position: absolute;
-  top: calc(var(--tab-h) * -0.36);
-  height: calc(var(--tab-h) * 0.8);
-  border-image: url("tab-green.png") 0 50 fill / 0 calc(var(--tab-h) * 0.5) stretch;
-}
+.back-tabs svg { position: absolute; top: calc(var(--tab-h) * -0.36); overflow: visible; }
 
 .sheet {
   position: relative;
@@ -156,9 +150,9 @@ body.folder-open .hero { opacity: 0; }
   background: #b2b8b6 url("sheet.jpg") center top / 100% auto repeat-y;
   border-radius: 2px 3px 0 0;
   box-shadow:
-    inset 0 1.5px 0 rgba(60, 66, 65, 0.4),
-    inset 1px 0 0 rgba(60, 66, 65, 0.18),
-    inset -1px 0 0 rgba(60, 66, 65, 0.25),
+    inset 0 1.5px 0 rgba(58, 65, 64, 0.5),
+    inset 1px 0 0 rgba(60, 66, 65, 0.22),
+    inset -1px 0 0 rgba(60, 66, 65, 0.3),
     0 20px 60px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
@@ -261,8 +255,20 @@ body.folder-open .hero { opacity: 0; }
   .hero-word.w3 { top: 62vh; left: 5vw; }
   .folder { width: calc(100vw - 12px); height: calc(100svh - 64px); }
   :root { --tab-h: 44px; }
-  .tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .folder:not(.side-tabs) .tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
   .tabs::-webkit-scrollbar { display: none; }
+  /* Side tabs: the tab strip is rotated to run down the left edge, bumps pointing left. */
+  .folder.side-tabs { --tab-h: 40px; flex-direction: row; }
+  .folder.side-tabs .tabs {
+    position: absolute;
+    left: 0; top: 0;
+    width: var(--len);
+    margin: 0;
+    z-index: 3;
+    transform-origin: 0 0;
+    transform: translateY(var(--len)) rotate(-90deg);
+  }
+  .folder.side-tabs .sheet { margin-left: var(--tab-h); border-radius: 3px 0 0 0; }
   .board.dimmed { display: none; }
   .sheet:has(.detail:not([hidden])) { overflow: auto; }
   .detail { position: relative; grid-template-columns: 1fr; padding: 56px 18px 40px; gap: 22px; }
