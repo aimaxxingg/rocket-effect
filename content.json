@@ -5,26 +5,202 @@
     "email": "info@wavefoundation.co",
     "instagram": "https://www.instagram.com/rocket.effect"
   },
-  "hero": ["rocket", "effect"],
+  "hero": [
+    "rocket",
+    "effect"
+  ],
   "heroLayout": {
-    "desktop": [{ "x": 4, "y": 20, "w": 36.1 }, { "x": 60.4, "y": 50, "w": 35.6 }],
-    "phone": [{ "x": 5, "y": 30, "w": 60 }, { "x": 35.8, "y": 50, "w": 59.2 }]
+    "desktop": [
+      {
+        "x": 4,
+        "y": 20,
+        "w": 36.1
+      },
+      {
+        "x": 60.4,
+        "y": 50,
+        "w": 35.6
+      }
+    ],
+    "phone": [
+      {
+        "x": 5,
+        "y": 30,
+        "w": 60
+      },
+      {
+        "x": 35.8,
+        "y": 50,
+        "w": 59.2
+      }
+    ]
   },
-  "heroAnim": { "enabled": true, "fade": 0.6, "step": 140, "holdOn": 1500, "holdOff": 750, "easing": "soft", "order": "scatter", "offOrder": "same" },
-  "tabs": ["press release", "digital ads", "content seeding", "art", "pr"],
+  "heroAnim": {
+    "enabled": true,
+    "fade": 0.6,
+    "step": 140,
+    "holdOn": 1500,
+    "holdOff": 750,
+    "easing": "quick in",
+    "order": "scatter",
+    "offOrder": "same"
+  },
+  "tabs": [
+    "press release",
+    "digital ads",
+    "content seeding",
+    "art",
+    "pr"
+  ],
   "projects": [
-    { "tab": "press release", "img": "assets/work/placeholder.png", "title": "Project one", "client": "Client", "year": "2026", "text": "Project description goes here: the brief, what we did and the results.", "x": 6, "y": 10, "w": 34, "r": -3 },
-    { "tab": "press release", "img": "assets/work/placeholder.png", "title": "Project two", "client": "Client", "year": "2026", "text": "Project description goes here: the brief, what we did and the results.", "x": 44, "y": 6, "w": 32, "r": 2 },
-    { "tab": "press release", "img": "assets/work/placeholder.png", "title": "Project three", "client": "Client", "year": "2025", "text": "Project description goes here: the brief, what we did and the results.", "x": 26, "y": 44, "w": 32, "r": -1 },
-    { "tab": "digital ads", "img": "assets/work/placeholder.png", "title": "Project four", "client": "Client", "year": "2026", "text": "Project description goes here: the brief, what we did and the results.", "x": 10, "y": 14, "w": 36, "r": 2 },
-    { "tab": "digital ads", "img": "assets/work/placeholder.png", "title": "Project five", "client": "Client", "year": "2025", "text": "Project description goes here: the brief, what we did and the results.", "x": 52, "y": 30, "w": 34, "r": -2 },
-    { "tab": "content seeding", "img": "assets/work/placeholder.png", "title": "Project six", "client": "Client", "year": "2026", "text": "Project description goes here: the brief, what we did and the results.", "x": 8, "y": 8, "w": 32, "r": -2 },
-    { "tab": "content seeding", "img": "assets/work/placeholder.png", "title": "Project seven", "client": "Client", "year": "2026", "text": "Project description goes here: the brief, what we did and the results.", "x": 40, "y": 20, "w": 32, "r": 3 },
-    { "tab": "content seeding", "img": "assets/work/placeholder.png", "title": "Project eight", "client": "Client", "year": "2025", "text": "Project description goes here: the brief, what we did and the results.", "x": 62, "y": 46, "w": 30, "r": -1 },
-    { "tab": "art", "img": "assets/work/strick-machine.jpg", "title": "Strick - Machine", "client": "Strick", "year": "2025", "text": "Cover art for “Machine” by Strick.", "link": { "href": "https://www.instagram.com/p/DKe31iBRZjv/", "label": "view on instagram" }, "x": 56, "y": 6, "w": 28, "r": -1 },
-    { "tab": "art", "img": "assets/work/placeholder.png", "title": "Project nine", "client": "Client", "year": "2025", "text": "Project description goes here: the brief, what we did and the results.", "x": 8, "y": 16, "w": 36, "r": 2 },
-    { "tab": "pr", "img": "assets/work/placeholder.png", "title": "Project ten", "client": "Client", "year": "2026", "text": "Project description goes here: the brief, what we did and the results.", "x": 14, "y": 12, "w": 34, "r": 1 },
-    { "tab": "pr", "img": "assets/work/placeholder.png", "title": "Project eleven", "client": "Client", "year": "2025", "text": "Project description goes here: the brief, what we did and the results.", "x": 50, "y": 26, "w": 34, "r": -3 }
+    {
+      "tab": "press release",
+      "img": "assets/work/placeholder.png",
+      "title": "Project one",
+      "client": "Client",
+      "year": "2026",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 6,
+      "y": 10,
+      "w": 34,
+      "r": -3
+    },
+    {
+      "tab": "press release",
+      "img": "assets/work/placeholder.png",
+      "title": "Project two",
+      "client": "Client",
+      "year": "2026",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 44,
+      "y": 6,
+      "w": 32,
+      "r": 2
+    },
+    {
+      "tab": "press release",
+      "img": "assets/work/placeholder.png",
+      "title": "Project three",
+      "client": "Client",
+      "year": "2025",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 26,
+      "y": 44,
+      "w": 32,
+      "r": -1
+    },
+    {
+      "tab": "digital ads",
+      "img": "assets/work/placeholder.png",
+      "title": "Project four",
+      "client": "Client",
+      "year": "2026",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 10,
+      "y": 14,
+      "w": 36,
+      "r": 2
+    },
+    {
+      "tab": "digital ads",
+      "img": "assets/work/placeholder.png",
+      "title": "Project five",
+      "client": "Client",
+      "year": "2025",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 52,
+      "y": 30,
+      "w": 34,
+      "r": -2
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/placeholder.png",
+      "title": "Project six",
+      "client": "Client",
+      "year": "2026",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 8,
+      "y": 8,
+      "w": 32,
+      "r": -2
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/placeholder.png",
+      "title": "Project seven",
+      "client": "Client",
+      "year": "2026",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 40,
+      "y": 20,
+      "w": 32,
+      "r": 3
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/placeholder.png",
+      "title": "Project eight",
+      "client": "Client",
+      "year": "2025",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 62,
+      "y": 46,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "art",
+      "img": "assets/work/strick-machine.jpg",
+      "title": "Strick - Machine",
+      "client": "Strick",
+      "year": "2025",
+      "text": "Cover art for “Machine” by Strick.",
+      "link": {
+        "href": "https://www.instagram.com/p/DKe31iBRZjv/",
+        "label": "view on instagram"
+      },
+      "x": 56,
+      "y": 6,
+      "w": 28,
+      "r": -1
+    },
+    {
+      "tab": "art",
+      "img": "assets/work/placeholder.png",
+      "title": "Project nine",
+      "client": "Client",
+      "year": "2025",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 8,
+      "y": 16,
+      "w": 36,
+      "r": 2
+    },
+    {
+      "tab": "pr",
+      "img": "assets/work/placeholder.png",
+      "title": "Project ten",
+      "client": "Client",
+      "year": "2026",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 14,
+      "y": 12,
+      "w": 34,
+      "r": 1
+    },
+    {
+      "tab": "pr",
+      "img": "assets/work/placeholder.png",
+      "title": "Project eleven",
+      "client": "Client",
+      "year": "2025",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 50,
+      "y": 26,
+      "w": 34,
+      "r": -3
+    }
   ],
   "about": [
     "rocket effect marketing is a creative marketing studio.",
