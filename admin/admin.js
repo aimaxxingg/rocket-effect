@@ -2,6 +2,8 @@
 // content.json plus any new images to the GitHub repo in one commit (GitHub Pages
 // then rebuilds the site). Without a token everything works except publishing.
 
+import { buildWordSVG } from '../assets/blobfont.js';
+
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -9,6 +11,11 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const STATE_KEY = 're-admin-state';    // unsaved work, survives reloads
 const DRAFT_KEY = 're-admin-draft';    // content for the site's ?preview
 const CONN_KEY = 're-admin-conn';
+// starting layout of the home page words (matches the site's original look)
+const HERO_DEFAULT = {
+  desktop: [{ x: 4, y: 20, w: 36.1 }, { x: 60.4, y: 50, w: 35.6 }],
+  phone: [{ x: 5, y: 30, w: 60 }, { x: 35.8, y: 50, w: 59.2 }],
+};
 const PROTECTED_IMAGES = ['assets/work/placeholder.png'];
 
 let content = null;     // working copy
@@ -36,6 +43,12 @@ const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(
 function normalize(c) {
   c.site ||= {};
   c.hero ||= [];
+  c.heroLayout ||= {};
+  for (const dev of ['desktop', 'phone']) {
+    c.heroLayout[dev] ||= [];
+    c.hero.forEach((_, i) => { c.heroLayout[dev][i] ||= { ...HERO_DEFAULT[dev][i % 2] }; });
+    c.heroLayout[dev].length = c.hero.length;
+  }
   c.tabs ||= [];
   c.projects ||= [];
   c.about ||= [];
@@ -168,6 +181,7 @@ function showSec(name) {
   $$('.side [data-sec]').forEach((b) => b.classList.toggle('on', b.dataset.sec === name));
   $$('main section').forEach((s) => (s.hidden = s.dataset.sec !== name));
   if (name === 'layout') renderStage();
+  if (name === 'home') renderHome();
   if (name === 'history') loadHistory();
   try { sessionStorage.setItem('re-admin-sec', name); } catch {}
 }
@@ -426,6 +440,79 @@ $('#lay-front').addEventListener('click', () => {
   changed(); renderStage(); renderProjects();
 });
 
+// Home page ----------------------------------------------------------------------
+// Words: x, y in % of the screen, w = word width in % of screen width (as on the site).
+let homeDev = 'desktop', homeSel = -1;
+function renderHome() {
+  if (!content) return;
+  const stage = $('#hstage');
+  stage.classList.toggle('phone', homeDev === 'phone');
+  $$('#home-dev [data-dev]').forEach((b) => b.classList.toggle('on', b.dataset.dev === homeDev));
+  const layout = content.heroLayout[homeDev];
+  if (homeSel >= content.hero.length) homeSel = -1;
+  stage.replaceChildren(...content.hero.map((word, i) => {
+    const el = document.createElement('div');
+    el.className = 'hw' + (i === homeSel ? ' sel' : '');
+    el.dataset.i = i;
+    const l = layout[i];
+    el.style.cssText = `left:${l.x}%; top:${l.y}%; width:${l.w}%`;
+    el.appendChild(buildWordSVG(word, { line: true }));
+    return el;
+  }));
+  renderHomeCtrl();
+}
+function renderHomeCtrl() {
+  const l = content.heroLayout[homeDev][homeSel];
+  $('#home-ctrl').hidden = !l;
+  if (!l) return;
+  $('#home-name').textContent = content.hero[homeSel];
+  $('#home-w').value = l.w;
+  $('#home-w-out').textContent = l.w;
+}
+$('#home-dev').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-dev]');
+  if (b) { homeDev = b.dataset.dev; renderHome(); }
+});
+$('#hstage').addEventListener('pointerdown', (e) => {
+  const el = e.target.closest('.hw');
+  homeSel = el ? +el.dataset.i : -1;
+  $$('.hw').forEach((w) => w.classList.toggle('sel', w === el));
+  renderHomeCtrl();
+  if (!el) return;
+  e.preventDefault();
+  const l = content.heroLayout[homeDev][homeSel];
+  const box = $('#hstage').getBoundingClientRect();
+  const sx = e.clientX, sy = e.clientY, start = { x: l.x, y: l.y };
+  const r1 = (v) => Math.round(v * 10) / 10;
+  el.setPointerCapture(e.pointerId);
+  const move = (ev) => {
+    l.x = r1(Math.max(-5, Math.min(100 - l.w + 5, start.x + (ev.clientX - sx) / box.width * 100)));
+    l.y = r1(Math.max(-5, Math.min(95, start.y + (ev.clientY - sy) / box.height * 100)));
+    el.style.left = l.x + '%';
+    el.style.top = l.y + '%';
+  };
+  const up = () => {
+    el.removeEventListener('pointermove', move);
+    el.removeEventListener('pointerup', up);
+    el.removeEventListener('pointercancel', up);
+    changed();
+  };
+  el.addEventListener('pointermove', move);
+  el.addEventListener('pointerup', up);
+  el.addEventListener('pointercancel', up);
+});
+$('#home-w').addEventListener('input', (e) => {
+  const l = content.heroLayout[homeDev][homeSel]; if (!l) return;
+  l.w = +e.target.value;
+  $('#home-w-out').textContent = l.w;
+  $(`.hw[data-i="${homeSel}"]`).style.width = l.w + '%';
+  changed();
+});
+$('#home-reset').addEventListener('click', () => {
+  content.heroLayout[homeDev] = content.hero.map((_, i) => ({ ...HERO_DEFAULT[homeDev][i % 2] }));
+  changed(); renderHome();
+});
+
 // Tabs -------------------------------------------------------------------------
 function renderTabs() {
   $('#tab-list').innerHTML = content.tabs.map((t, i) => {
@@ -513,12 +600,14 @@ function renderGeneral() {
     el.value = content[a]?.[b] ?? '';
   });
 }
-$('section[data-sec=general]').addEventListener('input', (e) => {
+$('.main').addEventListener('input', (e) => {
   const el = e.target.closest('[data-bind]'); if (!el) return;
   const [a, b] = el.dataset.bind.split('.');
   if (a === 'hero') {
-    const h = [0, 1].map((k) => $(`[data-bind="hero.${k}"]`).value.trim());
+    const h = [0, 1].map((k) => $(`[data-bind="hero.${k}"]`).value.trim().toLowerCase());
     content.hero = h.slice(0, h.findLastIndex((w) => w) + 1);
+    normalize(content);
+    renderHome();
   } else {
     content[a][b] = el.value.trim();
   }
@@ -588,7 +677,8 @@ $('#btn-preview').addEventListener('click', () => {
     c.projects.forEach((p) => { if (p.img.startsWith('data:')) p.img = PROTECTED_IMAGES[0]; });
     try { localStorage.setItem(DRAFT_KEY, JSON.stringify(c)); } catch {} }
   const tab = $('#lay-tab').value;
-  window.open('../?preview' + (tab && !$('section[data-sec=layout]').hidden ? '#work/' + encodeURIComponent(tab) : '#work'), 'rocket-preview');
+  const hash = !$('section[data-sec=home]').hidden ? '' : tab && !$('section[data-sec=layout]').hidden ? '#work/' + encodeURIComponent(tab) : '#work';
+  window.open('../?preview' + hash, 'rocket-preview');
 });
 
 // Sign in -------------------------------------------------------------------------

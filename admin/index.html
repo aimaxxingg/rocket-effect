@@ -37,6 +37,7 @@
 
   <div class="wrap">
     <nav class="side" id="side">
+      <button type="button" data-sec="home">Home page</button>
       <button type="button" data-sec="projects" class="on">Projects</button>
       <button type="button" data-sec="layout">Card layout</button>
       <button type="button" data-sec="tabs">Folder tabs</button>
@@ -47,6 +48,28 @@
     </nav>
 
     <main class="main">
+      <!-- Home page -->
+      <section data-sec="home" hidden>
+        <div class="sec-head">
+          <h2>Home page</h2>
+          <div class="row seg" id="home-dev">
+            <button type="button" data-dev="desktop" class="on">Desktop</button>
+            <button type="button" data-dev="phone">Phone</button>
+          </div>
+        </div>
+        <div class="form home-words">
+          <label>Word 1<input data-bind="hero.0"></label>
+          <label>Word 2<input data-bind="hero.1"></label>
+        </div>
+        <p class="hint">Drag a word to move it. Select a word to change its size. Desktop and phone are laid out separately.</p>
+        <div class="hstage-wrap"><div class="hstage" id="hstage"></div></div>
+        <div class="lay-ctrl" id="home-ctrl" hidden>
+          <strong id="home-name"></strong>
+          <label>Size <input type="range" id="home-w" min="8" max="96" step="0.5"> <output id="home-w-out"></output>%</label>
+          <button type="button" id="home-reset" class="ghost">Reset this layout</button>
+        </div>
+      </section>
+
       <!-- Projects -->
       <section data-sec="projects">
         <div class="sec-head">
@@ -105,11 +128,6 @@
           <label>Site description (for search engines)<textarea data-bind="site.description" rows="2"></textarea></label>
           <label>Email (the “email” link in the header)<input data-bind="site.email" type="email"></label>
           <label>Instagram link (the “ig” link)<input data-bind="site.instagram" type="url"></label>
-          <fieldset>
-            <legend>Home page words (they switch on and off)</legend>
-            <label>Word 1<input data-bind="hero.0"></label>
-            <label>Word 2<input data-bind="hero.1"></label>
-          </fieldset>
         </div>
       </section>
 

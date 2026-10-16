@@ -148,6 +148,32 @@ legend { font-size: 13px; color: var(--muted); padding: 0 6px; }
 .lay-ctrl input[type=range] { width: 160px; padding: 0; }
 .lay-ctrl output { min-width: 2.5em; display: inline-block; direction: ltr; }
 
+/* home page layout: same proportions as a laptop screen / a phone */
+.seg { gap: 0; }
+.seg button { border-color: var(--line); background: var(--card); border-radius: 0; }
+.seg button:first-child { border-radius: 999px 0 0 999px; }
+.seg button:last-child { border-radius: 0 999px 999px 0; border-left: 0; }
+.seg button.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.home-words { grid-template-columns: 1fr 1fr; max-width: 640px; margin-bottom: 14px; }
+.hstage-wrap { display: flex; justify-content: center; }
+.hstage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-width: calc(62vh * 1.6);
+  background: #dad9d7;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,.18);
+  touch-action: none;
+}
+.hstage.phone { width: min(320px, 100%, calc(62vh * 390 / 844)); aspect-ratio: 390 / 844; border-radius: 18px; }
+.hw { position: absolute; cursor: grab; outline: 2px solid transparent; outline-offset: 4px; }
+.hw.sel { outline-color: #1e66f5; }
+.hw svg { display: block; width: 100%; height: auto; aspect-ratio: var(--ratio); }
+.blobword { fill: var(--ink); stroke: var(--ink); stroke-width: 2; stroke-linecap: round; overflow: visible; }
+.blobword circle { stroke: none; }
+
 /* sign in */
 .login { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
 .login form { width: min(360px, 100%); display: grid; gap: 16px; background: var(--panel); border-radius: 16px; padding: 28px; }

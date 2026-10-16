@@ -59,7 +59,7 @@
       try { content = JSON.parse(localStorage.getItem('re-admin-draft')); } catch {}
     }
     content ||= await fetch('content.json', { cache: 'no-cache' }).then((r) => r.json());
-    const { site = {}, hero = [], tabs = [], projects = [], about = [] } = content;
+    const { site = {}, hero = [], heroLayout = {}, tabs = [], projects = [], about = [] } = content;
     const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
     if (site.title) document.title = site.title;
@@ -83,7 +83,20 @@
     const heroWords = [...document.querySelectorAll('.hero-word')];
     heroWords.forEach((a) => a.appendChild(buildWordSVG(a.getAttribute('aria-label'), { line: true, letters: true })));
     const letters = heroWords.flatMap((w) => [...w.querySelectorAll('.ch')]);
-    const STEP = 110, HOLD = 1400;   // ms between letters, ms fully lit / dark
+    // Word positions from the admin panel: x, y in % of the screen, w = word width in % of screen width.
+    const phoneHero = matchMedia('(max-width: 640px)');
+    function placeHero() {
+      const layout = heroLayout[phoneHero.matches ? 'phone' : 'desktop'] || [];
+      heroWords.forEach((a, i) => {
+        const l = layout[i];
+        a.style.cssText = l ? `left:${l.x}vw; top:${l.y}vh; right:auto` : '';
+        a.firstChild.style.width = l ? l.w + 'vw' : '';
+        a.firstChild.style.height = l ? 'auto' : '';
+      });
+    }
+    placeHero();
+    phoneHero.addEventListener('change', placeHero);
+    const STEP = 140, HOLD = 1500;   // ms between letters, ms fully lit / dark
     let lit = 0, dir = 1;
     function tick() {
       if (dir > 0) letters[lit++].classList.add('on');
