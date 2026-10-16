@@ -27,7 +27,6 @@
     <h1 class="sr-only">rocket effect marketing</h1>
     <a class="hero-word w1" href="#work" data-open="work" aria-label="rocket"></a>
     <a class="hero-word w2" href="#work" data-open="work" aria-label="effect"></a>
-    <a class="hero-word w3" href="#work" data-open="work" aria-label="marketing"></a>
   </main>
 
   <!-- Folder overlay: used for work (tabs per category) and about. -->
@@ -80,21 +79,22 @@
       a.replaceChildren(word(label));
     });
 
-    // --- Hero: words light up one by one, then switch off one by one ---------
+    // --- Hero: letters fade on one by one, then off one by one ---------------
     const heroWords = [...document.querySelectorAll('.hero-word')];
-    heroWords.forEach((a) => a.appendChild(word(a.getAttribute('aria-label'))));
-    const steps = [[1,0,0],[1,1,0],[1,1,1],[1,1,1],[1,1,1],[0,1,1],[0,0,1],[0,0,0]];
-    let step = 0;
+    heroWords.forEach((a) => a.appendChild(buildWordSVG(a.getAttribute('aria-label'), { line: true, letters: true })));
+    const letters = heroWords.flatMap((w) => [...w.querySelectorAll('.ch')]);
+    const STEP = 110, HOLD = 1400;   // ms between letters, ms fully lit / dark
+    let lit = 0, dir = 1;
     function tick() {
-      heroWords.forEach((w, i) => w.classList.toggle('on', !!steps[step][i]));
-      step = (step + 1) % steps.length;
+      if (dir > 0) letters[lit++].classList.add('on');
+      else letters[letters.length - lit--].classList.remove('on');
+      let wait = STEP;
+      if (lit === letters.length && dir > 0) { dir = -1; wait = HOLD; }
+      else if (lit === 0 && dir < 0) { dir = 1; wait = HOLD / 2; }
+      setTimeout(tick, wait);
     }
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      heroWords.forEach((w) => w.classList.add('on'));
-    } else {
-      tick();
-      setInterval(tick, 520);
-    }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) letters.forEach((l) => l.classList.add('on'));
+    else tick();
 
     // --- Folder overlay ------------------------------------------------------
     const overlay = document.getElementById('overlay');

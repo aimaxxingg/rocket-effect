@@ -517,7 +517,7 @@ $('section[data-sec=general]').addEventListener('input', (e) => {
   const el = e.target.closest('[data-bind]'); if (!el) return;
   const [a, b] = el.dataset.bind.split('.');
   if (a === 'hero') {
-    const h = [0, 1, 2].map((k) => $(`[data-bind="hero.${k}"]`).value.trim());
+    const h = [0, 1].map((k) => $(`[data-bind="hero.${k}"]`).value.trim());
     content.hero = h.slice(0, h.findLastIndex((w) => w) + 1);
   } else {
     content[a][b] = el.value.trim();

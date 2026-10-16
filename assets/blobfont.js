@@ -104,6 +104,7 @@ function dotsAlong(x1, y1, x2, y2) {
 }
 
 // opts.line: use full line bounds (incl. descenders) so words of a text line align.
+// opts.letters: put each letter in its own <g class="ch"> (for per-letter animation).
 export function buildWordSVG(text, opts = {}) {
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
@@ -113,6 +114,12 @@ export function buildWordSVG(text, opts = {}) {
   for (const ch of text) {
     const glyph = GLYPHS[ch];
     if (!glyph) continue;
+    let target = g;
+    if (opts.letters && ch !== ' ') {
+      target = document.createElementNS(NS, 'g');
+      target.setAttribute('class', 'ch');
+      g.appendChild(target);
+    }
     for (let [x1, y1, x2, y2] of glyph.s) {
       y1 *= YS; y2 *= YS;
       if (y1 === y2 && x1 !== x2) {
@@ -121,14 +128,14 @@ export function buildWordSVG(text, opts = {}) {
         line.setAttribute('y1', y1);
         line.setAttribute('x2', cursor + x2);
         line.setAttribute('y2', y2);
-        g.appendChild(line);
+        target.appendChild(line);
       } else {
         for (const [cx, cy] of dotsAlong(x1, y1, x2, y2)) {
           const c = document.createElementNS(NS, 'circle');
           c.setAttribute('cx', (cursor + cx).toFixed(3));
           c.setAttribute('cy', cy.toFixed(3));
           c.setAttribute('r', R);
-          g.appendChild(c);
+          target.appendChild(c);
         }
       }
     }

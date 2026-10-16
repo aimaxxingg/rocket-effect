@@ -62,11 +62,10 @@ a { color: inherit; text-decoration: none; }
   height: 100svh;
   overflow: hidden;
 }
-.hero-word {
-  position: absolute;
-  visibility: hidden;
-}
-.hero-word.on { visibility: visible; }
+.hero-word { position: absolute; }
+/* each letter fades on and off quickly */
+.hero-word .ch { opacity: 0; transition: opacity 0.22s ease; }
+.hero-word .ch.on { opacity: 1; }
 .hero { transition: opacity 0.35s; }
 body.folder-open .hero { opacity: 0; }
 .hero-word .blobword {
@@ -74,9 +73,8 @@ body.folder-open .hero { opacity: 0; }
   width: auto;
   aspect-ratio: var(--ratio);
 }
-.hero-word.w1 { --maxw: 60vw; left: 4vw;  top: 11vh; }
-.hero-word.w2 { --maxw: 60vw; right: 4vw; top: 37vh; }
-.hero-word.w3 { --maxw: 88vw; left: 9vw;  top: 62vh; }
+.hero-word.w1 { --maxw: 60vw; left: 4vw;  top: 20vh; }
+.hero-word.w2 { --maxw: 60vw; right: 4vw; top: 50vh; }
 
 /* Folder overlay (work + about) */
 .overlay {
@@ -245,9 +243,8 @@ body.folder-open .hero { opacity: 0; }
 @media (max-width: 640px) {
   :root { --nav-size: 16px; }
   .nav { padding: 14px 12px; }
-  .hero-word.w1 { top: 20vh; left: 5vw; }
-  .hero-word.w2 { top: 42vh; right: 5vw; }
-  .hero-word.w3 { top: 62vh; left: 5vw; }
+  .hero-word.w1 { top: 30vh; left: 5vw; }
+  .hero-word.w2 { top: 50vh; right: 5vw; }
   .folder { width: calc(100vw - 12px); height: calc(100svh - 64px); }
   .folder:not(.side-tabs) .tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
   .tabs::-webkit-scrollbar { display: none; }

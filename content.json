@@ -5,7 +5,7 @@
     "email": "info@wavefoundation.co",
     "instagram": "https://www.instagram.com/rocket.effect"
   },
-  "hero": ["rocket", "effect", "marketing"],
+  "hero": ["rocket", "effect"],
   "tabs": ["press release", "digital ads", "content seeding", "art", "pr"],
   "projects": [
     { "tab": "press release", "img": "assets/work/placeholder.png", "title": "Project one", "client": "Client", "year": "2026", "text": "Project description goes here: the brief, what we did and the results.", "x": 6, "y": 10, "w": 34, "r": -3 },
