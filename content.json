@@ -43,7 +43,7 @@
     "holdOff": 750,
     "easing": "quick in",
     "order": "scatter",
-    "offOrder": "same"
+    "offOrder": "same", "spawn": true, "drift": true
   },
   "tabs": [
     "press release",

@@ -62,6 +62,7 @@
           <label>Word 2<input data-bind="hero.1"></label>
         </div>
         <p class="hint">Drag a word to move it. Select a word to change its size. Desktop and phone are laid out separately.</p>
+        <p class="hint" id="home-spawn-note" hidden>Random positions is on, so the words move around by themselves; only their size is used. Untick “Play in the preview” to place them for when it is off.</p>
         <div class="hstage-wrap"><div class="hstage" id="hstage"></div></div>
         <div class="lay-ctrl" id="home-ctrl" hidden>
           <strong id="home-name"></strong>
@@ -71,6 +72,8 @@
         <fieldset class="anim" id="anim">
           <legend>Letter animation</legend>
           <label class="check"><input type="checkbox" data-anim="enabled"> Animate the letters (off = always fully shown)</label>
+          <label class="check"><input type="checkbox" data-anim="spawn"> Random positions: each word lights up in a new spot every time</label>
+          <label class="check"><input type="checkbox" data-anim="drift"> Let the word glide slowly while it is lit</label>
           <div class="anim-grid">
             <label>Fade length <output data-out="fade"></output> s<input type="range" data-anim="fade" min="0.05" max="2" step="0.05"></label>
             <label>Delay between letters <output data-out="step"></output> ms<input type="range" data-anim="step" min="0" max="500" step="10"></label>

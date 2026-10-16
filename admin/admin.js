@@ -524,7 +524,7 @@ function playAnim() {
   stopAnim();
   const letters = $$('#hstage .ch');
   const play = $('#anim-play').checked;
-  stopAnim = animateLetters(letters, play ? content.heroAnim : { ...content.heroAnim, enabled: false });
+  stopAnim = animateLetters(letters, play ? content.heroAnim : { ...content.heroAnim, enabled: false }, $$('#hstage .hw'));
 }
 function renderAnim() {
   const a = content.heroAnim;
@@ -538,7 +538,10 @@ function renderAnim() {
 }
 // "each letter on its own" has no letter-to-letter delay or switch-off order
 function syncAnimFields() {
-  const scatter = content.heroAnim.order === 'scatter';
+  const scatter = content.heroAnim.order === 'scatter' && !content.heroAnim.spawn;
+  $('[data-anim=drift]').disabled = !content.heroAnim.spawn;
+  $('[data-anim=drift]').closest('label').classList.toggle('off', !content.heroAnim.spawn);
+  $('#home-spawn-note').hidden = !content.heroAnim.spawn;
   ['step', 'offOrder'].forEach((k) => {
     const el = $(`[data-anim="${k}"]`);
     el.disabled = scatter;
