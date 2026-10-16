@@ -92,113 +92,70 @@
     const phone = matchMedia('(max-width: 640px)');
     const sideTabs = () => SIDE_TABS_ON_PHONE && phone.matches;
 
-    // Tab side traced from the reference photo, in tab heights:
-    // [outward from the shoulder, down from the top]; shoulder -> foot.
-    const SIDE = [[0,0],[.083,.031],[.188,.094],[.29,.198],[.396,.344],[.5,.51],[.583,.677],[.646,.781],[.729,.865],[.81,.927],[.958,1]];
-    const SPAN = SIDE[SIDE.length - 1][0];
-    const SVGNS = 'http://www.w3.org/2000/svg';
-    const SHEET_RATIO = 1184 / 1302;   // assets/sheet.jpg height / width
-
-    // Smooth curve through points (Catmull-Rom as cubic Béziers).
-    function smooth(pts) {
-      let d = '';
-      for (let i = 0; i < pts.length - 1; i++) {
-        const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
-        const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
-        const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
-        d += ` C${c1[0].toFixed(2)},${c1[1].toFixed(2)} ${c2[0].toFixed(2)},${c2[1].toFixed(2)} ${p2[0].toFixed(2)},${p2[1].toFixed(2)}`;
-      }
-      return d;
-    }
-    function tabOutline(w, h) {
-      const left = SIDE.map(([u, v]) => [SPAN * h - u * h, v * h]).reverse();   // foot -> shoulder
-      const right = SIDE.map(([u, v]) => [w - SPAN * h + u * h, v * h]);         // shoulder -> foot
-      return `M${left[0][0]},${left[0][1]}` + smooth(left) + ` L${right[0][0]},${right[0][1]}` + smooth(right);
-    }
-
-    // One tab: the sheet's own paper (aligned with the sheet, so the front tab
-    // runs straight into it), a soft shade on tabs behind, and the edge line.
-    function tabShape(w, h, i, offsetX, sheetW, active) {
-      const d = tabOutline(w, h);
-      const ext = active ? 4 : 0;   // the front tab covers the sheet's top line
-      const th = sheetW * SHEET_RATIO;
-      const svg = document.createElementNS(SVGNS, 'svg');
-      svg.setAttribute('class', 'shape');
-      svg.setAttribute('viewBox', `0 0 ${w} ${h + ext}`);
-      svg.setAttribute('width', w);
-      svg.setAttribute('height', h + ext);
-      svg.innerHTML =
-        `<defs><pattern id="pt${i}" patternUnits="userSpaceOnUse" x="${-offsetX}" y="${h - 2}" width="${sheetW}" height="${th}">` +
-        `<image href="assets/sheet.jpg" width="${sheetW}" height="${th}" preserveAspectRatio="none"/></pattern>` +
-        `<linearGradient id="sh${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2221" stop-opacity="0.07"/>` +
-        `<stop offset="0.8" stop-color="#1c2221" stop-opacity="0.09"/><stop offset="1" stop-color="#1c2221" stop-opacity="0.2"/></linearGradient></defs>` +
-        `<path d="${d} L${w},${h + ext} L0,${h + ext} Z" fill="url(#pt${i})"/>` +
-        (active ? '' : `<path d="${d} Z" fill="url(#sh${i})"/>`) +
-        `<path d="${d}" fill="none" stroke="${active ? 'rgba(52,58,58,0.72)' : 'rgba(60,67,66,0.5)'}" stroke-width="${active ? 1.5 : 1.1}"/>`;
-      return svg;
-    }
-
-    // Pale green tabs of the folders further back (also traced from the photo).
-    function greenShape(w, h) {
-      const r = h * 0.14, sl = h * 0.06, sr = h * 0.22;
-      const d = `M0,${h} L${sl},${r} Q${sl + 1},0 ${sl + r},0 L${w - sr - r},0 Q${w - sr},0 ${w - sr + r * 0.45},${r} L${w},${h}`;
-      const svg = document.createElementNS(SVGNS, 'svg');
-      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      svg.setAttribute('width', w);
-      svg.setAttribute('height', h);
-      svg.innerHTML = `<path d="${d} Z" fill="#ced4bb"/><path d="${d}" fill="none" stroke="rgba(120,130,100,0.45)" stroke-width="1"/>`;
-      return svg;
-    }
+    // The folder is assembled from pieces cut out of the reference photo
+    // (assets/folder/*.png). Every size below is in photo pixels; --u is the
+    // size of one photo pixel on screen. The sheet image is 670 photo px wide.
+    const PHOTO_W = 670;
+    const TAB_H = 51;        // tab top to the folder's top edge line
+    const CAP = 60;          // side width: shoulder to the end of the foot
+    const MIN_OVERLAP = 39;  // feet overlap as in the photo
+    const GREENS = [[33, 192], [394, 190]];   // pale green folder tabs behind: [x, width]
 
     function renderTabs(labels, active) {
       const side = sideTabs();
       folderEl.classList.toggle('side-tabs', side);
-      tabsEl.replaceChildren();
       // layout sizes, unaffected by the open animation's scale
-      const h = tabsEl.offsetHeight;
-      const sheetW = folderEl.offsetWidth - (side ? h : 0);
-      const len = side ? folderEl.offsetHeight : folderEl.offsetWidth;   // length the tabs run along
-      if (side) folderEl.style.setProperty('--len', len + 'px');
-      const overlap = h * 0.6;
+      const u = side ? 40 / TAB_H : folderEl.offsetWidth / PHOTO_W;
+      folderEl.style.setProperty('--u', u + 'px');
+      const len = (side ? folderEl.offsetHeight : folderEl.offsetWidth) / u - (side ? 0 : 6);   // in photo px, sheet edge to edge
+      if (side) folderEl.style.setProperty('--len', folderEl.offsetHeight + 'px');
       const n = labels.length;
       const order = side ? [...labels].reverse() : labels;   // rotated strip runs bottom -> top
 
+      tabsEl.replaceChildren();
       const els = order.map((label) => {
         const b = document.createElement('button');
-        const isActive = label === active;
-        b.className = 'tab' + (isActive ? ' active' : '');
+        b.className = 'tab' + (label === active ? ' active' : '');
         b.type = 'button';
         b.role = 'tab';
-        b.setAttribute('aria-selected', isActive);
+        b.setAttribute('aria-selected', label === active);
         b.setAttribute('aria-label', label);
         b.dataset.tab = label;
+        b.innerHTML = '<span class="cap l"></span><span class="mid"></span><span class="cap r"></span>';
         b.appendChild(word(label));
         tabsEl.appendChild(b);
         return b;
       });
-      // Widths: share the length evenly like real dividers, never narrower than the label needs.
-      const min = els.map((b) => parseFloat(getComputedStyle(b.lastChild).width) + SPAN * h * 1.7);
-      const even = n > 1 ? (len + overlap * (n - 1)) / n : len * 0.3;
-      let widths = min.map((m) => Math.max(even, m + h * 0.5));
-      const total = widths.reduce((a, b) => a + b, 0) - overlap * (n - 1);
-      if (n > 1 && total > len) {   // too long: shrink towards the minimum
-        const k = (len + overlap * (n - 1)) / (total + overlap * (n - 1));
-        widths = widths.map((w, i) => Math.max(min[i], w * k));
-      }
-      let x = 0;
+      // Natural width: label plus both sides; then spread across the folder like the photo.
+      const need = els.map((b) => Math.max(parseFloat(getComputedStyle(b.lastChild).width) / u + 2 * CAP + 24, 150));
+      const sum = need.reduce((a, b) => a + b, 0);
+      let overlap = MIN_OVERLAP, widths = need;
+      const spare = len - (sum - overlap * (n - 1));
+      if (n === 1) widths = [Math.max(need[0], len * 0.36)];
+      else if (spare > 0) widths = need.map((w) => w + spare / n);
+      else overlap = Math.min(CAP + 10, MIN_OVERLAP + -spare / (n - 1));
       els.forEach((b, i) => {
-        const w = Math.round(widths[i]);
-        b.style.width = w + 'px';
-        b.style.marginRight = i < n - 1 ? -overlap + 'px' : '0';
-        b.prepend(tabShape(w, h, i, side ? 0 : x, sheetW, b.classList.contains('active')));
-        x += w - overlap;
+        b.style.width = widths[i] * u + 'px';
+        b.style.marginRight = i < n - 1 ? -overlap * u + 'px' : '0';
+        // left tabs lie over right ones (as in the photo); the active one is the front sheet
+        b.style.zIndex = b.classList.contains('active') ? 30 : side ? 10 + i : 10 + n - i;
       });
+      // open the folder's top edge under the active tab, between its feet
+      const act = tabsEl.querySelector('.tab.active');
+      if (act && !side) {
+        const sheet = document.getElementById('sheet');
+        sheet.style.setProperty('--gap-l', act.offsetLeft + 11 * u + 'px');
+        sheet.style.setProperty('--gap-r', act.offsetLeft + act.offsetWidth - 11 * u + 'px');
+      }
 
-      // Green tabs peek out above (not in the side layout).
-      backTabs.replaceChildren(...(side ? [] : [[0.054, 0.277], [0.601, 0.269]].map(([gx, wr]) => {
-        const svg = greenShape(Math.round(len * wr), h);
-        svg.style.left = Math.round(len * gx) + 'px';
-        return svg;
+      const tabsEnd = els.reduce((x, b) => x + b.offsetWidth, 0) / u - overlap * (n - 1);
+      // only where tabs stand in front of them (as in the photo)
+      backTabs.replaceChildren(...(side ? [] : GREENS.filter(([x, w]) => x + w <= tabsEnd).map(([x, w]) => {
+        const g = document.createElement('span');
+        g.className = 'green';
+        g.style.left = x * u + 'px';
+        g.style.width = w * u + 'px';
+        return g;
       })));
     }
 
@@ -300,7 +257,12 @@
         else if (mode === 'about') showAbout();
       }, 150);
     });
-    if (location.hash === '#work') open('work');
+    // #work opens the folder; #work/<tab> opens it on that tab (e.g. #work/art)
+    if (location.hash.startsWith('#work')) {
+      const t = decodeURIComponent(location.hash.slice(6));
+      if (tabs.includes(t)) activeTab = t;
+      open('work');
+    }
     if (location.hash === '#about') open('about');
 
     // --- Drag cards; a click without dragging opens the project --------------
