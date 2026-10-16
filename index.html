@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rocket Effect Agency</title>
-  <meta name="description" content="Rocket Effect Agency">
+  <title>rocket effect marketing</title>
+  <meta name="description" content="rocket effect marketing — press release, digital ads, content seeding, art, pr.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,131 +13,210 @@
 </head>
 <body>
   <header class="nav">
-    <a class="left" href="./">Rocket Effect Agency</a>
-    <a class="center" href="#work" data-work>work</a>
+    <a class="left" href="./" data-word>rocket effect marketing</a>
+    <a class="center" href="#work" data-open="work" data-word>work</a>
     <nav class="right">
-      <a href="mailto:info@wavefoundation.co">email</a>
-      <a href="https://www.instagram.com/rocket.effect" target="_blank" rel="noopener">ig</a>
+      <a href="#about" data-open="about" data-word>about</a>
+      <a href="mailto:info@wavefoundation.co" data-word>email</a>
+      <a href="https://www.instagram.com/rocket.effect" target="_blank" rel="noopener" data-word>ig</a>
     </nav>
   </header>
 
-  <main class="hero">
-    <h1 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Rocket Effect</h1>
-    <div class="marquee" id="marquee"></div>
+  <!-- Hero: the words sit spread over the page and switch on/off one by one. -->
+  <main class="hero" id="hero">
+    <h1 class="sr-only">rocket effect marketing</h1>
+    <a class="hero-word w1" href="#work" data-open="work" aria-label="rocket"></a>
+    <a class="hero-word w2" href="#work" data-open="work" aria-label="effect"></a>
+    <a class="hero-word w3" href="#work" data-open="work" aria-label="marketing"></a>
   </main>
 
-  <!-- Work: freeform gallery opened on top of the marquee.
-       --x/--y/--w are % of the gallery width, --r is rotation in degrees.
-       Items can be dragged; a click without dragging opens the link.
-       Clicking anywhere outside the images closes it. -->
-  <div class="overlay" id="work" aria-hidden="true">
-    <div class="freeform">
-      <a class="item" href="#" style="--x:40; --y:0; --w:32; --r:2; --z:1">
-        <img src="assets/work/placeholder.png" alt="Project" width="1500" height="1000">
-      </a>
-      <a class="item" href="#" style="--x:3.06; --y:2.18; --w:32; --r:-3; --z:4">
-        <img src="assets/work/placeholder.png" alt="Project" width="1500" height="1000">
-      </a>
-      <a class="item" href="https://www.instagram.com/p/DKe31iBRZjv/" target="_blank" rel="noopener" style="--x:69.37; --y:4.58; --w:29.29; --r:-1; --z:2">
-        <img src="assets/work/strick-machine.jpg" alt="Strick – Machine cover art" width="1400" height="1400">
-        <figcaption>Strick - Machine</figcaption>
-      </a>
-      <a class="item" href="#" style="--x:7.88; --y:14.62; --w:32; --r:-1; --z:5">
-        <img src="assets/work/placeholder.png" alt="Project" width="1500" height="1000">
-      </a>
-      <a class="item" href="#" style="--x:40; --y:17.99; --w:32; --r:0; --z:3">
-        <img src="assets/work/placeholder.png" alt="Project" width="1500" height="1000">
-      </a>
+  <!-- Folder overlay: used for work (tabs per category) and about. -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="folder" id="folder">
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="sheet" id="sheet">
+        <div class="board" id="board"></div>
+        <article class="detail" id="detail" hidden></article>
+        <div class="about-copy" id="about" hidden></div>
+      </div>
     </div>
   </div>
 
   <script type="module">
     import { buildWordSVG } from './assets/blobfont.js';
+    import { tabs, projects, about } from './assets/projects.js';
 
-    const track = document.getElementById('marquee');
-    // Two identical halves so translateX(-50%) loops seamlessly.
-    for (let i = 0; i < 4; i++) {
-      const link = document.createElement('a');
-      link.href = '#work';
-      link.dataset.work = '';
-      link.setAttribute('aria-label', 'Rocket Effect — work');
-      link.appendChild(buildWordSVG('Rocket Effect'));
-      track.appendChild(link);
-    }
+    const word = (text) => buildWordSVG(text, { line: true });
 
-    // Header links drawn in the same lettering (text kept as aria-label).
-    document.querySelectorAll('.nav a').forEach((a) => {
+    // Header links drawn in the site lettering (text kept as aria-label).
+    document.querySelectorAll('[data-word]').forEach((a) => {
       const label = a.textContent.trim();
       a.setAttribute('aria-label', label);
-      a.replaceChildren(buildWordSVG(label, { line: true }));
+      a.replaceChildren(word(label));
     });
 
-    // --- Work overlay -------------------------------------------------------
-    const overlay = document.getElementById('work');
+    // --- Hero: words light up one by one, then switch off one by one ---------
+    const heroWords = [...document.querySelectorAll('.hero-word')];
+    heroWords.forEach((a) => a.appendChild(word(a.getAttribute('aria-label'))));
+    const steps = [[1,0,0],[1,1,0],[1,1,1],[1,1,1],[1,1,1],[0,1,1],[0,0,1],[0,0,0]];
+    let step = 0;
+    function tick() {
+      heroWords.forEach((w, i) => w.classList.toggle('on', !!steps[step][i]));
+      step = (step + 1) % steps.length;
+    }
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroWords.forEach((w) => w.classList.add('on'));
+    } else {
+      tick();
+      setInterval(tick, 520);
+    }
+
+    // --- Folder overlay ------------------------------------------------------
+    const overlay = document.getElementById('overlay');
+    const tabsEl = document.getElementById('tabs');
+    const board = document.getElementById('board');
+    const detail = document.getElementById('detail');
+    const aboutEl = document.getElementById('about');
+    let mode = null;          // 'work' | 'about' | null
+    let activeTab = tabs[0];
     let closeTimer;
 
-    function openWork() {
+    aboutEl.innerHTML = about.map((p) => `<p>${p}</p>`).join('');
+
+    function renderTabs(labels, active) {
+      tabsEl.replaceChildren(...labels.map((label, i) => {
+        const b = document.createElement('button');
+        b.className = 'tab' + (label === active ? ' active' : '');
+        b.type = 'button';
+        b.role = 'tab';
+        b.style.zIndex = label === active ? 50 : labels.length - i;
+        b.setAttribute('aria-selected', label === active);
+        b.setAttribute('aria-label', label);
+        b.dataset.tab = label;
+        b.appendChild(word(label));
+        return b;
+      }));
+    }
+
+    function renderBoard(tab) {
+      board.replaceChildren(...projects.filter((p) => p.tab === tab).map((p, i) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'card';
+        card.style.cssText = `--x:${p.x}; --y:${p.y}; --w:${p.w}; --r:${p.r}; --z:${i + 1}`;
+        card.setAttribute('aria-label', p.title);
+        card.innerHTML = `<img src="${p.img}" alt="" draggable="false"><span class="caption">${p.title}</span>`;
+        card.project = p;
+        makeDraggable(card);
+        return card;
+      }));
+    }
+
+    function showWork(tab = activeTab) {
+      activeTab = tab;
+      renderTabs(tabs, tab);
+      renderBoard(tab);
+      closeDetail();
+      board.hidden = false;
+      aboutEl.hidden = true;
+    }
+    function showAbout() {
+      renderTabs(['about'], 'about');
+      closeDetail();
+      board.hidden = true;
+      aboutEl.hidden = false;
+    }
+
+    function open(which) {
+      if (mode === which) return close();
       clearTimeout(closeTimer);
+      mode = which;
+      which === 'about' ? showAbout() : showWork();
       overlay.classList.remove('closing');
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
     }
-    function closeWork() {
-      if (!overlay.classList.contains('open')) return;
+    function close() {
+      if (!mode) return;
+      mode = null;
       overlay.classList.remove('open');
       overlay.classList.add('closing');
       overlay.setAttribute('aria-hidden', 'true');
-      closeTimer = setTimeout(() => overlay.classList.remove('closing'), 500);
+      closeTimer = setTimeout(() => overlay.classList.remove('closing'), 450);
     }
 
-    // Capture phase: while open, any click outside an image closes the overlay
-    // (like Cargo's click-out); "work" and the marquee toggle it.
-    document.addEventListener('click', (e) => {
-      const isOpen = overlay.classList.contains('open');
-      if (isOpen && e.target.closest('.item')) return;
-      if (e.target.closest('[data-work]')) {
-        e.preventDefault();
-        isOpen ? closeWork() : openWork();
-        return;
-      }
-      if (isOpen && !e.target.closest('.nav .right')) {
-        e.preventDefault();
-        closeWork();
-      }
-    }, true);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeWork(); });
-    if (location.hash === '#work') openWork();
+    // --- Project detail ------------------------------------------------------
+    function openDetail(p) {
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      detail.innerHTML = `
+        <button class="back" type="button" aria-label="back"></button>
+        <div class="detail-media"><img src="${p.img}" alt="${esc(p.title)}"></div>
+        <div class="detail-info">
+          <p class="meta">${esc(p.tab)} · ${esc(p.client)} · ${esc(p.year)}</p>
+          <h2>${esc(p.title)}</h2>
+          <p>${esc(p.text)}</p>
+          ${p.link ? `<a class="detail-link" href="${p.link.href}" target="_blank" rel="noopener">${esc(p.link.label)} ↗</a>` : ''}
+        </div>`;
+      detail.querySelector('.back').appendChild(word('back'));
+      detail.hidden = false;
+      board.classList.add('dimmed');
+      requestAnimationFrame(() => detail.classList.add('in'));
+    }
+    function closeDetail() {
+      detail.classList.remove('in');
+      detail.hidden = true;
+      board.classList.remove('dimmed');
+    }
 
-    // --- Drag items around; the dragged item comes to the front ------------
-    let front = 10;
-    overlay.querySelectorAll('.item').forEach((item) => {
-      let startX, startY, dx = 0, dy = 0, baseX = 0, baseY = 0, moved = false;
-      item.addEventListener('pointerdown', (e) => {
+    // --- Clicks ---------------------------------------------------------------
+    document.addEventListener('click', (e) => {
+      const opener = e.target.closest('[data-open]');
+      if (opener) { e.preventDefault(); open(opener.dataset.open); return; }
+      if (!mode) return;
+      const tab = e.target.closest('.tab');
+      if (tab && mode === 'work') { showWork(tab.dataset.tab); return; }
+      if (e.target.closest('.back')) { closeDetail(); return; }
+      // Click outside the folder closes it (header links still work).
+      if (!e.target.closest('#folder') && !e.target.closest('.nav')) close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (!detail.hidden) closeDetail(); else close();
+    });
+    if (location.hash === '#work') open('work');
+    if (location.hash === '#about') open('about');
+
+    // --- Drag cards; a click without dragging opens the project --------------
+    let front = 100;
+    function makeDraggable(card) {
+      let startX, startY, dx = 0, dy = 0, baseX = 0, baseY = 0, moved = false, down = false;
+      card.addEventListener('pointerdown', (e) => {
+        down = true; moved = false;
+        startX = e.clientX; startY = e.clientY;
         if (matchMedia('(max-width: 640px)').matches) return;
         e.preventDefault();
-        item.setPointerCapture(e.pointerId);
-        item.classList.add('dragging');
-        item.style.zIndex = ++front;
-        startX = e.clientX; startY = e.clientY; moved = false;
+        card.setPointerCapture(e.pointerId);
+        card.style.zIndex = ++front;
       });
-      item.addEventListener('pointermove', (e) => {
-        if (!item.classList.contains('dragging')) return;
+      card.addEventListener('pointermove', (e) => {
+        if (!down || matchMedia('(max-width: 640px)').matches) return;
         dx = e.clientX - startX; dy = e.clientY - startY;
-        if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
-        item.style.translate = `${baseX + dx}px ${baseY + dy}px`;
+        if (Math.abs(dx) + Math.abs(dy) > 4) { moved = true; card.classList.add('dragging'); }
+        card.style.translate = `${baseX + dx}px ${baseY + dy}px`;
       });
       const end = () => {
-        if (!item.classList.contains('dragging')) return;
-        item.classList.remove('dragging');
+        if (!down) return;
+        down = false;
+        card.classList.remove('dragging');
         baseX += dx; baseY += dy; dx = dy = 0;
       };
-      item.addEventListener('pointerup', end);
-      item.addEventListener('pointercancel', end);
-      item.addEventListener('click', (e) => {
-        if (moved || item.getAttribute('href') === '#') e.preventDefault();
+      card.addEventListener('pointerup', end);
+      card.addEventListener('pointercancel', end);
+      card.addEventListener('click', () => {
+        if (!moved) openDetail(card.project);
         moved = false;
       });
-    });
+    }
   </script>
 </body>
 </html>
