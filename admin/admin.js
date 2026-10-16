@@ -16,7 +16,7 @@ let baseJSON = '';      // what is published (as last loaded)
 let remoteSha = null;   // blob sha of content.json when loaded
 let pending = {};       // new images: path -> { b64, dataUrl }
 let library = [];       // image paths in assets/work
-let conn = { token: '', repo: 'aimaxxingg/rocket-effect', branch: 'main' };
+const conn = { token: '', repo: 'aimaxxingg/rocket-effect', branch: 'main' };
 
 // --- small helpers -----------------------------------------------------------
 function toast(msg, err = false, ms = 3200) {
@@ -57,6 +57,7 @@ async function gh(path, { method = 'GET', body } = {}) {
   }).catch(() => {
     throw new Error('Can’t reach api.github.com (check the connection; a VPN may be needed)');
   });
+  if (res.status === 401 && conn.token) signOut('Your token has expired. Enter a new one.');
   if (!res.ok) {
     let msg = res.status + '';
     try { msg += ' ' + (await res.json()).message; } catch {}
@@ -66,7 +67,6 @@ async function gh(path, { method = 'GET', body } = {}) {
   }
   return res.status === 204 ? null : res.json();
 }
-const connected = () => !!conn.token;
 
 async function fetchRemoteContent(ref = conn.branch) {
   const f = await gh(`contents/content.json?ref=${encodeURIComponent(ref)}`);
@@ -74,7 +74,7 @@ async function fetchRemoteContent(ref = conn.branch) {
 }
 async function loadLibrary() {
   const set = new Set(content.projects.map((p) => p.img).filter((p) => p?.startsWith('assets/')));
-  if (connected()) {
+  {
     try {
       const files = await gh(`contents/assets/work?ref=${encodeURIComponent(conn.branch)}`);
       files.filter((f) => f.type === 'file' && /\.(jpe?g|png|gif|webp|avif|svg)$/i.test(f.name)).forEach((f) => set.add(f.path));
@@ -86,7 +86,6 @@ async function loadLibrary() {
 
 // One commit: new images + content.json (+ optional removal of unused images).
 async function publish() {
-  if (!connected()) { toast('Connect to GitHub first to publish.', true); showSec('connect'); return; }
   const btn = $('#btn-publish');
   btn.disabled = true;
   btn.textContent = 'Publishing…';
@@ -157,8 +156,7 @@ function updateStatus() {
   const s = $('#status');
   const d = dirty();
   s.classList.toggle('dirty', d);
-  s.textContent = (connected() ? '● Connected to GitHub' : '○ Not connected (preview only)') +
-    (d ? ' · Unpublished changes' : ' · Everything is published');
+  s.textContent = d ? '● Unpublished changes' : 'Everything is published';
   $('#btn-discard').disabled = !d;
 }
 addEventListener('beforeunload', (e) => { if (dirty()) e.preventDefault(); });
@@ -528,7 +526,6 @@ $('section[data-sec=general]').addEventListener('input', (e) => {
 // History ----------------------------------------------------------------------
 async function loadHistory() {
   const ul = $('#hist-list');
-  if (!connected()) { ul.innerHTML = '<li><span class="meta">Connect to GitHub to see the history.</span></li>'; return; }
   ul.innerHTML = '<li><span class="meta">Loading…</span></li>';
   try {
     const commits = await gh(`commits?path=content.json&sha=${encodeURIComponent(conn.branch)}&per_page=30`);
@@ -592,51 +589,53 @@ $('#btn-preview').addEventListener('click', () => {
   window.open('../?preview' + (tab && !$('section[data-sec=layout]').hidden ? '#work/' + encodeURIComponent(tab) : '#work'), 'rocket-preview');
 });
 
-// Connect ---------------------------------------------------------------------
-function renderConn() {
-  const el = $('#conn-state');
-  el.className = 'conn-state ' + (connected() ? 'ok' : 'no');
-  el.textContent = connected() ? `Connected ✓ · repo ${conn.repo} · branch ${conn.branch}` : 'Not connected.';
-  $('#repo').value = conn.repo;
-  $('#branch').value = conn.branch;
-  $('#tok').value = '';
-}
-$('#btn-connect').addEventListener('click', async () => {
-  const token = $('#tok').value.trim();
-  const next = { token: token || conn.token, repo: $('#repo').value.trim(), branch: $('#branch').value.trim() || 'main' };
-  if (!next.token) { toast('Paste a token.', true); return; }
-  const old = conn;
-  conn = next;
+// Sign in -------------------------------------------------------------------------
+// The panel opens only after a token with write access to the repo is entered.
+async function signIn(token, remember) {
+  conn.token = token;
+  const repo = await gh('');
+  if (!repo.permissions?.push) throw new Error('This token can’t write to the site.');
   try {
-    const repo = await gh('');
-    if (!repo.permissions?.push) throw new Error('This token can’t write to the repo (needs Contents: Read and write)');
-    if ($('#remember').checked) localStorage.setItem(CONN_KEY, JSON.stringify(conn)); else localStorage.removeItem(CONN_KEY);
-    await reloadFromRemote(true);
-    renderConn();
-    toast('Connected ✓');
-  } catch (e) {
-    conn = old;
-    toast('Couldn’t connect: ' + e.message, true, 7000);
+    if (remember) localStorage.setItem(CONN_KEY, JSON.stringify({ token }));
+    else localStorage.removeItem(CONN_KEY);
+  } catch {}
+}
+function signOut(msg) {
+  conn.token = '';
+  try { localStorage.removeItem(CONN_KEY); } catch {}
+  $('#app').hidden = true;
+  $('#login').hidden = false;
+  $('#login-msg').textContent = msg || '';
+  $('#tok').value = '';
+  $('#tok').focus();
+}
+$('#login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const token = $('#tok').value.trim();
+  if (!token) return;
+  const btn = $('#login-form button');
+  btn.disabled = true;
+  $('#login-msg').textContent = '';
+  try {
+    await signIn(token, $('#remember').checked);
+    await openApp();
+  } catch (err) {
+    conn.token = '';
+    $('#login-msg').textContent = err.status === 401 ? 'Invalid or expired token.' : 'Couldn’t sign in: ' + err.message;
+  } finally {
+    btn.disabled = false;
   }
-  updateStatus();
 });
 $('#btn-logout').addEventListener('click', () => {
-  conn = { ...conn, token: '' };
-  try { localStorage.removeItem(CONN_KEY); } catch {}
-  renderConn(); updateStatus();
-  toast('Token removed.');
+  if (dirty() && !confirm('You have unpublished changes. Sign out anyway? (They stay saved on this device.)')) return;
+  signOut();
 });
 
 // Load the published content; keep unsaved work if there is any.
 async function reloadFromRemote(keepWork) {
-  let remote;
-  if (connected()) {
-    const r = await fetchRemoteContent();
-    remote = r.content; remoteSha = r.sha;
-  } else {
-    remote = await fetch('../content.json', { cache: 'no-store' }).then((r) => r.json());
-  }
-  normalize(remote);
+  const r = await fetchRemoteContent();
+  const remote = normalize(r.content);
+  remoteSha = r.sha;
   const work = keepWork && content && dirty() ? content : null;
   baseJSON = json(remote);
   content = work || remote;
@@ -644,16 +643,13 @@ async function reloadFromRemote(keepWork) {
   renderAll();
 }
 
-// --- start ----------------------------------------------------------------------
-(async function init() {
-  try { Object.assign(conn, JSON.parse(localStorage.getItem(CONN_KEY)) || {}); } catch {}
-  renderConn();
-  try {
-    await reloadFromRemote(false);
-  } catch (e) {
-    toast('Couldn’t load content: ' + e.message, true, 8000);
-    if (!content) return;
-  }
+let appReady = false;
+async function openApp() {
+  await reloadFromRemote(false);
+  $('#login').hidden = true;
+  $('#app').hidden = false;
+  if (appReady) return;
+  appReady = true;
   // unsaved work from last time?
   try {
     const s = JSON.parse(localStorage.getItem(STATE_KEY));
@@ -674,4 +670,18 @@ async function reloadFromRemote(keepWork) {
   let sec = 'projects';
   try { sec = sessionStorage.getItem('re-admin-sec') || sec; } catch {}
   showSec(sec);
+}
+
+// --- start ----------------------------------------------------------------------
+(async function init() {
+  let saved = '';
+  try { saved = JSON.parse(localStorage.getItem(CONN_KEY))?.token || ''; } catch {}
+  if (!saved) return signOut();
+  $('#login-msg').textContent = 'Signing in…';
+  try {
+    await signIn(saved, true);
+    await openApp();
+  } catch (e) {
+    signOut(e.status === 401 ? 'Your token has expired. Enter a new one.' : 'Couldn’t sign in: ' + e.message);
+  }
 })();

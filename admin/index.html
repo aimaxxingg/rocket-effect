@@ -12,6 +12,18 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
+  <!-- Sign in: the panel opens only with a valid token -->
+  <main class="login" id="login" hidden>
+    <form id="login-form" autocomplete="off">
+      <div class="brand">rocket effect <span>admin</span></div>
+      <label>Access token<input type="password" id="tok" placeholder="github_pat_…" autofocus></label>
+      <label class="check"><input type="checkbox" id="remember" checked> Keep me signed in on this device</label>
+      <button type="submit" class="primary">Sign in</button>
+      <p class="login-msg" id="login-msg" role="alert"></p>
+    </form>
+  </main>
+
+  <div id="app" hidden>
   <header class="top">
     <div class="brand">rocket effect <span>admin</span></div>
     <div class="status" id="status"></div>
@@ -19,6 +31,7 @@
       <button type="button" id="btn-preview" class="ghost">Preview</button>
       <button type="button" id="btn-discard" class="ghost">Discard changes</button>
       <button type="button" id="btn-publish" class="primary">Publish to site</button>
+      <button type="button" id="btn-logout" class="ghost">Sign out</button>
     </div>
   </header>
 
@@ -30,7 +43,6 @@
       <button type="button" data-sec="about">About</button>
       <button type="button" data-sec="general">General</button>
       <button type="button" data-sec="history">History</button>
-      <button type="button" data-sec="connect">GitHub connection</button>
       <a class="site-link" href="../" target="_blank" rel="noopener">Open site ↗</a>
     </nav>
 
@@ -113,29 +125,6 @@
         </div>
       </section>
 
-      <!-- Connect -->
-      <section data-sec="connect" hidden>
-        <div class="sec-head"><h2>GitHub connection</h2></div>
-        <div class="conn-state" id="conn-state"></div>
-        <ol class="steps">
-          <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">New fine-grained token ↗</a> on GitHub.</li>
-          <li>Give it a name (e.g. rocket-admin) and pick an expiry.</li>
-          <li>Repository access → <b>Only select repositories</b> → <b>rocket-effect</b>.</li>
-          <li>Permissions → Repository permissions → set <b>Contents</b> to <b>Read and write</b>.</li>
-          <li>Click Generate token, copy it and paste it here.</li>
-        </ol>
-        <div class="form">
-          <label>Token<input type="password" id="tok" autocomplete="off" placeholder="github_pat_…"></label>
-          <label>Repository<input id="repo" value="aimaxxingg/rocket-effect"></label>
-          <label>Branch<input id="branch" value="main"></label>
-          <label class="check"><input type="checkbox" id="remember" checked> Remember on this device</label>
-          <div class="row">
-            <button type="button" id="btn-connect" class="primary">Connect</button>
-            <button type="button" id="btn-logout" class="ghost">Disconnect and forget token</button>
-          </div>
-        </div>
-        <p class="hint">The token stays in this browser and is only sent to GitHub. You can edit and preview without it; only publishing needs a connection.</p>
-      </section>
     </main>
   </div>
 
@@ -172,6 +161,8 @@
       </div>
     </form>
   </dialog>
+
+  </div>
 
   <div class="toast" id="toast" role="status"></div>
 
