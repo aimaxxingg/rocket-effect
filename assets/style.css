@@ -340,6 +340,7 @@ body.folder-open .hero { opacity: 0; }
     z-index: 30;
     transform-origin: 0 0;
     transform: translateY(var(--len)) rotate(-90deg);
+    justify-content: flex-end;   /* a short strip (about) starts at the top */
   }
   .folder.side-tabs .sheet { margin-left: calc(var(--u) * 51); box-shadow: 0.5px 0 1px rgba(30, 38, 36, 0.22); }
   .board.dimmed { display: none; }
