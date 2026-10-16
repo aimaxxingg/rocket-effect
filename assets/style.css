@@ -78,21 +78,42 @@ a { color: inherit; text-decoration: none; }
   .marquee { animation: none; transform: translateX(calc((100vw - var(--word-width)) / 2)); }
 }
 
-/* Work page: freeform gallery (positions are % of gallery width) */
-.freeform {
+/* Work overlay: freeform gallery that opens on top of the marquee.
+   Positions are % of the gallery width (same values as the Cargo layout). */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  overflow: auto;
+  overscroll-behavior: none;
+  pointer-events: none;
+  visibility: hidden;
+  scrollbar-width: none;
+}
+.overlay::-webkit-scrollbar { display: none; }
+.overlay.open { visibility: visible; }
+.overlay .freeform {
   position: relative;
   margin: 0 var(--gutter);
-  padding-top: calc(var(--nav-size) + 34px);
-  height: max(100vh, calc(var(--gallery-h) + var(--nav-size) + 60px));
-  --gallery-h: 44vw;
+  height: calc(17px + 44vw);
+  opacity: 0;
+  transform: scale(0.9);
 }
+.overlay.open .freeform { animation: overlay-in 0.5s cubic-bezier(.24, 1, .29, 1) forwards; }
+.overlay.closing .freeform { animation: overlay-out 0.5s cubic-bezier(.24, 1, .29, 1) forwards; }
+.overlay.closing { visibility: visible; }
+.overlay.closing .item { pointer-events: none; }
+@keyframes overlay-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
+@keyframes overlay-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(1.1); } }
+
 .freeform .item {
   position: absolute;
   left: calc(var(--x) * 1%);
-  top: calc(var(--nav-size) + 34px + (100vw - 2 * var(--gutter)) * var(--y) / 100);
+  top: calc(17px + (100vw - 2 * var(--gutter)) * var(--y) / 100);
   width: calc(var(--w) * 1%);
   transform: rotate(calc(var(--r) * 1deg));
   z-index: var(--z);
+  pointer-events: auto;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -110,6 +131,6 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 640px) {
   :root { --nav-size: 16px; --word-width: 150vw; --speed: 11s; }
-  .freeform { height: auto; display: flex; flex-direction: column; gap: 1.5rem; padding-bottom: 3rem; padding-top: 70px; }
-  .freeform .item { position: relative; left: auto; top: auto; width: 100%; z-index: auto; }
+  .overlay .freeform { height: auto; display: flex; flex-direction: column; gap: 1.5rem; padding: 60px 0 3rem; }
+  .freeform .item { position: relative; left: auto; top: auto; width: 100%; z-index: auto; touch-action: auto; }
 }

@@ -14,7 +14,7 @@
 <body>
   <header class="nav">
     <a class="left" href="./">Rocket Effect Agency</a>
-    <a class="center" href="work.html">work</a>
+    <a class="center" href="#work" data-work>work</a>
     <nav class="right">
       <a href="mailto:info@wavefoundation.co">email</a>
       <a href="https://www.instagram.com/rocket.effect" target="_blank" rel="noopener">ig</a>
@@ -26,17 +26,111 @@
     <div class="marquee" id="marquee"></div>
   </main>
 
+  <!-- Work: freeform gallery opened on top of the marquee.
+       --x/--y/--w are % of the gallery width, --r is rotation in degrees.
+       Items can be dragged; a click without dragging opens the link.
+       Clicking anywhere outside the images closes it. -->
+  <div class="overlay" id="work" aria-hidden="true">
+    <div class="freeform">
+      <a class="item" href="#" style="--x:40; --y:0; --w:32; --r:2; --z:1">
+        <img src="assets/work/placeholder.png" alt="Project" width="1500" height="1000">
+      </a>
+      <a class="item" href="#" style="--x:3.06; --y:2.18; --w:32; --r:-3; --z:4">
+        <img src="assets/work/placeholder.png" alt="Project" width="1500" height="1000">
+      </a>
+      <a class="item" href="https://www.instagram.com/p/DKe31iBRZjv/" target="_blank" rel="noopener" style="--x:69.37; --y:4.58; --w:29.29; --r:-1; --z:2">
+        <img src="assets/work/strick-machine.jpg" alt="Strick – Machine cover art" width="1400" height="1400">
+        <figcaption>Strick - Machine</figcaption>
+      </a>
+      <a class="item" href="#" style="--x:7.88; --y:14.62; --w:32; --r:-1; --z:5">
+        <img src="assets/work/placeholder.png" alt="Project" width="1500" height="1000">
+      </a>
+      <a class="item" href="#" style="--x:40; --y:17.99; --w:32; --r:0; --z:3">
+        <img src="assets/work/placeholder.png" alt="Project" width="1500" height="1000">
+      </a>
+    </div>
+  </div>
+
   <script type="module">
     import { buildWordSVG } from './assets/blobfont.js';
+
     const track = document.getElementById('marquee');
     // Two identical halves so translateX(-50%) loops seamlessly.
     for (let i = 0; i < 4; i++) {
       const link = document.createElement('a');
-      link.href = 'work.html';
+      link.href = '#work';
+      link.dataset.work = '';
       link.setAttribute('aria-label', 'Rocket Effect — work');
       link.appendChild(buildWordSVG('Rocket Effect'));
       track.appendChild(link);
     }
+
+    // --- Work overlay -------------------------------------------------------
+    const overlay = document.getElementById('work');
+    let closeTimer;
+
+    function openWork() {
+      clearTimeout(closeTimer);
+      overlay.classList.remove('closing');
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+    function closeWork() {
+      if (!overlay.classList.contains('open')) return;
+      overlay.classList.remove('open');
+      overlay.classList.add('closing');
+      overlay.setAttribute('aria-hidden', 'true');
+      closeTimer = setTimeout(() => overlay.classList.remove('closing'), 500);
+    }
+
+    // Capture phase: while open, any click outside an image closes the overlay
+    // (like Cargo's click-out); "work" and the marquee toggle it.
+    document.addEventListener('click', (e) => {
+      const isOpen = overlay.classList.contains('open');
+      if (isOpen && e.target.closest('.item')) return;
+      if (e.target.closest('[data-work]')) {
+        e.preventDefault();
+        isOpen ? closeWork() : openWork();
+        return;
+      }
+      if (isOpen && !e.target.closest('.nav .right')) {
+        e.preventDefault();
+        closeWork();
+      }
+    }, true);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeWork(); });
+    if (location.hash === '#work') openWork();
+
+    // --- Drag items around; the dragged item comes to the front ------------
+    let front = 10;
+    overlay.querySelectorAll('.item').forEach((item) => {
+      let startX, startY, dx = 0, dy = 0, baseX = 0, baseY = 0, moved = false;
+      item.addEventListener('pointerdown', (e) => {
+        if (matchMedia('(max-width: 640px)').matches) return;
+        e.preventDefault();
+        item.setPointerCapture(e.pointerId);
+        item.classList.add('dragging');
+        item.style.zIndex = ++front;
+        startX = e.clientX; startY = e.clientY; moved = false;
+      });
+      item.addEventListener('pointermove', (e) => {
+        if (!item.classList.contains('dragging')) return;
+        dx = e.clientX - startX; dy = e.clientY - startY;
+        if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+        item.style.translate = `${baseX + dx}px ${baseY + dy}px`;
+      });
+      const end = () => {
+        if (!item.classList.contains('dragging')) return;
+        item.classList.remove('dragging');
+        baseX += dx; baseY += dy; dx = dy = 0;
+      };
+      item.addEventListener('pointerup', end);
+      item.addEventListener('pointercancel', end);
+      item.addEventListener('click', (e) => {
+        if (moved || item.getAttribute('href') === '#') e.preventDefault();
+        moved = false;
+      });
+    });
   </script>
 </body>
 </html>
