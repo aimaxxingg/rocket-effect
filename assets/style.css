@@ -42,6 +42,54 @@ a { color: inherit; text-decoration: none; }
 .nav .blobword { height: calc(var(--vbh) * var(--nav-unit)); width: auto; aspect-ratio: var(--ratio); overflow: visible; }
 .nav a { transition: opacity 0.2s; }
 .nav a:hover, .nav a[aria-current="page"] { opacity: 0.45; }
+.nav .links { display: contents; }
+
+/* Phone menu button: a little rocket that takes off when tapped */
+.menu-btn {
+  display: none;
+  width: 40px; height: 40px;
+  margin: -10px -8px -10px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.menu-btn svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.menu-btn .body, .menu-btn .fin { fill: var(--ink); }
+.menu-btn .window { fill: var(--bg); }
+.menu-btn .flame { fill: var(--ink); transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(0); }
+.menu-btn .rocket { transform-box: view-box; transform-origin: 50% 50%; }
+.menu-btn .smoke circle { fill: var(--ink); opacity: 0; transform-box: fill-box; transform-origin: center; }
+/* tap: shake, blast off to the top right, come back in from the bottom left and hover */
+.menu-btn.launch .rocket { animation: rocket-launch 0.9s cubic-bezier(.5, 0, .3, 1); }
+.menu-btn.launch .smoke circle { animation: rocket-smoke 0.8s ease-out; }
+.menu-btn.launch .smoke circle:nth-child(2) { animation-delay: 0.06s; }
+.menu-btn.launch .smoke circle:nth-child(3) { animation-delay: 0.12s; }
+.nav.menu-open .menu-btn .flame { animation: rocket-flame 0.14s ease-in-out infinite alternate; }
+.nav.menu-open .menu-btn .rocket { animation: rocket-launch 0.9s cubic-bezier(.5, 0, .3, 1), rocket-hover 1.6s 0.9s ease-in-out infinite; }
+.menu-btn.land .rocket { animation: rocket-land 0.45s var(--ease); }
+@keyframes rocket-launch {
+  0%   { transform: translate(0, 0); }
+  8%   { transform: translate(-1px, 1px) rotate(-6deg); }
+  16%  { transform: translate(1px, 0) rotate(6deg); }
+  24%  { transform: translate(-1px, 1px) rotate(-4deg); }
+  30%  { transform: translate(0, 2px); }
+  55%  { transform: translate(34px, -34px) scale(0.6); opacity: 0; }
+  56%  { transform: translate(-30px, 30px) scale(0.6); opacity: 0; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+@keyframes rocket-hover { 50% { transform: translate(1.5px, -1.5px); } }
+@keyframes rocket-land {
+  0%   { transform: translate(2px, -2px); }
+  45%  { transform: translate(-1px, 1.5px) scale(1.04, 0.94); }
+  100% { transform: none; }
+}
+@keyframes rocket-flame { from { transform: scaleY(0.75); } to { transform: scaleY(1.15); } }
+@keyframes rocket-smoke {
+  0%   { opacity: 0.55; transform: scale(0.3); }
+  100% { opacity: 0; transform: translate(-6px, 5px) scale(2.2); }
+}
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
@@ -242,7 +290,32 @@ body.folder-open .hero { opacity: 0; }
 
 @media (max-width: 640px) {
   :root { --nav-size: 16px; }
-  .nav { padding: 14px 12px; }
+  .nav { padding: 14px 12px; grid-template-columns: 1fr auto; }
+  .menu-btn { display: block; }
+  /* the links become a drop-down under the rocket */
+  .nav .links {
+    position: absolute;
+    top: 100%; right: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 18px;
+    padding: 18px 16px 20px 40px;
+    --nav-unit: 2.6px;
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(24, 23, 21, 0.14);
+    transform-origin: 100% 0;
+    transform: translateY(-10px) scale(0.92);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.35s var(--ease), opacity 0.2s, visibility 0s 0.35s;
+  }
+  .nav .right { display: contents; }
+  .nav .links a { opacity: 0; transform: translateY(-14px); transition: opacity 0.2s, transform 0.4s var(--ease); }
+  .nav.menu-open .links { opacity: 1; visibility: visible; transform: none; transition: transform 0.45s var(--ease) 0.15s, opacity 0.2s 0.15s, visibility 0s; }
+  .nav.menu-open .links a { opacity: 1; transform: none; transition-delay: calc(0.22s + var(--i) * 0.06s); }
+  .nav.menu-open .links a:active { opacity: 0.45; }
   .hero-word.w1 { top: 30vh; left: 5vw; }
   .hero-word.w2 { top: 50vh; right: 5vw; }
   .folder { width: calc(100vw - 12px); height: calc(100svh - 64px); }

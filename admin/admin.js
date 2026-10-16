@@ -534,6 +534,16 @@ function renderAnim() {
     if (el.type === 'checkbox') el.checked = !!a[k]; else el.value = a[k];
   });
   $$('[data-out]').forEach((o) => { o.textContent = a[o.dataset.out]; });
+  syncAnimFields();
+}
+// "each letter on its own" has no letter-to-letter delay or switch-off order
+function syncAnimFields() {
+  const scatter = content.heroAnim.order === 'scatter';
+  ['step', 'offOrder'].forEach((k) => {
+    const el = $(`[data-anim="${k}"]`);
+    el.disabled = scatter;
+    el.closest('label').classList.toggle('off', scatter);
+  });
 }
 $('#anim').addEventListener('input', (e) => {
   const el = e.target.closest('[data-anim]');
@@ -542,6 +552,7 @@ $('#anim').addEventListener('input', (e) => {
   content.heroAnim[k] = el.type === 'checkbox' ? el.checked : el.type === 'range' ? +el.value : el.value;
   const o = $(`[data-out="${k}"]`);
   if (o) o.textContent = content.heroAnim[k];
+  syncAnimFields();
   changed();
   clearTimeout(playAnim.t);
   playAnim.t = setTimeout(playAnim, 200);   // restart once the slider settles

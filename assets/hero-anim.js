@@ -8,7 +8,7 @@ export const ANIM_DEFAULT = {
   holdOn: 1500,       // ms everything stays lit
   holdOff: 750,       // ms everything stays dark
   easing: 'soft',     // see EASINGS
-  order: 'sequence',  // 'sequence' (left to right) | 'random'
+  order: 'scatter',   // 'scatter' (each letter on its own, at random) | 'sequence' (left to right) | 'random' (random wave)
   offOrder: 'same',   // 'same' (first on, first off) | 'reverse' (last on, first off)
 };
 
@@ -42,6 +42,21 @@ export function animateLetters(letters, settings = {}) {
   }
   letters.forEach((l) => l.classList.remove('on'));
   let stopped = false, timer;
+  if (s.order === 'scatter') {
+    // Every letter flickers on its own clock: lit for about holdOn, dark for about holdOff, randomised.
+    const timers = new Set();
+    const later = (fn, ms) => { const t = setTimeout(() => { timers.delete(t); fn(); }, ms); timers.add(t); };
+    const vary = (ms) => Math.max(s.fade * 1000, ms * (0.35 + Math.random() * 1.3));
+    letters.forEach((l) => {
+      const flip = () => {
+        if (stopped) return;
+        const lit = l.classList.toggle('on');
+        later(flip, s.fade * 1000 + vary(lit ? s.holdOn : s.holdOff));
+      };
+      later(flip, Math.random() * (s.holdOn + s.holdOff));
+    });
+    return () => { stopped = true; timers.forEach(clearTimeout); };
+  }
   const wait = (ms) => new Promise((r) => { timer = setTimeout(r, Math.max(0, ms)); });
   (async () => {
     const idx = letters.map((_, i) => i);

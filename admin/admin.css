@@ -181,6 +181,7 @@ legend { font-size: 13px; color: var(--muted); padding: 0 6px; }
 .anim-grid input[type=range] { padding: 0; border: 0; background: none; }
 .anim-grid output { color: var(--ink); font-weight: 600; }
 .anim .row { margin-top: 4px; }
+.anim-grid label.off { opacity: .4; }
 
 /* sign in */
 .login { min-height: 100vh; display: grid; place-items: center; padding: 20px; }
