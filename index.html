@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=13">
+  <link rel="stylesheet" href="assets/style.css?v=14">
 </head>
 <body>
   <header class="nav">
@@ -280,8 +280,10 @@
       const u = 40 / TAB_H, h = TAB_H * u, span = SPAN * TAB_H, n = tabs.length;
       stackEl.style.setProperty('--u', u + 'px');
       const W = stackEl.offsetWidth, H = stackEl.offsetHeight;
-      // each folder sits a step lower than the one behind it; the front one shows the most
-      const step = n > 1 ? Math.min(130, (H * 0.56 - h) / (n - 1)) : 0;
+      // each folder sits a step lower than the one behind it; the pile sits low and runs
+      // off the bottom of the screen, the front one showing the most
+      const step = n > 1 ? Math.min(76, (H * 0.6 - h) / (n - 1)) : 0;
+      const base = Math.max(0, H - (n - 1) * step - Math.max(H * 0.36, 200));
       const THUMBS = [[5, -4], [36, 2.5], [66, -2]];   // [left %, tilt] of the pictures lying on each folder
       const els = tabs.map((label, i) => {
         const f = document.createElement('button');
@@ -290,7 +292,7 @@
         f.dataset.i = i;
         f.setAttribute('aria-label', label);
         const rot = i === n - 1 ? 0 : i % 2 ? 0.7 : -0.6;
-        f.style.cssText = `top:${(i * step).toFixed(1)}px; --i:${i}; --rot:${rot}; --b:${1 - (n - 1 - i) * 0.025}; z-index:${2 * i + 2}`;
+        f.style.cssText = `top:${(base + i * step).toFixed(1)}px; --i:${i}; --rot:${rot}; --b:${1 - (n - 1 - i) * 0.025}; z-index:${2 * i + 2}`;
         const body = document.createElement('span');
         body.className = 'sbody';
         body.innerHTML = projects.filter((p) => p.tab === label).slice(0, 3)
@@ -331,12 +333,17 @@
       overlay.classList.add('stack-anim');
       overlay.classList.remove('stacked');
       f.style.visibility = 'hidden';
-      els.forEach((g, j) => { if (j !== i) { g.style.setProperty('--d', Math.abs(j - i)); g.classList.add('away'); } });
+      els.forEach((g, j) => { if (j !== i) { g.style.setProperty('--d', Math.abs(j - i)); g.classList.add('away', j < i ? 'up' : 'down'); } });
       folderEl.style.zIndex = 1000;
       folderEl.classList.add('flip');
-      folderEl.animate([{ transform: slot(f) }, { transform: 'none' }], { duration: 650, easing: EASE });
+      // lifts a little off the pile, then rises and opens
+      folderEl.animate([
+        { transform: slot(f), easing: 'ease-out' },
+        { transform: slot(f) + ' translateY(-14px)', offset: 0.22, easing: EASE },
+        { transform: 'none' },
+      ], { duration: 820 });
       clearTimeout(stackTimer);
-      stackTimer = setTimeout(() => overlay.classList.remove('stack-anim'), 700);
+      stackTimer = setTimeout(() => overlay.classList.remove('stack-anim'), 900);
     }
     // Back: the folder closes and slides back into its place in the pile.
     function backToStack() {
@@ -348,10 +355,10 @@
       f.style.visibility = 'hidden';
       els.forEach((g, j) => {
         g.style.animation = 'none';
-        if (j !== i) { g.style.setProperty('--d', Math.abs(j - i)); g.classList.add('away'); }
+        if (j !== i) { g.style.setProperty('--d', Math.abs(j - i)); g.classList.add('away', j < i ? 'up' : 'down'); }
       });
       stackEl.offsetWidth;   // start from "away", then let them come back
-      requestAnimationFrame(() => els.forEach((g) => g.classList.remove('away')));
+      requestAnimationFrame(() => els.forEach((g) => g.classList.remove('away', 'up', 'down')));
       folderEl.style.zIndex = 2 * i + 3;   // above the folders behind it, under the ones in front
       const a = folderEl.animate([{ transform: 'none' }, { transform: slot(f) }], { duration: 520, easing: EASE, fill: 'forwards' });
       a.finished.then(() => {

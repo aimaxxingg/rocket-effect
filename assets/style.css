@@ -344,10 +344,22 @@ body.folder-open .hero { opacity: 0; }
     filter: drop-shadow(0 -2px 3px rgba(30, 38, 36, 0.13)) drop-shadow(0 -6px 14px rgba(30, 38, 36, 0.12)) brightness(var(--b));
     animation: sf-in 0.75s var(--ease) backwards;
     animation-delay: calc(0.08s + var(--i) * 0.07s);
-    transition: translate 0.55s var(--ease);
+    transition: translate 0.6s var(--ease), opacity 0.45s;
+    transition-delay: calc(var(--d, 0) * 0.05s);
+    will-change: translate;
   }
   .sfolder:active { translate: 0 -5px; }
-  .sfolder.away { translate: 0 105vh; transition-duration: 0.5s; transition-delay: calc(var(--d) * 0.04s); }
+  /* when one is opened: the ones in front fall off the bottom (speeding up, so you see them go),
+     the ones behind drift up and fade under it */
+  .sfolder.away.down {
+    translate: 0 105vh;
+    transition: translate 0.6s cubic-bezier(.5, 0, .75, .15) calc(var(--d) * 0.06s);
+  }
+  .sfolder.away.up {
+    translate: 0 -40px;
+    opacity: 0;
+    transition: translate 0.5s var(--ease) calc(var(--d) * 0.05s), opacity 0.4s calc(var(--d) * 0.05s);
+  }
   @keyframes sf-in { from { translate: 0 100vh; } }
   .stab { position: absolute; top: 0; height: calc(var(--u) * 51); }
   .stab > svg.shape { position: absolute; left: 0; top: 0; overflow: visible; }
@@ -371,7 +383,7 @@ body.folder-open .hero { opacity: 0; }
   /* a few of the folder's pictures lying on it, peeking out under the next folder */
   .sbody img {
     position: absolute;
-    top: 14px;
+    top: 8px;
     left: calc(var(--x) * 1%);
     width: 29%;
     height: auto;
