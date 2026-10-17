@@ -9,12 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=8">
+  <link rel="stylesheet" href="assets/style.css?v=9">
 </head>
 <body>
   <header class="nav">
     <a class="left" href="./" aria-label="rocket effect marketing"><svg class="logo" viewBox="0 0 753 510" aria-hidden="true"><circle cx="75" cy="75" r="75"/><circle cx="75" cy="135" r="75"/><circle cx="75" cy="195" r="75"/><circle cx="75" cy="255" r="75"/><circle cx="75" cy="315" r="75"/><circle cx="75" cy="375" r="75"/><circle cx="75" cy="435" r="75"/><rect x="0" y="0" width="323" height="142" rx="71"/><circle cx="293" cy="130" r="75"/><circle cx="293" cy="192" r="75"/><rect x="75" y="182" width="248" height="140" rx="70"/><circle cx="212" cy="345" r="75"/><circle cx="255" cy="392" r="75"/><circle cx="294" cy="435" r="75"/><circle cx="460" cy="75" r="75"/><circle cx="460" cy="135" r="75"/><circle cx="460" cy="195" r="75"/><circle cx="460" cy="255" r="75"/><circle cx="460" cy="315" r="75"/><circle cx="460" cy="375" r="75"/><circle cx="460" cy="435" r="75"/><rect x="386" y="0" width="367" height="142" rx="71"/><rect x="460" y="182" width="250" height="141" rx="70.5"/><rect x="386" y="365" width="367" height="142" rx="71"/></svg></a>
-    <!-- On phones the links fold into a drop-down opened by the rocket button. -->
+    <!-- On phones the links fold into a drop-down opened by the menu button. -->
     <div class="links" id="nav-links">
       <a class="center" href="#work" data-open="work" data-word>work</a>
       <nav class="right">
@@ -24,17 +24,7 @@
       </nav>
     </div>
     <button class="menu-btn" id="menu-btn" type="button" aria-label="menu" aria-expanded="false" aria-controls="nav-links">
-      <svg viewBox="0 0 40 40" aria-hidden="true">
-        <g class="rocket">
-          <g transform="rotate(45 20 20)">
-            <path class="flame" d="M16.6 28.5 C16.6 32 18.2 35 20 37.5 C21.8 35 23.4 32 23.4 28.5 Z"/>
-            <path class="fin" d="M14.3 20.5 L10.2 25.6 L10.6 29.6 L15 27.4 Z M25.7 20.5 L29.8 25.6 L29.4 29.6 L25 27.4 Z"/>
-            <path class="body" d="M20 3 C25 7 26.6 13 26.4 19.5 L25.6 28.6 H14.4 L13.6 19.5 C13.4 13 15 7 20 3 Z"/>
-            <circle class="window" cx="20" cy="15.2" r="2.9"/>
-          </g>
-        </g>
-        <g class="smoke"><circle cx="11" cy="29" r="2.6"/><circle cx="7.5" cy="32" r="2"/><circle cx="12.5" cy="33.6" r="1.6"/></g>
-      </svg>
+      <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
     </button>
   </header>
 
@@ -98,24 +88,27 @@
       a.replaceChildren(word(label));
     });
 
-    // --- Phone menu: the rocket button opens the links as a drop-down ------------
+    // --- Phone menu: the three-line button opens the links as a drop-down -------
     const nav = document.querySelector('.nav');
     const menuBtn = document.getElementById('menu-btn');
     const setMenu = (open) => {
       if (open === nav.classList.contains('menu-open')) return;
       nav.classList.toggle('menu-open', open);
       menuBtn.setAttribute('aria-expanded', open);
-      // replay the take-off / landing animation
-      menuBtn.classList.remove('launch', 'land');
-      void menuBtn.offsetWidth;
-      menuBtn.classList.add(open ? 'launch' : 'land');
     };
     menuBtn.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
     document.addEventListener('click', (e) => {
       if (e.target.closest('#nav-links a') || !e.target.closest('.nav')) setMenu(false);
     });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
-    document.querySelectorAll('#nav-links a').forEach((a, i) => a.style.setProperty('--i', i));
+    document.querySelectorAll('#nav-links a').forEach((a, i) => {
+      a.style.setProperty('--i', i);
+      // plain text twin of the lettering, shown in the phone drop-down
+      const t = document.createElement('span');
+      t.className = 'txt';
+      t.textContent = a.getAttribute('aria-label');
+      a.appendChild(t);
+    });
 
     // --- Hero: letters fade on one by one, then off one by one ---------------
     const heroWords = [...document.querySelectorAll('.hero-word')];
@@ -249,6 +242,7 @@
       let overlap = MIN_OVERLAP, widths = need;
       const spare = len - (sum - overlap * (n - 1));
       if (n === 1) widths = [Math.max(need[0], len * 0.36)];
+      else if (side && spare > 0) widths = need;   // phones: each tab only as long as its label
       else if (spare > 0) widths = need.map((w) => w + spare / n);
       else overlap = Math.min(span + 6, MIN_OVERLAP - spare / (n - 1));
       const h = TAB_H * u;

@@ -37,10 +37,10 @@
   },
   "heroAnim": {
     "enabled": true,
-    "fade": 0.6,
-    "step": 140,
-    "holdOn": 1500,
-    "holdOff": 750,
+    "fade": 0.45,
+    "step": 90,
+    "holdOn": 1000,
+    "holdOff": 450,
     "easing": "quick in",
     "order": "scatter",
     "offOrder": "same", "spawn": true, "drift": false
