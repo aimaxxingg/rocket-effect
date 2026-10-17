@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=11">
+  <link rel="stylesheet" href="assets/style.css?v=12">
 </head>
 <body>
   <header class="nav">
@@ -85,7 +85,8 @@
     document.querySelectorAll('[data-word]').forEach((a) => {
       const label = a.textContent.trim();
       a.setAttribute('aria-label', label);
-      a.replaceChildren(word(label));
+      // menu links keep the thinner dot lettering; the rest uses the typeface
+      a.replaceChildren(a.closest('#nav-links') ? buildWordSVG(label, { line: true, dots: true }) : word(label));
     });
 
     // --- Phone menu: the three-line button opens the links as a drop-down -------
@@ -101,14 +102,7 @@
       if (e.target.closest('#nav-links a') || !e.target.closest('.nav')) setMenu(false);
     });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
-    document.querySelectorAll('#nav-links a').forEach((a, i) => {
-      a.style.setProperty('--i', i);
-      // plain text twin of the lettering, shown in the phone drop-down
-      const t = document.createElement('span');
-      t.className = 'txt';
-      t.textContent = a.getAttribute('aria-label');
-      a.appendChild(t);
-    });
+    document.querySelectorAll('#nav-links a').forEach((a, i) => a.style.setProperty('--i', i));
 
     // --- Hero: letters fade on one by one, then off one by one ---------------
     const heroWords = [...document.querySelectorAll('.hero-word')];

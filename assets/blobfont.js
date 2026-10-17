@@ -159,7 +159,7 @@ function buildWordFont(text, opts) {
 }
 
 export function buildWordSVG(text, opts = {}) {
-  if (font) return buildWordFont(text, opts);
+  if (font && !opts.dots) return buildWordFont(text, opts);   // opts.dots: always the thin dot lettering
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
   const g = document.createElementNS(NS, 'g');
