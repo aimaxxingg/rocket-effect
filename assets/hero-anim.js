@@ -30,13 +30,15 @@ const shuffle = (a) => {
   return a;
 };
 
-// letters: elements that get class "on" when lit (CSS fades their opacity).
+// letters: elements that get class "on" when lit (CSS fades their fill/stroke opacity: fading
+// plain opacity makes Safari clip each letter to its box, cutting off the round edges).
 // words (optional): the absolutely placed word elements holding those letters, used by spawn mode.
 // Returns a function that stops the animation.
 export function animateLetters(letters, settings = {}, words = []) {
   const s = { ...ANIM_DEFAULT, ...settings };
   letters.forEach((l) => {
-    l.style.transition = `opacity ${s.fade}s ${EASINGS[s.easing] || EASINGS.soft}`;
+    const ease = EASINGS[s.easing] || EASINGS.soft;
+    l.style.transition = `fill-opacity ${s.fade}s ${ease}, stroke-opacity ${s.fade}s ${ease}`;
   });
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!s.enabled || reduced || !letters.length) {

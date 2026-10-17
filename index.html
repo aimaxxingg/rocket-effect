@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=16">
+  <link rel="stylesheet" href="assets/style.css?v=18">
 </head>
 <body>
   <header class="nav">
@@ -298,7 +298,7 @@
         f.dataset.i = i;
         f.setAttribute('aria-label', label);
         const rot = i === n - 1 ? 0 : i % 2 ? 0.7 : -0.6;
-        f.style.cssText = `top:${(base + i * step).toFixed(1)}px; --i:${i}; --rot:${rot}; --b:${1 - (n - 1 - i) * 0.025}; z-index:${2 * i + 2}`;
+        f.style.cssText = `top:${(base + i * step).toFixed(1)}px; --i:${i}; --rot:${rot}; z-index:${2 * i + 2}`;
         const body = document.createElement('span');
         body.className = 'sbody';
         body.innerHTML = projects.filter((p) => p.tab === label).slice(0, 3)

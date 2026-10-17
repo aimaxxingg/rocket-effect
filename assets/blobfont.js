@@ -134,7 +134,9 @@ function buildWordFont(text, opts) {
   const k = size / 100;
   const base = 6 * YS;
   const wordM = ctx.measureText(text);
-  const left = Math.min(0, -wordM.actualBoundingBoxLeft * k);
+  // a little room on both sides: Safari clips glyph edges that poke past the box while letters fade
+  const pad = size * 0.05;
+  const left = Math.min(0, -wordM.actualBoundingBoxLeft * k) - pad;
   [...text].forEach((ch, i) => {
     if (ch === ' ') return;
     const t = document.createElementNS(NS, 'text');
@@ -146,7 +148,7 @@ function buildWordFont(text, opts) {
   });
   g.setAttribute('font-family', family);
   g.setAttribute('font-size', size.toFixed(3));
-  const width = Math.max(wordM.width, wordM.actualBoundingBoxRight) * k - left + 0.1;
+  const width = Math.max(wordM.width, wordM.actualBoundingBoxRight) * k - left + pad + 0.1;
   const top = LINE_TOP * YS - R - 0.05;
   const height = (opts.line ? LINE_BOTTOM : 6) * YS + R + 0.05 - top;
   svg.setAttribute('viewBox', `${left} ${top} ${width} ${height}`);
