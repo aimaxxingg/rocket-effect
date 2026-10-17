@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=26">
+  <link rel="stylesheet" href="assets/style.css?v=27">
 </head>
 <body>
   <header class="nav">
@@ -299,14 +299,8 @@
       // off the bottom of the screen, the front one showing the most
       const step = n > 1 ? Math.min(76, (H * 0.6 - h) / (n - 1)) : 0;
       const base = Math.max(0, H - (n - 1) * step - Math.max(H * 0.36, 200));
-      // pictures lying on each folder in a loose row: a little overlap and a slight tilt,
-      // mirrored on every other folder so the pile doesn't look copy-pasted
-      // low on the folder, so only their top edges peek out from under the next one
-      const THUMBS = [[3, 60, -2.5], [33, 63, 1.8], [63, 59, -1.2]];   // [left %, top px, tilt]
-      const thumb = (i, j) => {
-        const [x, y, r] = THUMBS[j], flip = i % 2 ? -1 : 1;
-        return `--x:${x}; --y:${y}; --w:30; --r:${r * flip}`;
-      };
+      // a few blank sheets inside each folder, peeking over its top edge (one per project, up to 3)
+      const SHEETS = [[4, 46, 11, -1.2, '#f3f1ea'], [30, 52, 7, 0.9, '#e9e6dc'], [12, 60, 15, 0.4, '#f7f5ef']];   // [left %, width %, peek px, tilt, colour]
       const els = tabs.map((label, i) => {
         const f = document.createElement('button');
         f.type = 'button';
@@ -315,14 +309,18 @@
         f.setAttribute('aria-label', label);
         const rot = i === n - 1 ? 0 : i % 2 ? 0.7 : -0.6;
         f.style.cssText = `top:${(base + i * step).toFixed(1)}px; --i:${i}; --rot:${rot}; z-index:${2 * i + 2}`;
-        const body = document.createElement('span');
-        body.className = 'sbody';
-        body.innerHTML = projects.filter((p) => p.tab === label).slice(0, 3)
-          .map((p, j) => `<img src="${esc(p.img)}" alt="" style="${thumb(i, j)}">`).join('');
+        const count = Math.min(3, Math.max(1, projects.filter((p) => p.tab === label).length));
+        SHEETS.slice(0, count).forEach(([x, w, peek, r, c], j) => {
+          const s = document.createElement('span');
+          s.className = 'sheet-peek';
+          const flip = i % 2 ? -1 : 1;
+          s.style.cssText = `left:${i % 2 ? 100 - x - w : x}%; width:${w}%; top:${(h - peek).toFixed(1)}px; rotate:${r * flip}deg; background:${c}`;
+          f.appendChild(s);
+        });
         const t = document.createElement('span');
         t.className = 'stab';
         t.appendChild(word(label));
-        f.append(body, t);
+        f.appendChild(t);
         return f;
       });
       stackEl.replaceChildren(...els);
@@ -332,6 +330,23 @@
         const w = Math.round(Math.max(need, (W / u) * 0.36) * u);   // same width as the open folder's tab
         const x = n > 1 ? Math.round((i / (n - 1)) * (W - w)) : 0;
         stackX[tabs[i]] = x;
+        t.style.left = x + 'px';
+        t.style.width = w + 'px';
+        // The whole folder (tab and body) is ONE piece cut (clip-path) from the CSS paper, so there's
+        // no joint to show a seam. Its shadow is a small blurred copy of just the top edge, behind it
+        // (a filter over the full folder makes iPhones lag and drop the drawing).
+        const shadow = document.createElement('span');
+        shadow.className = 'sshadow';
+        const shadowShape = document.createElement('span');
+        const top = folderPath(W, h + 18, x, w, h);
+        shadowShape.style.cssText = `width:${W}px; height:${h + 18}px; -webkit-clip-path:path("${top}"); clip-path:path("${top}")`;
+        shadow.appendChild(shadowShape);
+        const paperEl = document.createElement('span');
+        paperEl.className = 'spaper';
+        const d = folderPath(W, H + 4, x, w, h);
+        paperEl.style.cssText = `width:${W}px; height:${H + 4}px; background-position:0 ${h}px; -webkit-clip-path:path("${d}"); clip-path:path("${d}")`;
+        f.insertBefore(shadow, t);
+        f.insertBefore(paperEl, t);
         if (i % 2 === 0) {
           // in the widest bare stretch of the folder's edge beside its tab
           const leftFree = x, rightFree = W - x - w;
@@ -339,21 +354,15 @@
           const c = stackClip[tabs[i]] = { x: Math.round(cx), color: CLIP_COLORS[(i / 2) % 3], tilt: i % 4 ? 7 : -6 };
           f.appendChild(clipEl(c));
         }
-        t.style.left = x + 'px';
-        t.style.width = w + 'px';
-        // The tab is cut (clip-path) out of the same CSS paper as the folder body, lined up with it,
-        // so tab and body always match. (An SVG paper pattern here rendered blurry or not at all on iPhones.)
-        const d = tabPath(w, h, 6);
-        const shade = document.createElement('span');
-        shade.className = 'sshade';
-        const paperEl = document.createElement('span');
-        paperEl.className = 'spaper';
-        paperEl.style.cssText = `width:${w}px; height:${h + 6}px; background-position:${-x}px ${h}px; ` +
-          `-webkit-clip-path:path("${d}"); clip-path:path("${d}")`;
-        shade.appendChild(paperEl);
-        t.prepend(shade);
       });
       return els;
+    }
+    // Outline of a whole folder: body W x H with its tab (x, w, h tall) on top; the body starts at y = h.
+    function folderPath(W, H, x, w, h) {
+      const left = SIDE.map(([px, py]) => [x + SPAN * h - px * h, py * h]).reverse();   // foot -> shoulder
+      const right = SIDE.map(([px, py]) => [x + w - SPAN * h + px * h, py * h]);         // shoulder -> foot
+      return `M0,${h} L${left[0][0]},${left[0][1]}` + smooth(left) + ` L${right[0][0]},${right[0][1]}` + smooth(right) +
+        ` L${W},${h} L${W},${H} L0,${H} Z`;
     }
     function showStack() {
       closeDetail();
