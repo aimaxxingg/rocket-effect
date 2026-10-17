@@ -124,8 +124,9 @@ body.folder-open .hero { opacity: 0; }
   bottom: -14px;
   --u: 2px;   /* one reference-photo pixel, set by the script */
   width: 100vw;   /* edge to edge: no strip of page showing at the sides */
-  height: calc(100vh - 64px);
-  height: calc(100svh - 64px);
+  /* sits a little lower than the full screen, like a folder lying open on the desk */
+  height: calc(100vh - 150px);
+  height: calc(100svh - 150px);
   display: flex;
   flex-direction: column;
   pointer-events: auto;
@@ -285,9 +286,18 @@ body.folder-open .hero { opacity: 0; }
 .about-copy {
   position: absolute;
   inset: 0;
-  padding: 64px 48px;
+  padding: 64px 48px 28px;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
+.about-copy .about-ig { display: block; margin-top: 0.4em; line-height: 0; transition: opacity 0.2s; }
+.about-copy .about-ig:hover { opacity: 0.5; }
+.about-copy .about-ig .blobword { height: calc(var(--vbh) * 2.6px); width: auto; aspect-ratio: var(--ratio); }
+/* credit at the foot of the about folder */
+.about-copy .about-credit { margin: auto 0 0; padding-top: 40px; max-width: none; line-height: 0; opacity: 0.55; }
+.about-copy .about-credit .blobword { height: calc(var(--vbh) * 1.3px); width: auto; aspect-ratio: var(--ratio); }
 .about-copy p {
   font-size: clamp(26px, 3.2vw, 52px);
   font-weight: 700;
@@ -432,5 +442,6 @@ body.folder-open .hero { opacity: 0; }
   .board.dimmed { display: none; }
   .sheet:has(.detail:not([hidden])) { overflow: auto; }
   .detail { position: relative; grid-template-columns: 1fr; padding: 56px 18px 40px; gap: 22px; }
-  .about-copy { padding: 40px 20px; }
+  .about-copy { padding: 40px 20px 110px; }   /* room for Safari's toolbar over the folder's foot */
+  .about-copy .about-ig .blobword { height: calc(var(--vbh) * 2.1px); }
 }
