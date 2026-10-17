@@ -11,7 +11,7 @@ export const ANIM_DEFAULT = {
   order: 'scatter',   // 'scatter' (each letter on its own, at random) | 'sequence' (left to right) | 'random' (random wave)
   offOrder: 'same',   // 'same' (first on, first off) | 'reverse' (last on, first off)
   spawn: false,       // words light up in a new random spot every time (size stays as laid out)
-  drift: true,        // with spawn: a word glides slowly while it is lit
+  drift: false,       // with spawn: a word glides slowly while it is lit
 };
 
 export const EASINGS = {
