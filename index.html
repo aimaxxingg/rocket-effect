@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=30">
+  <link rel="stylesheet" href="assets/style.css?v=32">
 </head>
 <body>
   <header class="nav">
@@ -151,7 +151,13 @@
     const credit = document.createElement('p');
     credit.className = 'about-credit';
     credit.setAttribute('aria-label', 'site by oiviid');
-    credit.appendChild(buildWordSVG('site by oiviid', { line: true, dots: true }));
+    const by = document.createElement('a');
+    by.href = 'https://oiviid.com';
+    by.target = '_blank';
+    by.rel = 'noopener';
+    by.setAttribute('aria-label', 'oiviid');
+    by.appendChild(buildWordSVG('oiviid', { line: true, dots: true }));
+    credit.append(buildWordSVG('site by ', { line: true, dots: true }), by);
     aboutEl.appendChild(credit);
     document.getElementById('to-stack').appendChild(word('back'));
 
