@@ -163,9 +163,9 @@ body.folder-open .hero { opacity: 0; }
 .tab .blobword {
   position: absolute;
   left: 50%;
-  top: calc(var(--u) * 20);
+  top: calc(var(--u) * 17.5);
   translate: -50% 0;
-  height: calc(var(--u) * 15);
+  height: calc(var(--u) * 20);
   width: auto;
   aspect-ratio: var(--ratio);
   fill: #3b3f3e; stroke: #3b3f3e;
@@ -328,8 +328,8 @@ body.folder-open .hero { opacity: 0; }
     transform: translateY(var(--len)) rotate(-90deg);
     justify-content: flex-end;   /* a short strip (about) starts at the top */
   }
-  .folder.side-tabs .tab .blobword { height: calc(var(--u) * 21); top: calc(var(--u) * 16); }
-  .folder.side-tabs .tab:not(.active) .blobword { opacity: 0.75; }
+  .folder.side-tabs .tab .blobword { height: calc(var(--u) * 27); top: calc(var(--u) * 13); }
+  .folder.side-tabs .tab:not(.active) .blobword { opacity: 0.8; }
   .folder.side-tabs .sheet { margin-left: calc(var(--u) * 51); box-shadow: 0.5px 0 1px rgba(30, 38, 36, 0.22); }
   .board.dimmed { display: none; }
   .sheet:has(.detail:not([hidden])) { overflow: auto; }
