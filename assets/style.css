@@ -121,7 +121,7 @@ body.folder-open .hero { opacity: 0; }
   left: 50%;
   bottom: -14px;
   --u: 2px;   /* one reference-photo pixel, set by the script */
-  width: min(1760px, 94vw);
+  width: 100vw;   /* edge to edge: no strip of page showing at the sides */
   height: calc(100vh - 64px);
   height: calc(100svh - 64px);
   display: flex;
@@ -311,7 +311,8 @@ body.folder-open .hero { opacity: 0; }
   .nav.menu-open .links a:active { opacity: 0.45; }
   .hero-word.w1 { top: 30vh; left: 5vw; }
   .hero-word.w2 { top: 50vh; right: 5vw; }
-  .folder { width: calc(100vw - 12px); height: calc(100vh - 76px); height: calc(100svh - 76px); bottom: 12px; }
+  /* edge to edge, and on past the bottom of the screen (Safari's toolbar floats over it) */
+  .folder { width: 100vw; top: 64px; bottom: auto; height: calc(100vh - 30px); height: calc(100lvh - 30px); }
   .folder .tab .blobword { height: calc(var(--u) * 27); top: calc(var(--u) * 13); }
   .folder { transform-origin: 50% 0; }
   .overlay.open .folder.flip { animation: none; opacity: 1; transform: none; }
@@ -320,10 +321,10 @@ body.folder-open .hero { opacity: 0; }
   /* Stack of folders (one per tab), lying on top of each other like the photo */
   .stack {
     position: absolute;
-    left: 6px; bottom: 12px;
-    width: calc(100vw - 12px);
-    height: calc(100vh - 76px);
-    height: calc(100svh - 76px);
+    left: 0; top: 64px;
+    width: 100vw;
+    height: calc(100vh - 64px);
+    height: calc(100svh - 64px);
     pointer-events: auto;
   }
   .overlay.stacked .stack, .overlay.stack-anim .stack { display: block; }
