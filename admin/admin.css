@@ -1,5 +1,5 @@
 :root {
-  --bg: #dad9d7;
+  --bg: #efeeec;
   --panel: #f3f2f0;
   --card: #fff;
   --ink: #181715;
@@ -161,7 +161,7 @@ legend { font-size: 13px; color: var(--muted); padding: 0 6px; }
   width: 100%;
   aspect-ratio: 16 / 10;
   max-width: calc(62vh * 1.6);
-  background: #dad9d7;
+  background: #efeeec;
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,.18);
