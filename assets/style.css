@@ -180,6 +180,19 @@ body.folder-open .hero { opacity: 0; }
 .tab:not(.active):hover > svg.shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)) brightness(0.96); }
 .tab:not(.active):hover .blobword { opacity: 0.85; }
 .stack, .to-stack { display: none; }
+/* paper clips on the phone folders: over the top edge of the folder */
+.clip {
+  position: absolute;
+  top: calc(var(--u) * 51 - 20px);
+  z-index: 45;
+  width: 13px; height: 38px;
+  fill: none;
+  stroke-linecap: round;
+  overflow: visible;
+  transform-origin: 50% 60%;
+  filter: drop-shadow(0.5px 1.5px 1px rgba(20, 24, 22, 0.35));
+  pointer-events: none;
+}
 .back-tabs { position: absolute; left: 0; right: 0; top: 0; z-index: 0; pointer-events: none; }
 .back-tabs svg { position: absolute; top: calc(var(--u) * -18); overflow: visible; }
 

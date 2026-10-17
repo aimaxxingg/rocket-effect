@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=21">
+  <link rel="stylesheet" href="assets/style.css?v=23">
 </head>
 <body>
   <header class="nav">
@@ -152,6 +152,19 @@
     const stackEl = document.getElementById('stack');
     const toStack = document.getElementById('to-stack');
     const stackX = {};   // tab -> left edge of its tab in the stack (px), so the opened folder's tab lines up
+    const stackClip = {};   // tab -> its paper clip {x, color, tilt} (every other folder has one)
+    // Paper clip (wire bent round three times), clipped over the folder's top edge.
+    const CLIP_COLORS = ['#b8693f', '#5b9fd3', '#6f787b'];   // copper, blue, steel - as in the photo
+    function clipEl({ x, color, tilt }) {
+      const svg = document.createElementNS(SVGNS, 'svg');
+      svg.setAttribute('class', 'clip');
+      svg.setAttribute('viewBox', '0 0 20 58');
+      svg.style.cssText = `left:${x}px; rotate:${tilt}deg; color:${color}`;
+      const d = 'M7,16 V45 a3.5,3.5 0 0 0 7,0 V9 a5.5,5.5 0 0 0 -11,0 V47 a7,7 0 0 0 14,0 V19';
+      svg.innerHTML = `<path d="${d}" stroke="currentColor" stroke-width="1.9"/>` +
+        `<path d="${d}" stroke="#fff" stroke-opacity=".35" stroke-width=".6" transform="translate(-.45 -.3)"/>`;
+      return svg;
+    }
 
     // Folder tabs: clean outlines traced from the reference photo, filled with
     // the photo's own paper (assets/folder/paper.jpg, a seamless tile), no strokes.
@@ -267,6 +280,8 @@
       // phones: the one tab sits where it was in the stack; "back" goes on the other side
       const tx = phone.matches && n === 1 ? stackX[labels[0]] || 0 : 0;
       tabsEl.style.paddingLeft = tx + 'px';
+      // the opened folder keeps its paper clip
+      if (phone.matches && n === 1 && stackClip[labels[0]]) tabsEl.appendChild(clipEl(stackClip[labels[0]]));
       toStack.classList.toggle('left', tx > folderEl.offsetWidth / 3);
       backTabs.replaceChildren(...(side || phone.matches ? [] : GREENS.filter(([gx, gw]) => gx + gw <= tabsEnd).map(([gx, gw], i) => {
         const g = greenShape(Math.round(gw * u), Math.round(h), i);
@@ -317,6 +332,13 @@
         const w = Math.round(Math.max(need, (W / u) * 0.36) * u);   // same width as the open folder's tab
         const x = n > 1 ? Math.round((i / (n - 1)) * (W - w)) : 0;
         stackX[tabs[i]] = x;
+        if (i % 2 === 0) {
+          // in the widest bare stretch of the folder's edge beside its tab
+          const leftFree = x, rightFree = W - x - w;
+          const cx = rightFree > leftFree ? x + w + rightFree * 0.55 : leftFree * 0.4;
+          const c = stackClip[tabs[i]] = { x: Math.round(cx), color: CLIP_COLORS[(i / 2) % 3], tilt: i % 4 ? 7 : -6 };
+          f.appendChild(clipEl(c));
+        }
         t.style.left = x + 'px';
         t.style.width = w + 'px';
         t.prepend(tabShape(w, h, 's' + i, x, true));
