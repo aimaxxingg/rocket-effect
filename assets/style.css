@@ -43,6 +43,8 @@ a { color: inherit; text-decoration: none; }
 .nav a { transition: opacity 0.2s; }
 .nav a:hover, .nav a[aria-current="page"] { opacity: 0.45; }
 .nav .links { display: contents; }
+/* RE logo, top left */
+.nav .logo { display: block; height: calc(var(--nav-unit) * 19); width: auto; aspect-ratio: 753 / 510; margin: -4px 0; fill: var(--ink); }
 
 /* Phone menu button: a little rocket that takes off when tapped */
 .menu-btn {
