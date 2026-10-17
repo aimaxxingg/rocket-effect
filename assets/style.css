@@ -37,6 +37,8 @@ a { color: inherit; text-decoration: none; }
   line-height: 1;
 }
 .nav .center { justify-self: center; }
+.nav .left { justify-self: start; }   /* only as wide as the logo, so a tap doesn't light up the whole row */
+.nav a, .nav button, .hero-word { -webkit-tap-highlight-color: transparent; }
 .nav .right { justify-self: end; display: flex; gap: calc(var(--nav-unit) * 11); }
 .nav a { display: block; line-height: 0; }
 .nav .blobword { height: calc(var(--vbh) * var(--nav-unit)); width: auto; aspect-ratio: var(--ratio); overflow: visible; }
@@ -373,7 +375,9 @@ body.folder-open .hero { opacity: 0; }
   }
   @keyframes sf-in { from { translate: 0 100vh; } }
   .stab { position: absolute; top: 0; height: calc(var(--u) * 51); }
-  .stab > svg.shape { position: absolute; left: 0; top: 0; overflow: visible; filter: drop-shadow(0 -1px 2px rgba(30, 38, 36, 0.2)) drop-shadow(0 -3px 7px rgba(30, 38, 36, 0.22)); }
+  /* shadow above and beside the tab only: cut off where the tab joins the body, so no seam */
+  .sshade { position: absolute; left: 0; top: 0; clip-path: inset(-30px -30px 3px -30px); filter: drop-shadow(0 -1px 2px rgba(30, 38, 36, 0.2)) drop-shadow(0 -3px 7px rgba(30, 38, 36, 0.22)); }
+  .spaper { display: block; background: #b3b9b7 url("folder/paper.jpg") 0 0 / 742px 297px repeat; }
   .stab .blobword {
     position: absolute;
     left: 50%; translate: -50% 0;

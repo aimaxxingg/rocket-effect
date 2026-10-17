@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=23">
+  <link rel="stylesheet" href="assets/style.css?v=26">
 </head>
 <body>
   <header class="nav">
@@ -341,7 +341,17 @@
         }
         t.style.left = x + 'px';
         t.style.width = w + 'px';
-        t.prepend(tabShape(w, h, 's' + i, x, true));
+        // The tab is cut (clip-path) out of the same CSS paper as the folder body, lined up with it,
+        // so tab and body always match. (An SVG paper pattern here rendered blurry or not at all on iPhones.)
+        const d = tabPath(w, h, 6);
+        const shade = document.createElement('span');
+        shade.className = 'sshade';
+        const paperEl = document.createElement('span');
+        paperEl.className = 'spaper';
+        paperEl.style.cssText = `width:${w}px; height:${h + 6}px; background-position:${-x}px ${h}px; ` +
+          `-webkit-clip-path:path("${d}"); clip-path:path("${d}")`;
+        shade.appendChild(paperEl);
+        t.prepend(shade);
       });
       return els;
     }
