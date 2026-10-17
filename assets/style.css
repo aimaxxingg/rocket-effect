@@ -125,8 +125,8 @@ body.folder-open .hero { opacity: 0; }
   --u: 2px;   /* one reference-photo pixel, set by the script */
   width: 100vw;   /* edge to edge: no strip of page showing at the sides */
   /* sits a little lower than the full screen, like a folder lying open on the desk */
-  height: calc(100vh - 150px);
-  height: calc(100svh - 150px);
+  height: calc(100vh - 100px);
+  height: calc(100svh - 100px);
   display: flex;
   flex-direction: column;
   pointer-events: auto;
@@ -286,7 +286,7 @@ body.folder-open .hero { opacity: 0; }
 .about-copy {
   position: absolute;
   inset: 0;
-  padding: 64px 48px 50px;   /* the folder's foot runs 14px past the screen: keep the credit above it */
+  padding: 40px 48px 40px;   /* the folder's foot runs 14px past the screen: keep the credit above it */
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -296,13 +296,13 @@ body.folder-open .hero { opacity: 0; }
 .about-copy .about-ig:hover { opacity: 0.5; }
 .about-copy .about-ig .blobword { height: calc(var(--vbh) * 2.6px); width: auto; aspect-ratio: var(--ratio); }
 /* credit at the foot of the about folder */
-.about-copy .about-credit { display: flex; align-items: flex-start; margin: auto 0 0; padding-top: 40px; max-width: none; line-height: 0; }
+.about-copy .about-credit { display: flex; align-items: flex-start; margin: auto 0 0; padding-top: 24px; max-width: none; line-height: 0; }
 .about-copy .about-credit > .blobword { opacity: 0.55; }
 .about-copy .about-credit a { line-height: 0; border-bottom: 1px solid currentColor; padding-bottom: 2px; transition: opacity 0.2s; }
 .about-copy .about-credit a:hover { opacity: 0.5; }
 .about-copy .about-credit .blobword { height: calc(var(--vbh) * 1.3px); width: auto; aspect-ratio: var(--ratio); }
 .about-copy p {
-  font-size: clamp(26px, 3.2vw, 52px);
+  font-size: clamp(22px, min(3.2vw, 5.4vh), 52px);   /* also by height, so about fits without scrolling */
   font-weight: 700;
   letter-spacing: -0.06em;
   line-height: 1;
@@ -446,6 +446,6 @@ body.folder-open .hero { opacity: 0; }
   .sheet:has(.detail:not([hidden])) { overflow: auto; }
   .detail { position: relative; grid-template-columns: 1fr; padding: 56px 18px 40px; gap: 22px; }
   /* the folder runs on past the bottom of the screen (and under Safari's toolbar): keep the credit in view */
-  .about-copy { padding: 40px 20px 80px; padding-bottom: calc(100lvh - 100svh + 64px); }
+  .about-copy { padding: 32px 20px 60px; padding-bottom: calc(100lvh - 100svh + 44px); }
   .about-copy .about-ig .blobword { height: calc(var(--vbh) * 2.1px); }
 }
