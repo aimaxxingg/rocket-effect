@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=27">
+  <link rel="stylesheet" href="assets/style.css?v=29">
 </head>
 <body>
   <header class="nav">
@@ -209,16 +209,34 @@
       `<pattern id="${id}" patternUnits="userSpaceOnUse" x="${x}" y="${y}" width="${TILE[0]}" height="${TILE[1]}">` +
       `<image href="${src}" width="${TILE[0]}" height="${TILE[1]}" preserveAspectRatio="none"/></pattern>`;
 
+    // A folder tab cut (clip-path) out of the same CSS paper as the sheet and lined up with it
+    // (x = the tab's left edge over the sheet), so it runs into the sheet without a seam.
+    // .shape carries the shadow filters (a clip-path would cut them off); the front tab also gets a
+    // plain strip of the same paper reaching into the sheet, without shadow, to cover the joint.
     function tabShape(w, h, i, x, active) {
-      const ext = active ? 6 : 0;   // the front tab reaches a little into the sheet (same paper, no seam)
-      const svg = svgEl(w, h + ext);
-      const d = tabPath(w, h, ext);
-      svg.innerHTML = `<defs>${paper('pt' + i, -x, h)}` +
-        `<linearGradient id="sh${i}" x1="0" y1="0" x2="0" y2="1"><stop offset="0.45" stop-color="#1c2422" stop-opacity="0.04"/>` +
-        `<stop offset="1" stop-color="#1c2422" stop-opacity="0.11"/></linearGradient></defs>` +
-        `<g filter="url(#soft-edge)"><path d="${d}" fill="url(#pt${i})"/>` +
-        (active ? '' : `<path d="${d}" fill="url(#sh${i})"/>`) + '</g>';
-      return svg;
+      const paperCss = (shade, py) =>
+        `background-image:${[...shade, 'url("assets/folder/paper.jpg")'].join(', ')}; ` +
+        `background-position:${[...shade.map(() => '0 0'), `${-x}px ${py}px`].join(', ')}; ` +
+        `background-size:${[...shade.map(() => '100% 100%'), `${TILE[0]}px ${TILE[1]}px`].join(', ')}`;
+      const group = document.createElement('span');
+      group.className = 'shape-group';
+      const wrap = document.createElement('span');
+      wrap.className = 'shape';
+      const d = tabPath(w, h, 0);
+      const p = document.createElement('span');
+      p.className = 'shape-paper';
+      // tabs behind the front one get a soft shading towards their foot
+      const shade = active ? [] : ['linear-gradient(rgba(28, 36, 34, 0.04) 45%, rgba(28, 36, 34, 0.11))'];
+      p.style.cssText = `width:${w}px; height:${h}px; -webkit-clip-path:path("${d}"); clip-path:path("${d}"); ${paperCss(shade, h)}`;
+      wrap.appendChild(p);
+      group.appendChild(wrap);
+      if (active) {
+        const ext = document.createElement('span');
+        ext.className = 'shape-paper shape-ext';
+        ext.style.cssText = `width:${w}px; height:7px; top:${h - 1}px; ${paperCss([], 1)}`;
+        group.appendChild(ext);
+      }
+      return group;
     }
     function greenShape(w, h, i) {
       const r = h * 0.16, sl = h * 0.05, sr = h * 0.2;
@@ -263,6 +281,8 @@
       else if (spare > 0) widths = need.map((w) => w + spare / n);
       else overlap = Math.min(span + 6, MIN_OVERLAP - spare / (n - 1));
       const h = TAB_H * u;
+      // phones: the one tab sits where it was in the stack; "back" goes on the other side
+      const tx = phone.matches && n === 1 ? stackX[labels[0]] || 0 : 0;
       let x = 0;
       els.forEach((b, i) => {
         const w = Math.round(widths[i] * u);
@@ -271,14 +291,12 @@
         b.style.marginRight = i < n - 1 ? -overlap * u + 'px' : '0';
         // left tabs lie over right ones (as in the photo); the active one is the front sheet
         b.style.zIndex = isActive ? 30 : side ? 10 + i : 10 + n - i;
-        b.prepend(tabShape(w, h, i, side ? 0 : x, isActive));
+        b.prepend(tabShape(w, h, i, side ? 0 : tx + x, isActive));
         x += w - overlap * u;
       });
 
       // Pale green tabs, only where tabs stand in front of them (as in the photo).
       const tabsEnd = x / u + overlap;
-      // phones: the one tab sits where it was in the stack; "back" goes on the other side
-      const tx = phone.matches && n === 1 ? stackX[labels[0]] || 0 : 0;
       tabsEl.style.paddingLeft = tx + 'px';
       // the opened folder keeps its paper clip
       if (phone.matches && n === 1 && stackClip[labels[0]]) tabsEl.appendChild(clipEl(stackClip[labels[0]]));

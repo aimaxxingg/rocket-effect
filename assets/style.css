@@ -158,9 +158,11 @@ body.folder-open .hero { opacity: 0; }
   cursor: pointer;
   color: var(--ink);
 }
-.tab > svg.shape { position: absolute; left: 0; top: 0; overflow: visible; }
+.tab > .shape-group, .shape { position: absolute; left: 0; top: 0; }
+.shape-ext { position: absolute; left: 0; }
+.shape-paper { display: block; background-color: #b3b9b7; background-repeat: repeat; }
 /* a soft hint of depth between overlapping tabs (no outlines) */
-.tab:not(.active) > svg.shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)); }
+.tab:not(.active) .shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)); }
 .tab .blobword {
   position: absolute;
   left: 50%;
@@ -173,13 +175,13 @@ body.folder-open .hero { opacity: 0; }
 }
 /* the open tab stands out: it casts a shadow on the tabs around it (nothing below, so it still
    runs into the sheet), while the tabs behind it sit a little darker */
-.tab.active > svg.shape {
+.tab.active .shape {
   filter: drop-shadow(0 -1px 2px rgba(30, 38, 36, 0.22)) drop-shadow(0 -3px 9px rgba(30, 38, 36, 0.3));
   clip-path: inset(-40px -40px 0 -40px);
 }
-.tab:not(.active) > svg.shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)) brightness(0.9); }
+.tab:not(.active) .shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)) brightness(0.9); }
 .tab:not(.active) .blobword { opacity: 0.6; }
-.tab:not(.active):hover > svg.shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)) brightness(0.96); }
+.tab:not(.active):hover .shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)) brightness(0.96); }
 .tab:not(.active):hover .blobword { opacity: 0.85; }
 .stack, .to-stack { display: none; }
 /* paper clips on the phone folders: over the top edge of the folder */
