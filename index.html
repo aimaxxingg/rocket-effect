@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=12">
+  <link rel="stylesheet" href="assets/style.css?v=13">
 </head>
 <body>
   <header class="nav">
@@ -44,7 +44,10 @@
     </filter>
   </svg>
   <div class="overlay" id="overlay" aria-hidden="true">
+    <!-- phones: the folders lie stacked, one per tab; tapping one pulls it out and opens it -->
+    <div class="stack" id="stack"></div>
     <div class="folder" id="folder">
+      <button class="to-stack" id="to-stack" type="button" aria-label="all folders"></button>
       <div class="back-tabs" id="back-tabs"></div>
       <div class="tabs" id="tabs" role="tablist"></div>
       <div class="sheet" id="sheet">
@@ -133,15 +136,22 @@
     const aboutEl = document.getElementById('about');
     let mode = null;          // 'work' | 'about' | null
     let activeTab = tabs[0];
-    let closeTimer;
+    let closeTimer, stackTimer;
 
     aboutEl.innerHTML = about.map((p) => `<p>${esc(p)}</p>`).join('');
+    document.getElementById('to-stack').appendChild(word('back'));
 
-    // Phones: tabs stacked down the left side of the folder.
-    // Set to false to go back to tabs along the top on phones too.
-    const SIDE_TABS_ON_PHONE = true;
+    // Phones: the folders lie stacked on top of each other (STACK_ON_PHONE).
+    // The older phone layout, tabs down the left side of one folder, is SIDE_TABS_ON_PHONE
+    // (set STACK_ON_PHONE = false and SIDE_TABS_ON_PHONE = true to go back to it).
+    const STACK_ON_PHONE = true;
+    const SIDE_TABS_ON_PHONE = false;
     const phone = matchMedia('(max-width: 640px)');
     const sideTabs = () => SIDE_TABS_ON_PHONE && phone.matches;
+    const useStack = () => STACK_ON_PHONE && phone.matches;
+    const stackEl = document.getElementById('stack');
+    const toStack = document.getElementById('to-stack');
+    const stackX = {};   // tab -> left edge of its tab in the stack (px), so the opened folder's tab lines up
 
     // Folder tabs: clean outlines traced from the reference photo, filled with
     // the photo's own paper (assets/folder/paper.jpg, a seamless tile), no strokes.
@@ -209,7 +219,7 @@
       const side = sideTabs();
       folderEl.classList.toggle('side-tabs', side);
       // layout sizes, unaffected by the open animation's scale
-      const u = side ? 40 / TAB_H : folderEl.offsetWidth / PHOTO_W;
+      const u = side || phone.matches ? 40 / TAB_H : folderEl.offsetWidth / PHOTO_W;
       folderEl.style.setProperty('--u', u + 'px');
       const len = (side ? folderEl.offsetHeight : folderEl.offsetWidth) / u;   // in photo px
       if (side) folderEl.style.setProperty('--len', folderEl.offsetHeight + 'px');
@@ -254,11 +264,102 @@
 
       // Pale green tabs, only where tabs stand in front of them (as in the photo).
       const tabsEnd = x / u + overlap;
-      backTabs.replaceChildren(...(side ? [] : GREENS.filter(([gx, gw]) => gx + gw <= tabsEnd).map(([gx, gw], i) => {
+      // phones: the one tab sits where it was in the stack; "back" goes on the other side
+      const tx = phone.matches && n === 1 ? stackX[labels[0]] || 0 : 0;
+      tabsEl.style.paddingLeft = tx + 'px';
+      toStack.classList.toggle('left', tx > folderEl.offsetWidth / 3);
+      backTabs.replaceChildren(...(side || phone.matches ? [] : GREENS.filter(([gx, gw]) => gx + gw <= tabsEnd).map(([gx, gw], i) => {
         const g = greenShape(Math.round(gw * u), Math.round(h), i);
         g.style.left = gx * u + 'px';
         return g;
       })));
+    }
+
+    // --- Phones: stack of folders ------------------------------------------------
+    function renderStack() {
+      const u = 40 / TAB_H, h = TAB_H * u, span = SPAN * TAB_H, n = tabs.length;
+      stackEl.style.setProperty('--u', u + 'px');
+      const W = stackEl.offsetWidth, H = stackEl.offsetHeight;
+      // each folder sits a step lower than the one behind it; the front one shows the most
+      const step = n > 1 ? Math.min(130, (H * 0.56 - h) / (n - 1)) : 0;
+      const THUMBS = [[5, -4], [36, 2.5], [66, -2]];   // [left %, tilt] of the pictures lying on each folder
+      const els = tabs.map((label, i) => {
+        const f = document.createElement('button');
+        f.type = 'button';
+        f.className = 'sfolder';
+        f.dataset.i = i;
+        f.setAttribute('aria-label', label);
+        const rot = i === n - 1 ? 0 : i % 2 ? 0.7 : -0.6;
+        f.style.cssText = `top:${(i * step).toFixed(1)}px; --i:${i}; --rot:${rot}; --b:${1 - (n - 1 - i) * 0.025}; z-index:${2 * i + 2}`;
+        const body = document.createElement('span');
+        body.className = 'sbody';
+        body.innerHTML = projects.filter((p) => p.tab === label).slice(0, 3)
+          .map((p, j) => `<img src="${esc(p.img)}" alt="" style="--x:${THUMBS[j][0]}; --r:${THUMBS[j][1]}">`).join('');
+        const t = document.createElement('span');
+        t.className = 'stab';
+        t.appendChild(word(label));
+        f.append(body, t);
+        return f;
+      });
+      stackEl.replaceChildren(...els);
+      els.forEach((f, i) => {
+        const t = f.lastChild;
+        const need = Math.max(parseFloat(getComputedStyle(t.lastChild).width) / u + 2 * span + 26, 140);
+        const w = Math.round(Math.max(need, (W / u) * 0.36) * u);   // same width as the open folder's tab
+        const x = n > 1 ? Math.round((i / (n - 1)) * (W - w)) : 0;
+        stackX[tabs[i]] = x;
+        t.style.left = x + 'px';
+        t.style.width = w + 'px';
+        t.prepend(tabShape(w, h, 's' + i, x, true));
+      });
+      return els;
+    }
+    function showStack() {
+      closeDetail();
+      clearTimeout(stackTimer);
+      folderEl.getAnimations().forEach((a) => a.cancel());
+      overlay.classList.remove('stack-anim');
+      overlay.classList.add('stacked');
+      renderStack();
+    }
+    const EASE = 'cubic-bezier(.24, 1, .29, 1)';
+    const slot = (f) => `translateY(${f.offsetTop}px) rotate(${f.style.getPropertyValue('--rot')}deg)`;
+    // Tap a folder: it slides out of the pile and opens; the others drop away.
+    function openFromStack(i) {
+      const els = [...stackEl.children], f = els[i];
+      showWork(tabs[i]);
+      overlay.classList.add('stack-anim');
+      overlay.classList.remove('stacked');
+      f.style.visibility = 'hidden';
+      els.forEach((g, j) => { if (j !== i) { g.style.setProperty('--d', Math.abs(j - i)); g.classList.add('away'); } });
+      folderEl.style.zIndex = 1000;
+      folderEl.classList.add('flip');
+      folderEl.animate([{ transform: slot(f) }, { transform: 'none' }], { duration: 650, easing: EASE });
+      clearTimeout(stackTimer);
+      stackTimer = setTimeout(() => overlay.classList.remove('stack-anim'), 700);
+    }
+    // Back: the folder closes and slides back into its place in the pile.
+    function backToStack() {
+      const i = tabs.indexOf(activeTab);
+      closeDetail();
+      clearTimeout(stackTimer);
+      overlay.classList.add('stack-anim');
+      const els = renderStack(), f = els[i];
+      f.style.visibility = 'hidden';
+      els.forEach((g, j) => {
+        g.style.animation = 'none';
+        if (j !== i) { g.style.setProperty('--d', Math.abs(j - i)); g.classList.add('away'); }
+      });
+      stackEl.offsetWidth;   // start from "away", then let them come back
+      requestAnimationFrame(() => els.forEach((g) => g.classList.remove('away')));
+      folderEl.style.zIndex = 2 * i + 3;   // above the folders behind it, under the ones in front
+      const a = folderEl.animate([{ transform: 'none' }, { transform: slot(f) }], { duration: 520, easing: EASE, fill: 'forwards' });
+      a.finished.then(() => {
+        if (mode !== 'work') return;
+        overlay.classList.replace('stack-anim', 'stacked');
+        f.style.visibility = '';
+        a.cancel();
+      }).catch(() => {});
     }
 
     function renderBoard(tab) {
@@ -280,24 +381,31 @@
 
     function showWork(tab = activeTab) {
       activeTab = tab;
-      renderTabs(tabs, tab);
+      renderTabs(useStack() ? [tab] : tabs, tab);   // phones: an opened folder shows just its own tab
       renderBoard(tab);
+      toStack.hidden = !useStack();
       closeDetail();
       board.hidden = false;
       aboutEl.hidden = true;
     }
     function showAbout() {
       renderTabs(['about'], 'about');
+      toStack.hidden = true;
       closeDetail();
       board.hidden = true;
       aboutEl.hidden = false;
     }
 
-    function open(which) {
+    function open(which, tab) {
       if (mode === which) return close();
       clearTimeout(closeTimer);
       mode = which;
-      which === 'about' ? showAbout() : showWork();
+      overlay.classList.remove('stacked', 'stack-anim');
+      folderEl.classList.remove('flip');
+      folderEl.style.zIndex = '';
+      if (which === 'about') showAbout();
+      else if (useStack() && !tab) showStack();
+      else showWork(tab);
       overlay.classList.remove('closing');
       overlay.classList.add('open');
       document.body.classList.add('folder-open');
@@ -340,29 +448,34 @@
       const opener = e.target.closest('[data-open]');
       if (opener) { e.preventDefault(); open(opener.dataset.open); return; }
       if (!mode) return;
+      const sf = e.target.closest('.sfolder');
+      if (sf) { openFromStack(+sf.dataset.i); return; }
+      if (e.target.closest('.to-stack')) { backToStack(); return; }
       const tab = e.target.closest('.tab');
-      if (tab && mode === 'work') { showWork(tab.dataset.tab); return; }
+      if (tab && mode === 'work') { useStack() ? backToStack() : showWork(tab.dataset.tab); return; }
       if (e.target.closest('.back')) { closeDetail(); return; }
       // Click outside the folder closes it (header links still work).
       if (!e.target.closest('#folder') && !e.target.closest('.nav')) close();
     });
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      if (!detail.hidden) closeDetail(); else close();
+      if (!detail.hidden) closeDetail();
+      else if (mode === 'work' && useStack() && !overlay.classList.contains('stacked')) backToStack();
+      else close();
     });
     let resizeTimer;
     addEventListener('resize', () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        if (mode === 'work') showWork(activeTab);
+        if (mode === 'work' && useStack() && overlay.classList.contains('stacked')) showStack();
+        else if (mode === 'work') { overlay.classList.remove('stacked', 'stack-anim'); showWork(activeTab); }
         else if (mode === 'about') showAbout();
       }, 150);
     });
     // #work opens the folder; #work/<tab> opens it on that tab (e.g. #work/art)
     if (location.hash.startsWith('#work')) {
       const t = decodeURIComponent(location.hash.slice(6));
-      if (tabs.includes(t)) activeTab = t;
-      open('work');
+      open('work', tabs.includes(t) ? t : undefined);
     }
     if (location.hash === '#about') open('about');
 

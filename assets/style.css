@@ -179,6 +179,7 @@ body.folder-open .hero { opacity: 0; }
 .tab:not(.active) .blobword { opacity: 0.6; }
 .tab:not(.active):hover > svg.shape { filter: drop-shadow(1.5px 0 1.5px rgba(30, 38, 36, 0.14)) brightness(0.96); }
 .tab:not(.active):hover .blobword { opacity: 0.85; }
+.stack, .to-stack { display: none; }
 .back-tabs { position: absolute; left: 0; right: 0; top: 0; z-index: 0; pointer-events: none; }
 .back-tabs svg { position: absolute; top: calc(var(--u) * -18); overflow: visible; }
 
@@ -311,8 +312,88 @@ body.folder-open .hero { opacity: 0; }
   .hero-word.w1 { top: 30vh; left: 5vw; }
   .hero-word.w2 { top: 50vh; right: 5vw; }
   .folder { width: calc(100vw - 12px); height: calc(100vh - 76px); height: calc(100svh - 76px); bottom: 12px; }
-  .folder:not(.side-tabs) .tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
-  .tabs::-webkit-scrollbar { display: none; }
+  .folder .tab .blobword { height: calc(var(--u) * 27); top: calc(var(--u) * 13); }
+  .folder { transform-origin: 50% 0; }
+  .overlay.open .folder.flip { animation: none; opacity: 1; transform: none; }
+  .folder.flip .card { animation-delay: calc(0.25s + var(--z) * 60ms); }
+
+  /* Stack of folders (one per tab), lying on top of each other like the photo */
+  .stack {
+    position: absolute;
+    left: 6px; bottom: 12px;
+    width: calc(100vw - 12px);
+    height: calc(100vh - 76px);
+    height: calc(100svh - 76px);
+    pointer-events: auto;
+  }
+  .overlay.stacked .stack, .overlay.stack-anim .stack { display: block; }
+  .overlay.stacked .folder { visibility: hidden; }
+  .overlay.closing .stack { animation: folder-out 0.45s var(--ease) forwards; pointer-events: none; }
+  .sfolder {
+    position: absolute;
+    left: 0;
+    width: 100%; height: 100%;
+    border: 0; padding: 0;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    -webkit-tap-highlight-color: transparent;
+    transform-origin: 50% 0;
+    rotate: calc(var(--rot) * 1deg);
+    /* each folder casts a soft shadow up onto the one behind it */
+    filter: drop-shadow(0 -2px 3px rgba(30, 38, 36, 0.13)) drop-shadow(0 -6px 14px rgba(30, 38, 36, 0.12)) brightness(var(--b));
+    animation: sf-in 0.75s var(--ease) backwards;
+    animation-delay: calc(0.08s + var(--i) * 0.07s);
+    transition: translate 0.55s var(--ease);
+  }
+  .sfolder:active { translate: 0 -5px; }
+  .sfolder.away { translate: 0 105vh; transition-duration: 0.5s; transition-delay: calc(var(--d) * 0.04s); }
+  @keyframes sf-in { from { translate: 0 100vh; } }
+  .stab { position: absolute; top: 0; height: calc(var(--u) * 51); }
+  .stab > svg.shape { position: absolute; left: 0; top: 0; overflow: visible; }
+  .stab .blobword {
+    position: absolute;
+    left: 50%; translate: -50% 0;
+    top: calc(var(--u) * 13);
+    height: calc(var(--u) * 27);
+    width: auto;
+    aspect-ratio: var(--ratio);
+    fill: #3b3f3e; stroke: #3b3f3e;
+  }
+  .sbody {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    top: calc(var(--u) * 51);
+    background: #b3b9b7 url("folder/paper.jpg") 0 0 / 742px 297px repeat;
+    box-shadow: -0.5px 0 1px rgba(30, 38, 36, 0.22), 0.5px 0 1px rgba(30, 38, 36, 0.22);
+    overflow: hidden;
+  }
+  /* a few of the folder's pictures lying on it, peeking out under the next folder */
+  .sbody img {
+    position: absolute;
+    top: 14px;
+    left: calc(var(--x) * 1%);
+    width: 29%;
+    height: auto;
+    rotate: calc(var(--r) * 1deg);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  }
+  /* inside an opened folder: "back" puts it back on the pile */
+  .to-stack {
+    position: absolute;
+    top: 0; right: 14px;
+    z-index: 40;
+    display: block;
+    height: calc(var(--u) * 51);
+    border: 0; padding: 0 4px;
+    background: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .to-stack.left { right: auto; left: 14px; }
+  .to-stack .blobword { height: calc(var(--u) * 22); width: auto; aspect-ratio: var(--ratio); }
+  .to-stack:active { opacity: 0.45; }
+  .folder:has(.detail:not([hidden])) .to-stack { display: none; }
   /* Side tabs: the tab strip is rotated to run down the left edge, bumps pointing left. */
   .folder.side-tabs { flex-direction: row; }
   .folder.side-tabs .tabs {
