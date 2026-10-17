@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=14">
+  <link rel="stylesheet" href="assets/style.css?v=15">
 </head>
 <body>
   <header class="nav">
@@ -284,7 +284,13 @@
       // off the bottom of the screen, the front one showing the most
       const step = n > 1 ? Math.min(76, (H * 0.6 - h) / (n - 1)) : 0;
       const base = Math.max(0, H - (n - 1) * step - Math.max(H * 0.36, 200));
-      const THUMBS = [[5, -4], [36, 2.5], [66, -2]];   // [left %, tilt] of the pictures lying on each folder
+      // pictures lying on each folder, tossed on loosely (same spots every time: seeded by folder + picture)
+      const rnd = (k) => { const v = Math.sin(k * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+      const thumb = (i, j) => {
+        const k = i * 7 + j * 3 + 1;
+        return `--x:${(-3 + j * 29 + rnd(k) * 12).toFixed(1)}; --y:${(rnd(k + 1) * 16 - 2).toFixed(1)}; ` +
+          `--w:${(40 + rnd(k + 2) * 9).toFixed(1)}; --r:${(rnd(k + 3) * 18 - 9).toFixed(1)}`;
+      };
       const els = tabs.map((label, i) => {
         const f = document.createElement('button');
         f.type = 'button';
@@ -296,7 +302,7 @@
         const body = document.createElement('span');
         body.className = 'sbody';
         body.innerHTML = projects.filter((p) => p.tab === label).slice(0, 3)
-          .map((p, j) => `<img src="${esc(p.img)}" alt="" style="--x:${THUMBS[j][0]}; --r:${THUMBS[j][1]}">`).join('');
+          .map((p, j) => `<img src="${esc(p.img)}" alt="" style="${thumb(i, j)}">`).join('');
         const t = document.createElement('span');
         t.className = 'stab';
         t.appendChild(word(label));
