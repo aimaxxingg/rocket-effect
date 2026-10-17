@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=19">
+  <link rel="stylesheet" href="assets/style.css?v=21">
 </head>
 <body>
   <header class="nav">
@@ -286,10 +286,11 @@
       const base = Math.max(0, H - (n - 1) * step - Math.max(H * 0.36, 200));
       // pictures lying on each folder in a loose row: a little overlap and a slight tilt,
       // mirrored on every other folder so the pile doesn't look copy-pasted
-      const THUMBS = [[3, 7, -2.5], [33, 11, 1.8], [63, 5, -1.2]];   // [left %, top px, tilt]
+      // low on the folder, so only their top edges peek out from under the next one
+      const THUMBS = [[3, 60, -2.5], [33, 63, 1.8], [63, 59, -1.2]];   // [left %, top px, tilt]
       const thumb = (i, j) => {
         const [x, y, r] = THUMBS[j], flip = i % 2 ? -1 : 1;
-        return `--x:${x}; --y:${y}; --w:35; --r:${r * flip}`;
+        return `--x:${x}; --y:${y}; --w:30; --r:${r * flip}`;
       };
       const els = tabs.map((label, i) => {
         const f = document.createElement('button');

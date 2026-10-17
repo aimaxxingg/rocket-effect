@@ -360,7 +360,7 @@ body.folder-open .hero { opacity: 0; }
   }
   @keyframes sf-in { from { translate: 0 100vh; } }
   .stab { position: absolute; top: 0; height: calc(var(--u) * 51); }
-  .stab > svg.shape { position: absolute; left: 0; top: 0; overflow: visible; filter: drop-shadow(0 -2px 3px rgba(30, 38, 36, 0.16)); }
+  .stab > svg.shape { position: absolute; left: 0; top: 0; overflow: visible; filter: drop-shadow(0 -1px 2px rgba(30, 38, 36, 0.2)) drop-shadow(0 -3px 7px rgba(30, 38, 36, 0.22)); }
   .stab .blobword {
     position: absolute;
     left: 50%; translate: -50% 0;
@@ -377,7 +377,7 @@ body.folder-open .hero { opacity: 0; }
     background: #b3b9b7 url("folder/paper.jpg") 0 0 / 742px 297px repeat;
     /* each folder casts a soft shadow up onto the one behind it (box-shadow: cheap on phones,
        unlike a filter over the whole folder) */
-    box-shadow: 0 -3px 10px rgba(30, 38, 36, 0.14), -0.5px 0 1px rgba(30, 38, 36, 0.22), 0.5px 0 1px rgba(30, 38, 36, 0.22);
+    box-shadow: 0 -1px 3px rgba(30, 38, 36, 0.18), 0 -5px 16px rgba(30, 38, 36, 0.24), -0.5px 0 1px rgba(30, 38, 36, 0.22), 0.5px 0 1px rgba(30, 38, 36, 0.22);
     overflow: hidden;
   }
   /* a few of the folder's pictures lying on it, peeking out under the next folder */
@@ -386,6 +386,7 @@ body.folder-open .hero { opacity: 0; }
     top: calc(var(--y) * 1px);
     left: calc(var(--x) * 1%);
     width: calc(var(--w) * 1%);
+    opacity: 0.35;   /* only a hint of what's inside until the folder is opened */
     height: auto;
     rotate: calc(var(--r) * 1deg);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
