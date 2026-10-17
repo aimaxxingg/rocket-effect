@@ -103,8 +103,9 @@ function spawnWords(words, s) {
       if (d > bestD) { best = c; bestD = d; }
       if (d > gap * 2) break;
     }
-    spots[i] = best;
-    return best;
+    // nothing measurable (page hidden or mid-resize): keep the old spot
+    spots[i] = best || spots[i] || { x: 5, y: 20, w: 0, h: 0 };
+    return spots[i];
   }
 
   const order = (n) => {
