@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=42">
+  <link rel="stylesheet" href="assets/style.css?v=43">
 </head>
 <body>
   <header class="nav">
@@ -45,6 +45,7 @@
   <div class="overlay" id="overlay" aria-hidden="true">
     <!-- phones: the folders lie stacked, one per tab; tapping one pulls it out and opens it -->
     <div class="stack" id="stack"></div>
+    <div class="folder-fade" aria-hidden="true"></div>
     <div class="folder" id="folder">
       <button class="to-stack" id="to-stack" type="button" aria-label="all folders"></button>
       <div class="back-tabs" id="back-tabs"></div>
@@ -621,6 +622,7 @@
       detail.hidden = false;
       board.classList.add('dimmed');
       requestAnimationFrame(() => detail.classList.add('in'));
+      setTimeout(() => { if (!detail.hidden) detail.classList.add('in'); }, 80);   // in case a frame is late
     }
     function closeDetail() {
       detail.classList.remove('in');
@@ -672,24 +674,51 @@
 
     // --- Drag cards; a click without dragging opens the project --------------
     let front = 100;
+    // Mouse: drag right away. Touch: a swipe scrolls the folder; press and hold to pick a card up.
     function makeDraggable(card) {
-      let startX, startY, dx = 0, dy = 0, baseX = 0, baseY = 0, moved = false, down = false;
-      card.addEventListener('pointerdown', (e) => {
-        down = true; moved = false;
-        startX = e.clientX; startY = e.clientY;
-        e.preventDefault();
-        try { card.setPointerCapture(e.pointerId); } catch {}
+      let startX, startY, dx = 0, dy = 0, baseX = 0, baseY = 0, moved = false, down = false, held = false, timer = 0;
+      let pid = 0;
+      const lift = () => {
+        held = true; moved = true;
+        try { card.setPointerCapture(pid); } catch {}
         card.style.zIndex = ++front;
+        card.classList.add('dragging');
+        navigator.vibrate?.(8);
+      };
+      card.addEventListener('pointerdown', (e) => {
+        down = true; moved = false; held = false; dx = dy = 0;
+        startX = e.clientX; startY = e.clientY;
+        pid = e.pointerId;
+        if (e.pointerType === 'mouse') {
+          e.preventDefault();
+          held = true;
+          card.style.zIndex = ++front;
+          try { card.setPointerCapture(pid); } catch {}
+        } else {
+          clearTimeout(timer);
+          timer = setTimeout(() => { if (down) lift(); }, 320);
+        }
       });
       card.addEventListener('pointermove', (e) => {
         if (!down) return;
-        dx = e.clientX - startX; dy = e.clientY - startY;
+        const mx = e.clientX - startX, my = e.clientY - startY;
+        if (!held) {
+          // moved before the hold: it's a scroll, not a drag
+          if (Math.abs(mx) + Math.abs(my) > 8) { clearTimeout(timer); down = false; }
+          return;
+        }
+        dx = mx; dy = my;
         if (Math.abs(dx) + Math.abs(dy) > 4) { moved = true; card.classList.add('dragging'); }
         card.style.translate = `${baseX + dx}px ${baseY + dy}px`;
       });
+      // once a card is held, the finger moves it instead of scrolling the page
+      card.addEventListener('touchmove', (e) => { if (held && down) e.preventDefault(); }, { passive: false });
+      card.addEventListener('contextmenu', (e) => e.preventDefault());
       const end = () => {
+        clearTimeout(timer);
         if (!down) return;
         down = false;
+        held = false;
         card.classList.remove('dragging');
         baseX += dx; baseY += dy; dx = dy = 0;
       };

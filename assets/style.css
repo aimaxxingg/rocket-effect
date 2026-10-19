@@ -220,14 +220,21 @@ body.folder-open .hero { opacity: 0; }
 .folder.scrolly {
   overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   height: calc(100svh - 76px); padding-top: 24px;
-  -webkit-mask-image: linear-gradient(transparent, #000 34px); mask-image: linear-gradient(transparent, #000 34px);
 }
+.folder-fade { display: none; }
+.overlay:has(.folder.scrolly) .folder-fade {
+  display: block; position: absolute; left: 0; right: 0; top: 90px; height: 34px; z-index: 1;
+  background: linear-gradient(var(--bg), transparent); pointer-events: none;
+}
+.overlay:has(.folder.scrolly) .folder { z-index: 0; }
 .folder.scrolly::-webkit-scrollbar { display: none; }
 .folder.scrolly .tabs, .folder.scrolly .sheet { flex: none; }
 .folder.scrolly .board { overflow: visible; }
 .board.papers .card { touch-action: pan-y; }
 .card {
+  -webkit-touch-callout: none;
   position: absolute;
   left: calc(var(--x) * 1%);
   top: calc(var(--y) * 1%);
@@ -291,8 +298,8 @@ body.folder-open .hero { opacity: 0; }
 .news-ear { justify-self: start; padding: 0.5cqw 0.8cqw; border: 0.1cqw solid #555; font-size: 0.85cqw; line-height: 1.3; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
 .news-ear.right { justify-self: end; border: 0; font-size: 1cqw; }
 .news-mast { font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 5.2cqw; line-height: 1; text-align: center; }
-.news .news-mast.logo { display: flex; align-items: center; justify-content: center; height: 6.6cqw; }
-.news-mast.logo img { display: block; mix-blend-mode: multiply; opacity: 0.9; max-width: 34cqw; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: none; }
+.news .news-mast.logo { display: flex; align-items: center; justify-content: center; height: 6.6cqw; overflow: hidden; }
+.news .news-mast.logo img { display: block; flex: none; width: auto; height: 6.6cqw; max-width: 34cqw; max-height: none; object-fit: contain; box-shadow: none; }
 .news .news-main { display: grid; grid-template-columns: auto 1fr; gap: 2.2cqw; margin-top: 0.45cqw; padding-top: 1.2cqw; border-top: 0.1cqw solid #23221f; }
 .news .news-photo { position: relative; height: 30cqw; overflow: hidden; }
 .news .news-photo img { display: block; width: auto; height: 30cqw; min-width: 24cqw; max-width: 50cqw; max-height: none; object-fit: cover; object-position: 35% 30%; box-shadow: none; }
@@ -300,7 +307,7 @@ body.folder-open .hero { opacity: 0; }
 .news .news-photo::after, .news .news-thumb::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse, transparent 55%, rgba(30, 30, 28, 0.22)), rgba(240, 238, 232, 0.12); mix-blend-mode: normal; pointer-events: none; }
 .news .news-lead { display: flex; flex-direction: column; height: 30cqw; overflow: hidden; padding-left: 2.2cqw; border-left: 0.1cqw solid #8a8884; }
 .news-kicker { color: #a8302a; font-size: 0.9cqw; letter-spacing: 0.2em; text-transform: uppercase; text-align: center; }
-.news-head { margin: 0.6cqw 0 0.8cqw; font-family: "Playfair Display", Georgia, serif; font-weight: 800; font-style: italic; font-size: 3.4cqw; line-height: 1.06; text-align: center; text-wrap: balance; }
+.news-head { margin: 0.6cqw 0 0.8cqw; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 700; font-style: normal; font-size: 3.3cqw; line-height: 1.04; letter-spacing: -0.02em; text-align: center; text-wrap: balance; }
 .news-head.long { font-size: 2.6cqw; }
 .news-by { margin-bottom: 0.9cqw; font-size: 0.8cqw; letter-spacing: 0.14em; text-transform: uppercase; text-align: center; }
 .news-body { flex: 1; min-height: 0; overflow: hidden; font-size: 1.12cqw; line-height: 1.45; text-align: justify; hyphens: auto; }
@@ -313,10 +320,26 @@ body.folder-open .hero { opacity: 0; }
 .news .news-thumb { position: relative; flex: none; align-self: center; height: 11cqw; margin-top: 0.8cqw; overflow: hidden; }
 .news .news-thumb img { display: block; width: auto; height: 11cqw; max-width: 100%; max-height: none; object-fit: cover; object-position: 35% 30%; box-shadow: none; }
 .news-story:first-child { padding-left: 0; border-left: 0; }
-.news-story-h { margin-bottom: 0.7cqw; font-family: "Playfair Display", Georgia, serif; font-weight: 800; font-size: 1.5cqw; line-height: 1.1; text-align: center; }
+.news-story-h { margin-bottom: 0.7cqw; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 700; font-size: 1.4cqw; letter-spacing: -0.01em; line-height: 1.1; text-align: center; }
 /* the story text, drawn as lines of small print */
 .news .news-lines { flex: 1; min-height: 0; height: auto; background: repeating-linear-gradient(#a5a39d 0 0.3cqw, transparent 0.3cqw 1.05cqw); opacity: 0.8; }
-.card.news-card .caption { display: none; }   /* the masthead already says where it ran */
+.card.news-card .caption { display: none; }
+/* crumpled paper: a centre fold, a cross fold and a few soft creases, light and shade (flipped per paper) */
+.news::before {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 49.2%, rgba(0, 0, 0, 0.07) 49.8%, rgba(255, 255, 255, 0.55) 50.2%, transparent 50.9%),
+    linear-gradient(0deg, transparent 46%, rgba(0, 0, 0, 0.045) 49.6%, rgba(255, 255, 255, 0.4) 50.3%, transparent 54%),
+    linear-gradient(116deg, transparent 18%, rgba(0, 0, 0, 0.045) 27%, transparent 31%, rgba(255, 255, 255, 0.3) 36%, transparent 44%),
+    linear-gradient(64deg, transparent 56%, rgba(0, 0, 0, 0.05) 63%, transparent 66.5%, rgba(255, 255, 255, 0.32) 71%, transparent 78%),
+    linear-gradient(158deg, transparent 68%, rgba(0, 0, 0, 0.045) 79%, transparent 86%),
+    linear-gradient(28deg, transparent 6%, rgba(255, 255, 255, 0.28) 12%, transparent 19%, rgba(0, 0, 0, 0.035) 24%, transparent 30%),
+    radial-gradient(ellipse at 18% 82%, rgba(0, 0, 0, 0.05), transparent 42%),
+    radial-gradient(ellipse at 84% 22%, rgba(255, 255, 255, 0.3), transparent 38%);
+}
+.card:nth-child(2n) .news::before { transform: scaleX(-1); }
+.card:nth-child(3n) .news::before { transform: scaleY(-1); }
+.card:nth-child(5n) .news::before { transform: scale(-1, -1); }   /* the masthead already says where it ran */
 /* in the pile: folded papers, a few sheets thick at their edges; the ones further down a touch darker */
 .card.news-card .news {
   box-shadow:
@@ -343,7 +366,9 @@ body.folder-open .hero { opacity: 0; }
 }
 .detail.in { opacity: 1; translate: 0 0; }
 .detail-media img { width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block; box-shadow: 0 14px 40px rgba(0,0,0,0.2); }
-.detail-info { align-self: end; text-transform: lowercase; }
+.detail-info { align-self: end; text-transform: lowercase; font-family: Thermochrome, "Inter Tight", "Helvetica Neue", Arial, sans-serif; font-weight: 400; }
+.detail-info h2, .detail-info p { letter-spacing: 0; }
+.detail-info p { font-size: 15px; line-height: 1.5; }
 .detail-info .meta { font-size: 13px; font-weight: 600; opacity: 0.6; margin-bottom: 10px; }
 .detail-info h2 { font-size: clamp(28px, 3.4vw, 54px); font-weight: 700; letter-spacing: -0.06em; line-height: 0.95; margin-bottom: 18px; }
 .detail-info p { font-size: 17px; line-height: 1.4; letter-spacing: -0.02em; max-width: 42ch; }
@@ -417,7 +442,8 @@ body.folder-open .hero { opacity: 0; }
   .hero-word.w2 { top: 50vh; right: 5vw; }
   /* edge to edge, and on past the bottom of the screen (Safari's toolbar floats over it) */
   .folder { width: 100vw; top: 64px; bottom: auto; height: calc(100vh - 30px); height: calc(100lvh - 30px); }
-  .folder.scrolly { top: 40px; height: calc(100lvh - 6px); }
+  .folder.scrolly { top: 40px; height: calc(100svh - 40px); }
+  .overlay:has(.folder.scrolly) .folder-fade { top: 40px; }
   .folder .tab .blobword { height: calc(var(--u) * 27); top: calc(var(--u) * 13); }
   .folder { transform-origin: 50% 0; }
   .overlay.open .folder.flip { animation: none; opacity: 1; transform: none; }
