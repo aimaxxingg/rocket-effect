@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=37">
+  <link rel="stylesheet" href="assets/style.css?v=39">
 </head>
 <body>
   <header class="nav">
@@ -465,18 +465,33 @@
     // Press pieces (projects with "news") are drawn as a newspaper page: white paper, colour print.
     // Spans only, since it sits inside a button. Sizes are in cqw of .news, so it scales with the card.
     const paragraphs = (text) => String(text || '').split(/\n\s*\n/).filter(Boolean);
+    // A folded broadsheet front page: ears and masthead (the outlet's logo) on top, the photo with
+    // the story beside it, and a strip of other stories below (headlines of the other press pieces,
+    // their text drawn as lines of print).
     function newsPage(p) {
       const n = p.news;
+      const same = projects.filter((o) => o.news && o.tab === p.tab);
+      const i = same.indexOf(p);
+      const others = [1, 2, 3].map((k) => same[(i + k) % same.length]).filter((o) => o && o !== p);
       return `<span class="news"><span class="news-in">
-        <span class="news-top"><span>music &amp; culture</span><span>${esc(n.date)}</span></span>
-        ${n.logo ? `<span class="news-mast logo"><img src="${esc(n.logo)}" alt="${esc(n.outlet)}" draggable="false"></span>`
-          : `<span class="news-mast">${esc(n.outlet)}</span>`}
-        <span class="news-kicker">${esc(n.kicker)}</span>
-        <span class="news-head${p.title.length > 70 ? ' long' : ''}">${esc(p.title)}</span>
-        <span class="news-by">by ${esc(n.byline)}</span>
-        <span class="news-photo"><img src="${esc(p.img)}" alt="" draggable="false"></span>
+        <span class="news-top">
+          <span class="news-ear">music &amp; culture<br>all the stories</span>
+          ${n.logo ? `<span class="news-mast logo"><img src="${esc(n.logo)}" alt="${esc(n.outlet)}" draggable="false"></span>`
+            : `<span class="news-mast">${esc(n.outlet)}</span>`}
+          <span class="news-ear right">${esc(n.date)}</span>
+        </span>
+        <span class="news-main">
+          <span class="news-photo"><img src="${esc(p.img)}" alt="" draggable="false"></span>
+          <span class="news-lead">
+            <span class="news-kicker">${esc(n.kicker)}</span>
+            <span class="news-head${p.title.length > 70 ? ' long' : ''}">${esc(p.title)}</span>
+            <span class="news-by">by ${esc(n.byline)}</span>
+            <span class="news-body">${paragraphs(p.text).map((t) => `<span class="news-p">${esc(t)}</span>`).join('')}</span>
+          </span>
+        </span>
         <span class="news-cap">${esc(n.caption)}</span>
-        <span class="news-body">${paragraphs(p.text).map((t) => `<span class="news-p">${esc(t)}</span>`).join('')}</span>
+        <span class="news-more">${others.map((o, k) => `<span class="news-story"><span class="news-story-h">${esc(o.title)}</span><span class="news-lines"></span>` +
+          (k === (i % 2) + 1 ? `<span class="news-thumb"><img src="${esc(o.img)}" alt="" draggable="false"></span>` : '') + '</span>').join('')}<span class="news-story"><span class="news-lines"></span></span></span>
       </span></span>`;
     }
 
@@ -490,9 +505,9 @@
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'card' + (p.news ? ' news-card' : '');
-        const pos = !narrow ? p : pile ? { x: 12 + (p.x - 38) * 0.9, y: 0, w: 76 } : { x: i % 2 ? 28 : 5, y: 0, w: 66 };
-        const top = pile ? H * 0.03 + (p.y - 2) * H * 0.012 : H * 0.05 + i * step;
-        card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${p.r}; --z:${i + 1}` +
+        const pos = !narrow ? p : pile ? { x: 5 + (p.x - 28) * 0.7, y: 0, w: 88 } : { x: i % 2 ? 28 : 5, y: 0, w: 66 };
+        const top = pile ? H * 0.04 + (p.y - 2) * H * 0.018 : H * 0.05 + i * step;
+        card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${p.r}; --z:${i + 1}; --under:${list.length - 1 - i}` +
           (narrow ? `; top:${Math.round(top)}px` : '');
         card.setAttribute('aria-label', p.title);
         card.innerHTML = p.news

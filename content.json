@@ -186,10 +186,10 @@
         "caption": "Wavee, whose single “Afties” is out now.",
         "logo": "assets/work/pr/logos/hiphopdose.png"
       },
-      "x": 33,
-      "y": 9,
-      "w": 24,
-      "r": -7
+      "x": 34,
+      "y": 17,
+      "w": 40,
+      "r": 6
     },
     {
       "tab": "press release",
@@ -210,10 +210,10 @@
         "caption": "Brooklyn’s Wavee.",
         "logo": "assets/work/pr/logos/rollinghype.svg"
       },
-      "x": 42,
-      "y": 7,
-      "w": 24,
-      "r": 5
+      "x": 31,
+      "y": 15,
+      "w": 40,
+      "r": -2.5
     },
     {
       "tab": "press release",
@@ -234,9 +234,9 @@
         "caption": "NellzSoTrilla under the Space Needle, Seattle."
       },
       "x": 35,
-      "y": 5,
-      "w": 24,
-      "r": -3
+      "y": 13,
+      "w": 40,
+      "r": 4
     },
     {
       "tab": "press release",
@@ -256,10 +256,10 @@
         "byline": "Shawn Grant",
         "caption": "L3TA, whose new single “Euphoria” is out now."
       },
-      "x": 44,
-      "y": 8,
-      "w": 24,
-      "r": 8
+      "x": 30,
+      "y": 12,
+      "w": 40,
+      "r": 1.5
     },
     {
       "tab": "press release",
@@ -280,10 +280,10 @@
         "caption": "“Euphoria” by L3TA.",
         "logo": "assets/work/pr/logos/earmilk.png"
       },
-      "x": 32,
-      "y": 3,
-      "w": 24,
-      "r": 3
+      "x": 33,
+      "y": 10,
+      "w": 40,
+      "r": -3
     },
     {
       "tab": "press release",
@@ -304,10 +304,10 @@
         "caption": "L3TA, in Hot 97’s weekly new-music roundup.",
         "logo": "assets/work/pr/logos/hot97.png"
       },
-      "x": 40,
-      "y": 6,
-      "w": 24,
-      "r": -5
+      "x": 29,
+      "y": 8,
+      "w": 40,
+      "r": 3
     },
     {
       "tab": "press release",
@@ -328,10 +328,10 @@
         "caption": "Trill Ryan, whose latest single “For Real” is out now.",
         "logo": "assets/work/pr/logos/earmilk.png"
       },
-      "x": 36,
-      "y": 2,
-      "w": 24,
-      "r": 6
+      "x": 32,
+      "y": 6,
+      "w": 40,
+      "r": -1.5
     },
     {
       "tab": "press release",
@@ -352,10 +352,10 @@
         "caption": "Artists to watch in 2023, Trill Ryan among them.",
         "logo": "assets/work/pr/logos/laweekly.svg"
       },
-      "x": 43,
-      "y": 4,
-      "w": 24,
-      "r": -2
+      "x": 28,
+      "y": 5,
+      "w": 40,
+      "r": 2
     },
     {
       "tab": "press release",
@@ -376,10 +376,10 @@
         "caption": "“For Real” by Trill Ryan.",
         "logo": "assets/work/pr/logos/lyricallemonade.png"
       },
-      "x": 34,
-      "y": 5,
-      "w": 24,
-      "r": 2
+      "x": 31,
+      "y": 3,
+      "w": 40,
+      "r": -1
     },
     {
       "tab": "press release",
@@ -400,10 +400,10 @@
         "caption": "Trill Ryan.",
         "logo": "assets/work/pr/logos/hypefresh.png"
       },
-      "x": 38,
-      "y": 3,
-      "w": 24,
-      "r": -1
+      "x": 28,
+      "y": 2,
+      "w": 40,
+      "r": 0
     }
   ],
   "about": [

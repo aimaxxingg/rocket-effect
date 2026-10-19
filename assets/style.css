@@ -253,43 +253,63 @@ body.folder-open .hero { opacity: 0; }
 }
 @keyframes card-in { from { opacity: 0; translate: 0 24px; } }
 
-/* Press pieces: a newspaper page (white paper, colour print). Everything is sized in cqw of .news,
-   so the page scales with the card; on the board the small text is texture, in the detail it reads. */
+/* Press pieces: a folded broadsheet front page (white paper, colour print). Everything is sized in
+   cqw of .news, so the page scales with the card; on the board the small print is texture, in the
+   detail view it reads. */
 .news {
+  position: relative;
   display: block;
   container-type: inline-size;
-  aspect-ratio: 0.76;
+  aspect-ratio: 1.32;
   overflow: hidden;
   background: #fbfaf6;
   color: #1c1b19;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
   font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
   text-transform: none;
   letter-spacing: 0;
   text-align: left;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.14);
 }
 .news span { display: block; }
-.news .news-in { height: 100%; display: flex; flex-direction: column; padding: 5.5cqw 6cqw; }
-.news .news-top { display: flex; justify-content: space-between; font-size: 1.75cqw; letter-spacing: 0.14em; text-transform: uppercase; padding-bottom: 1.3cqw; border-bottom: 0.22cqw solid #2b2926; }
-.news-mast { font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 8.4cqw; line-height: 1; text-align: center; padding: 2.6cqw 0 2.2cqw; border-bottom: 0.8cqw solid #1c1b19; }
-.news-kicker { margin-top: 2.4cqw; color: #b3261e; font-size: 1.75cqw; letter-spacing: 0.22em; text-transform: uppercase; text-align: center; }
-.news-mast.logo { display: flex !important; align-items: center; justify-content: center; height: 14.5cqw; padding: 1.6cqw 0 2cqw; }
-.news-mast.logo img { display: block; max-width: 72%; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: none; }
-.news-head { margin: 1.2cqw 0 2cqw; font-family: "Playfair Display", Georgia, serif; font-weight: 800; font-size: 6.2cqw; line-height: 1.04; text-align: center; text-wrap: balance; }
-.news-head.long { font-size: 4.8cqw; }
-.news-by { padding: 1cqw 0; border-top: 0.16cqw solid #3a3835; border-bottom: 0.16cqw solid #3a3835; font-size: 1.7cqw; letter-spacing: 0.16em; text-transform: uppercase; text-align: center; }
-.news-photo { flex: none; height: 33cqw; margin-top: 2.4cqw; overflow: hidden; border: 0.16cqw solid #4a4845; }
+.news .news-in { height: 100%; display: flex; flex-direction: column; padding: 2.4cqw 3cqw 0; }
+.news .news-top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2cqw; padding-bottom: 0.9cqw; border-bottom: 0.32cqw solid #1c1b19; }
+.news-ear { justify-self: start; padding: 0.5cqw 0.8cqw; border: 0.1cqw solid #555; font-size: 0.85cqw; line-height: 1.3; letter-spacing: 0.1em; text-transform: uppercase; text-align: center; }
+.news-ear.right { justify-self: end; border: 0; font-size: 1cqw; }
+.news-mast { font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 5.2cqw; line-height: 1; text-align: center; }
+.news .news-mast.logo { display: flex; align-items: center; justify-content: center; height: 6.6cqw; }
+.news-mast.logo img { display: block; max-width: 34cqw; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: none; }
+.news .news-main { display: grid; grid-template-columns: 1.6fr 1fr; gap: 2.2cqw; margin-top: 0.45cqw; padding-top: 1.2cqw; border-top: 0.1cqw solid #1c1b19; }
+.news-photo { height: 30cqw; overflow: hidden; }
 .news .news-photo img { display: block; width: 100%; height: 100%; max-height: none; object-fit: cover; box-shadow: none; }
-.news-cap { margin: 0.8cqw 0 2cqw; font-size: 1.5cqw; font-style: italic; }
-.news-body { flex: 1; min-height: 0; overflow: hidden; column-count: 2; column-gap: 4cqw; column-rule: 0.16cqw solid #6a6865; font-size: 2.1cqw; line-height: 1.5; text-align: justify; hyphens: auto; }
-.news-p { margin-bottom: 1.2cqw; }
-.news-p:first-child::first-letter { float: left; padding: 0.5cqw 1cqw 0 0; font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 7cqw; line-height: 0.8; }
+.news .news-lead { display: flex; flex-direction: column; height: 30cqw; overflow: hidden; padding-left: 2.2cqw; border-left: 0.1cqw solid #8a8884; }
+.news-kicker { color: #b3261e; font-size: 0.9cqw; letter-spacing: 0.2em; text-transform: uppercase; text-align: center; }
+.news-head { margin: 0.6cqw 0 0.8cqw; font-family: "Playfair Display", Georgia, serif; font-weight: 800; font-style: italic; font-size: 2.9cqw; line-height: 1.06; text-align: center; text-wrap: balance; }
+.news-head.long { font-size: 2.2cqw; }
+.news-by { margin-bottom: 0.9cqw; font-size: 0.8cqw; letter-spacing: 0.14em; text-transform: uppercase; text-align: center; }
+.news-body { flex: 1; min-height: 0; overflow: hidden; font-size: 1.12cqw; line-height: 1.45; text-align: justify; hyphens: auto; }
+.news-p { margin-bottom: 0.7cqw; }
+.news-p:first-child::first-letter { float: left; padding: 0.3cqw 0.6cqw 0 0; font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 3.6cqw; line-height: 0.8; }
+.news-cap { margin-top: 0.5cqw; padding-bottom: 0.8cqw; border-bottom: 0.1cqw solid #1c1b19; font-size: 0.8cqw; font-style: italic; }
+.news .news-more { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.3fr 1fr 1fr 0.8fr; padding-top: 1cqw; overflow: hidden; }
+.news .news-story { display: flex; flex-direction: column; padding: 0 1.4cqw; border-left: 0.1cqw solid #8a8884; overflow: hidden; }
+/* a small photo at the foot of one story: colour that peeks out of the pile */
+.news .news-thumb { flex: none; height: 9cqw; margin-top: 0.8cqw; overflow: hidden; }
+.news .news-thumb img { display: block; width: 100%; height: 100%; max-height: none; object-fit: cover; box-shadow: none; }
+.news-story:first-child { padding-left: 0; border-left: 0; }
+.news-story-h { margin-bottom: 0.7cqw; font-family: "Playfair Display", Georgia, serif; font-weight: 800; font-size: 1.5cqw; line-height: 1.1; text-align: center; }
+/* the story text, drawn as lines of small print */
+.news .news-lines { flex: 1; min-height: 0; height: auto; background: repeating-linear-gradient(#a9a7a1 0 0.3cqw, transparent 0.3cqw 1.05cqw); opacity: 0.85; }
 .card.news-card .caption { display: none; }   /* the masthead already says where it ran */
-/* the pile: papers lie a little apart, the one underneath slightly shaded */
-.card.news-card .news { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 8px 22px rgba(0, 0, 0, 0.16); }
+/* in the pile: folded papers, a few sheets thick at their edges; the ones further down a touch darker */
+.card.news-card .news {
+  box-shadow:
+    0.5px 1px 0 #e8e6e0, 1px 2px 0 #fbfaf6, 1.5px 3px 0 #dfddd6, 2px 4px 0 #f5f4ef, 2.5px 5px 0 #d6d4cc,
+    3px 6px 0 rgba(0, 0, 0, 0.06), 0 10px 26px rgba(0, 0, 0, 0.16);
+}
+.card.news-card .news::after { content: ""; position: absolute; inset: 0; background: rgba(40, 38, 34, calc(var(--under, 0) * 0.012)); pointer-events: none; }
 .board-end { position: absolute; left: 0; width: 1px; height: 1px; }
 /* in the detail view the page is shown as large as the screen allows */
-.detail-media .news { width: min(100%, calc((100svh - 330px) * 0.76)); margin: 0 auto; }
+.detail-media .news { width: min(100%, calc((100svh - 300px) * 1.32)); margin: 0 auto; }
 
 /* Project detail page (inside the folder) */
 .detail {
