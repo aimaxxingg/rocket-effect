@@ -221,8 +221,8 @@ body.folder-open .hero { opacity: 0; }
   pointer-events: none;
   opacity: 0;
   transform: translateY(46px) scale(0.94);
-  transition: opacity 0.34s ease-in, transform 0.42s var(--ease);
-  transition-delay: calc(var(--z) * 22ms);
+  transition: opacity 0.2s ease-in, transform 0.28s var(--ease);
+  transition-delay: calc(var(--z) * 10ms);
 }
 /* a folder of newspapers scrolls as a whole (tabs included); a little room above for the tab's shadow,
    and the top fades out instead of a hard cut */
@@ -498,6 +498,10 @@ body.folder-open .hero { opacity: 0; }
     opacity: 0;
     transition: translate 0.5s var(--ease) calc(var(--d) * 0.05s), opacity 0.4s calc(var(--d) * 0.05s);
   }
+  /* going back to the stack: the folders in front wait until the open one's cards are tucked in,
+     so nothing seems to slide behind them */
+  .overlay.stack-anim .sfolder { transition-delay: calc(0.2s + var(--d, 0) * 0.05s); }
+  .overlay.stack-anim .to-stack { opacity: 0; transition: opacity 0.2s; }
   @keyframes sf-in { from { translate: 0 100vh; } }
   .stab { position: absolute; top: 0; height: calc(var(--u) * 51); }
   .stab .blobword {

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=44">
+  <link rel="stylesheet" href="assets/style.css?v=46">
 </head>
 <body>
   <header class="nav">
@@ -445,6 +445,8 @@
       closeDetail();
       clearTimeout(stackTimer);
       board.classList.add('tucking');
+      // a scrolled folder of papers rolls back to its top on the way, so its tab lands where the stack's is
+      if (folderEl.scrollTop) folderEl.scrollTo({ top: 0, behavior: 'smooth' });
       overlay.classList.add('stack-anim');
       const els = renderStack(), f = els[i];
       f.style.visibility = 'hidden';
@@ -460,6 +462,8 @@
         if (mode !== 'work') return;
         overlay.classList.replace('stack-anim', 'stacked');
         f.style.visibility = '';
+        // its papers ease in, rather than popping up as the open folder hands over to it
+        f.querySelectorAll('.sheet-peek').forEach((el) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' }));
         a.cancel();
       }).catch(() => {});
     }
