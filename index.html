@@ -8,8 +8,8 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=33">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
+  <link rel="stylesheet" href="assets/style.css?v=35">
 </head>
 <body>
   <header class="nav">
@@ -267,6 +267,12 @@
       return svg;
     }
 
+    // Width of a tab label. Its computed width can come back as "auto" in Safari while the page is
+    // re-laid out (e.g. on resize), which used to collapse every tab to nothing; fall back to its ratio.
+    function labelWidth(svg, h) {
+      const w = svg.getBoundingClientRect().width || parseFloat(getComputedStyle(svg).width);
+      return w > 0 ? w : parseFloat(svg.style.getPropertyValue('--ratio')) * h;
+    }
     function renderTabs(labels, active) {
       const side = sideTabs();
       folderEl.classList.toggle('side-tabs', side);
@@ -293,7 +299,7 @@
         return b;
       });
       // Natural width: label plus both sides; then spread across the folder like the photo.
-      const need = els.map((b) => Math.max(parseFloat(getComputedStyle(b.lastChild).width) / u + 2 * span + 26, 140));
+      const need = els.map((b) => Math.max(labelWidth(b.lastChild, u * (side || phone.matches ? 27 : 20)) / u + 2 * span + 26, 140));
       const sum = need.reduce((a, b) => a + b, 0);
       let overlap = MIN_OVERLAP, widths = need;
       const spare = len - (sum - overlap * (n - 1));
@@ -365,7 +371,7 @@
       stackEl.replaceChildren(...els);
       els.forEach((f, i) => {
         const t = f.lastChild;
-        const need = Math.max(parseFloat(getComputedStyle(t.lastChild).width) / u + 2 * span + 26, 140);
+        const need = Math.max(labelWidth(t.lastChild, u * 27) / u + 2 * span + 26, 140);
         const w = Math.round(Math.max(need, (W / u) * 0.36) * u);   // same width as the open folder's tab
         const x = n > 1 ? Math.round((i / (n - 1)) * (W - w)) : 0;
         stackX[tabs[i]] = x;
@@ -456,21 +462,52 @@
       }).catch(() => {});
     }
 
+    // Press pieces (projects with "news") are drawn as a newspaper page: white paper, colour print.
+    // Spans only, since it sits inside a button. Sizes are in cqw of .news, so it scales with the card.
+    const paragraphs = (text) => String(text || '').split(/\n\s*\n/).filter(Boolean);
+    function newsPage(p) {
+      const n = p.news;
+      return `<span class="news"><span class="news-in">
+        <span class="news-top"><span>music &amp; culture</span><span>${esc(n.date)}</span></span>
+        <span class="news-mast">${esc(n.outlet)}</span>
+        <span class="news-kicker">${esc(n.kicker)}</span>
+        <span class="news-head${p.title.length > 70 ? ' long' : ''}">${esc(p.title)}</span>
+        <span class="news-by">by ${esc(n.byline)}</span>
+        <span class="news-photo"><img src="${esc(p.img)}" alt="" draggable="false"></span>
+        <span class="news-cap">${esc(n.caption)}</span>
+        <span class="news-body">${paragraphs(p.text).map((t) => `<span class="news-p">${esc(t)}</span>`).join('')}</span>
+      </span></span>`;
+    }
+
     function renderBoard(tab) {
       const narrow = matchMedia('(max-width: 640px)').matches;
-      board.replaceChildren(...projects.filter((p) => p.tab === tab).map((p, i) => {
+      // phones: the cards run down the sheet (it scrolls when there are many)
+      const H = document.getElementById('sheet').clientHeight || innerHeight * 0.8, step = H * 0.26;
+      const list = projects.filter((p) => p.tab === tab);
+      const cards = list.map((p, i) => {
         const card = document.createElement('button');
         card.type = 'button';
-        card.className = 'card';
-        // On phones keep the freeform pile, just bigger cards stacked down the sheet.
-        const pos = narrow ? { x: i % 2 ? 28 : 5, y: 5 + i * 26, w: 66 } : p;
-        card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${p.r}; --z:${i + 1}`;
+        card.className = 'card' + (p.news ? ' news-card' : '');
+        const pos = narrow ? { x: i % 2 ? 28 : 5, y: 0, w: 66 } : p;
+        card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${p.r}; --z:${i + 1}` +
+          (narrow ? `; top:${Math.round(H * 0.05 + i * step)}px` : '');
         card.setAttribute('aria-label', p.title);
-        card.innerHTML = `<img src="${esc(p.img)}" alt="" draggable="false"><span class="caption">${esc(p.title)}</span>`;
+        card.innerHTML = p.news
+          ? `${newsPage(p)}<span class="caption">${esc(p.news.outlet)}</span>`
+          : `<img src="${esc(p.img)}" alt="" draggable="false"><span class="caption">${esc(p.title)}</span>`;
         card.project = p;
         makeDraggable(card);
         return card;
-      }));
+      });
+      if (narrow && list.length) {
+        // room below the last card, so it can be scrolled fully into view
+        const end = document.createElement('span');
+        end.className = 'board-end';
+        end.style.top = Math.round(H * 0.05 + (list.length - 1) * step + board.clientWidth * 0.66 * 1.4 + 40) + 'px';
+        cards.push(end);
+      }
+      board.replaceChildren(...cards);
+      board.scrollTop = 0;
     }
 
     function showWork(tab = activeTab) {
@@ -519,11 +556,11 @@
     function openDetail(p) {
       detail.innerHTML = `
         <button class="back" type="button" aria-label="back"></button>
-        <div class="detail-media"><img src="${esc(p.img)}" alt="${esc(p.title)}"></div>
+        <div class="detail-media">${p.news ? newsPage(p) : `<img src="${esc(p.img)}" alt="${esc(p.title)}">`}</div>
         <div class="detail-info">
           <p class="meta">${esc(p.tab)} · ${esc(p.client)} · ${esc(p.year)}</p>
           <h2>${esc(p.title)}</h2>
-          <p>${esc(p.text)}</p>
+          ${paragraphs(p.text).map((t) => `<p>${esc(t)}</p>`).join('')}
           ${p.link?.href ? `<a class="detail-link" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label || 'link')} ↗</a>` : ''}
         </div>`;
       detail.querySelector('.back').appendChild(word('back'));

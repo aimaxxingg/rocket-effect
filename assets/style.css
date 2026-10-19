@@ -253,6 +253,40 @@ body.folder-open .hero { opacity: 0; }
 }
 @keyframes card-in { from { opacity: 0; translate: 0 24px; } }
 
+/* Press pieces: a newspaper page (white paper, colour print). Everything is sized in cqw of .news,
+   so the page scales with the card; on the board the small text is texture, in the detail it reads. */
+.news {
+  display: block;
+  container-type: inline-size;
+  aspect-ratio: 0.76;
+  overflow: hidden;
+  background: #fbfaf6;
+  color: #1c1b19;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+  text-transform: none;
+  letter-spacing: 0;
+  text-align: left;
+}
+.news span { display: block; }
+.news .news-in { height: 100%; display: flex; flex-direction: column; padding: 5.5cqw 6cqw; }
+.news .news-top { display: flex; justify-content: space-between; font-size: 1.75cqw; letter-spacing: 0.14em; text-transform: uppercase; padding-bottom: 1.3cqw; border-bottom: 0.22cqw solid #2b2926; }
+.news-mast { font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 8.4cqw; line-height: 1; text-align: center; padding: 2.6cqw 0 2.2cqw; border-bottom: 0.8cqw solid #1c1b19; }
+.news-kicker { margin-top: 2.4cqw; color: #b3261e; font-size: 1.75cqw; letter-spacing: 0.22em; text-transform: uppercase; text-align: center; }
+.news-head { margin: 1.2cqw 0 2cqw; font-family: "Playfair Display", Georgia, serif; font-weight: 800; font-size: 6.2cqw; line-height: 1.04; text-align: center; text-wrap: balance; }
+.news-head.long { font-size: 4.8cqw; }
+.news-by { padding: 1cqw 0; border-top: 0.16cqw solid #3a3835; border-bottom: 0.16cqw solid #3a3835; font-size: 1.7cqw; letter-spacing: 0.16em; text-transform: uppercase; text-align: center; }
+.news-photo { flex: none; height: 33cqw; margin-top: 2.4cqw; overflow: hidden; border: 0.16cqw solid #4a4845; }
+.news .news-photo img { display: block; width: 100%; height: 100%; max-height: none; object-fit: cover; box-shadow: none; }
+.news-cap { margin: 0.8cqw 0 2cqw; font-size: 1.5cqw; font-style: italic; }
+.news-body { flex: 1; min-height: 0; overflow: hidden; column-count: 2; column-gap: 4cqw; column-rule: 0.16cqw solid #6a6865; font-size: 2.1cqw; line-height: 1.5; text-align: justify; hyphens: auto; }
+.news-p { margin-bottom: 1.2cqw; }
+.news-p:first-child::first-letter { float: left; padding: 0.5cqw 1cqw 0 0; font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 7cqw; line-height: 0.8; }
+.card.news-card .caption { text-transform: none; }
+.board-end { position: absolute; left: 0; width: 1px; height: 1px; }
+/* in the detail view the page is shown as large as the screen allows */
+.detail-media .news { width: min(100%, calc((100svh - 230px) * 0.76)); margin: 0 auto; }
+
 /* Project detail page (inside the folder) */
 .detail {
   position: absolute;
@@ -443,6 +477,10 @@ body.folder-open .hero { opacity: 0; }
   .folder.side-tabs .tab:not(.active) .blobword { opacity: 0.8; }
   .folder.side-tabs .sheet { margin-left: calc(var(--u) * 51); box-shadow: 0.5px 0 1px rgba(30, 38, 36, 0.22); }
   .board.dimmed { display: none; }
+  /* a folder with many cards scrolls; cards can still be dragged sideways */
+  .board { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+  .card { touch-action: pan-y; }
+  .detail-media .news { width: 100%; }
   .sheet:has(.detail:not([hidden])) { overflow: auto; }
   .detail { position: relative; grid-template-columns: 1fr; padding: 56px 18px 40px; gap: 22px; }
   /* the folder runs on past the bottom of the screen (and under Safari's toolbar): keep the credit in view */

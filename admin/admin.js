@@ -292,6 +292,7 @@ pform.addEventListener('submit', (e) => {
   const n = content.projects.filter((p) => p.tab === f.tab.value).length;
   const pos = tabSame ? { x: prev.x, y: prev.y, w: prev.w, r: prev.r } : { x: 6 + (n * 23) % 66, y: 8 + (n * 17) % 50, w: 30, r: [-2, 1.5, -1, 2.5][n % 4] };
   const p = {
+    ...(prev || {}),   // keep fields the form doesn't show (e.g. "news" on press pieces)
     tab: f.tab.value,
     img: editImg || PROTECTED_IMAGES[0],
     title: f.title.value.trim(),
@@ -301,6 +302,7 @@ pform.addEventListener('submit', (e) => {
     ...(f.linkHref.value.trim() ? { link: { href: f.linkHref.value.trim(), label: f.linkLabel.value.trim() || 'link' } } : {}),
     ...pos,
   };
+  if (!f.linkHref.value.trim()) delete p.link;
   if (editing >= 0) content.projects[editing] = p; else content.projects.push(p);
   dlg.close();
   changed(); renderProjects();
