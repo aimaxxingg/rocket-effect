@@ -215,6 +215,15 @@ body.folder-open .hero { opacity: 0; }
 /* Cards: freeform, draggable */
 .board { position: absolute; inset: 0; transition: opacity 0.3s, filter 0.3s; }
 .board.dimmed { opacity: 0.25; filter: blur(2px); pointer-events: none; }
+/* closing a folder: the cards slip down into it and fade, one after another, instead of vanishing */
+.board.tucking .card {
+  animation: none;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(46px) scale(0.94);
+  transition: opacity 0.34s ease-in, transform 0.42s var(--ease);
+  transition-delay: calc(var(--z) * 22ms);
+}
 /* a folder of newspapers scrolls as a whole (tabs included); a little room above for the tab's shadow,
    and the top fades out instead of a hard cut */
 .folder.scrolly {
@@ -366,9 +375,9 @@ body.folder-open .hero { opacity: 0; }
 }
 .detail.in { opacity: 1; translate: 0 0; }
 .detail-media img { width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block; box-shadow: 0 14px 40px rgba(0,0,0,0.2); }
-.detail-info { align-self: end; text-transform: lowercase; font-family: Thermochrome, "Inter Tight", "Helvetica Neue", Arial, sans-serif; font-weight: 400; }
-.detail-info h2, .detail-info p { letter-spacing: 0; }
-.detail-info p { font-size: 15px; line-height: 1.5; }
+.detail-info { align-self: end; text-transform: lowercase; }
+/* the title in the Rocket Effect typeface; the text stays in the plain, readable face */
+.detail-info h2 { font-family: Thermochrome, "Inter Tight", "Helvetica Neue", Arial, sans-serif; font-weight: 400; letter-spacing: 0; }
 .detail-info .meta { font-size: 13px; font-weight: 600; opacity: 0.6; margin-bottom: 10px; }
 .detail-info h2 { font-size: clamp(28px, 3.4vw, 54px); font-weight: 700; letter-spacing: -0.06em; line-height: 0.95; margin-bottom: 18px; }
 .detail-info p { font-size: 17px; line-height: 1.4; letter-spacing: -0.02em; max-width: 42ch; }

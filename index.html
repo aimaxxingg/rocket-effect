@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=43">
+  <link rel="stylesheet" href="assets/style.css?v=44">
 </head>
 <body>
   <header class="nav">
@@ -444,6 +444,7 @@
       const i = tabs.indexOf(activeTab);
       closeDetail();
       clearTimeout(stackTimer);
+      board.classList.add('tucking');
       overlay.classList.add('stack-anim');
       const els = renderStack(), f = els[i];
       f.style.visibility = 'hidden';
@@ -513,6 +514,7 @@
 
     function renderBoard(tab) {
       const narrow = matchMedia('(max-width: 640px)').matches;
+      board.classList.remove('tucking');
       setScrolly(0);
       // phones: the cards run down the sheet (it scrolls when there are many)
       const H = sheetEl.clientHeight || innerHeight * 0.8, step = H * 0.26;
@@ -593,6 +595,7 @@
     function close() {
       if (!mode) return;
       mode = null;
+      board.classList.add('tucking');
       overlay.classList.remove('open');
       overlay.classList.add('closing');
       document.body.classList.remove('folder-open');
