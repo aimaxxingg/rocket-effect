@@ -102,6 +102,32 @@ async function loadLibrary() {
 }
 
 // One commit: new images + content.json (+ optional removal of unused images).
+// Three-way merge: my changes (mine vs base) applied on top of what is published now (remote), so
+// work done elsewhere in the meantime (another tab, another person, a code update) is not lost.
+// Projects are matched by their image; a project I didn't touch takes the remote version.
+function mergeContent(base, mine, remote) {
+  const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const key = (p) => p.img || p.title;
+  const out = { ...remote };
+  for (const k of Object.keys(mine)) if (k !== 'projects' && !same(mine[k], base[k])) out[k] = mine[k];
+  const B = new Map(base.projects.map((p) => [key(p), p]));
+  const R = new Map(remote.projects.map((p) => [key(p), p]));
+  const M = new Map(mine.projects.map((p) => [key(p), p]));
+  const list = [];
+  for (const p of mine.projects) {
+    const k = key(p), b = B.get(k);
+    if (!b) { list.push(p); continue; }                 // added here
+    if (!same(p, b)) { list.push(p); continue; }        // edited here: mine wins
+    if (R.has(k)) list.push(R.get(k));                  // untouched here: take the published one
+  }                                                     // (untouched here and removed there: drop)
+  for (const p of remote.projects) {
+    const k = key(p);
+    if (!B.has(k) && !M.has(k)) list.push(p);           // added elsewhere
+  }
+  out.projects = list;
+  return out;
+}
+
 async function publish() {
   const btn = $('#btn-publish');
   btn.disabled = true;
@@ -109,8 +135,15 @@ async function publish() {
   try {
     // someone else (or another tab) published since we loaded?
     const now = await gh(`contents/content.json?ref=${encodeURIComponent(conn.branch)}`).catch((e) => (e.status === 404 ? null : Promise.reject(e)));
-    if (now && remoteSha && now.sha !== remoteSha &&
-        !confirm('The site content was changed elsewhere since you opened the panel. Overwrite it with your changes?')) return;
+    if (now && now.sha !== remoteSha) {
+      // changed elsewhere since we loaded: keep those changes and put ours on top
+      const remote = normalize(JSON.parse(b64ToUtf8(now.content)));
+      content = normalize(mergeContent(JSON.parse(baseJSON), content, remote));
+      baseJSON = json(remote);
+      remoteSha = now.sha;
+      renderAll();
+      toast('The site was changed elsewhere meanwhile; those changes were kept and yours added on top.', false, 6000);
+    }
 
     const ref = await gh(`git/ref/heads/${encodeURIComponent(conn.branch)}`);
     const head = await gh(`git/commits/${ref.object.sha}`);
@@ -795,8 +828,9 @@ async function reloadFromRemote(keepWork) {
   const remote = normalize(r.content);
   remoteSha = r.sha;
   const work = keepWork && content && dirty() ? content : null;
+  const oldBase = baseJSON;
   baseJSON = json(remote);
-  content = work || remote;
+  content = work && oldBase ? normalize(mergeContent(JSON.parse(oldBase), work, remote)) : work || remote;
   await loadLibrary();
   renderAll();
 }
@@ -813,7 +847,10 @@ async function openApp() {
     const s = JSON.parse(localStorage.getItem(STATE_KEY));
     if (s && (json(s.content) !== baseJSON || Object.keys(s.pending || {}).length)) {
       if (confirm('Found unpublished changes from last time. Keep them?')) {
-        content = normalize(s.content);
+        // the draft was made on an older version: apply only its changes onto what is published now
+        content = s.baseJSON && s.baseJSON !== baseJSON
+          ? normalize(mergeContent(JSON.parse(s.baseJSON), s.content, JSON.parse(baseJSON)))
+          : normalize(s.content);
         pending = s.pending || {};
         await loadLibrary();
         renderAll();
