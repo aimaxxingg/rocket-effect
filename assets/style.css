@@ -215,7 +215,17 @@ body.folder-open .hero { opacity: 0; }
 /* Cards: freeform, draggable */
 .board { position: absolute; inset: 0; transition: opacity 0.3s, filter 0.3s; }
 .board.dimmed { opacity: 0.25; filter: blur(2px); pointer-events: none; }
-.board.papers { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) transparent; }
+/* a folder of newspapers scrolls as a whole (tabs included); a little room above for the tab's shadow,
+   and the top fades out instead of a hard cut */
+.folder.scrolly {
+  overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: none;
+  height: calc(100svh - 76px); padding-top: 24px;
+  -webkit-mask-image: linear-gradient(transparent, #000 34px); mask-image: linear-gradient(transparent, #000 34px);
+}
+.folder.scrolly::-webkit-scrollbar { display: none; }
+.folder.scrolly .tabs, .folder.scrolly .sheet { flex: none; }
+.folder.scrolly .board { overflow: visible; }
 .board.papers .card { touch-action: pan-y; }
 .card {
   position: absolute;
@@ -311,7 +321,7 @@ body.folder-open .hero { opacity: 0; }
 .card.news-card .news {
   box-shadow:
     0.5px 1px 0 #e3e1da, 1px 2px 0 #f5f4ef, 1.5px 3px 0 #dad8d0, 2px 4px 0 #eeede7, 2.5px 5px 0 #d1cfc7,
-    3px 6px 0 rgba(0, 0, 0, 0.06), 0 10px 26px rgba(0, 0, 0, 0.16);
+    3px 6px 0 rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.12), 0 22px 40px -8px rgba(0, 0, 0, 0.32);
 }
 .board-end { position: absolute; left: 0; width: 1px; height: 1px; }
 /* in the detail view the page is shown as large as the screen allows */
@@ -407,6 +417,7 @@ body.folder-open .hero { opacity: 0; }
   .hero-word.w2 { top: 50vh; right: 5vw; }
   /* edge to edge, and on past the bottom of the screen (Safari's toolbar floats over it) */
   .folder { width: 100vw; top: 64px; bottom: auto; height: calc(100vh - 30px); height: calc(100lvh - 30px); }
+  .folder.scrolly { top: 40px; height: calc(100lvh - 6px); }
   .folder .tab .blobword { height: calc(var(--u) * 27); top: calc(var(--u) * 13); }
   .folder { transform-origin: 50% 0; }
   .overlay.open .folder.flip { animation: none; opacity: 1; transform: none; }

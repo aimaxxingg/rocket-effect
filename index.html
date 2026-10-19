@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=41">
+  <link rel="stylesheet" href="assets/style.css?v=42">
 </head>
 <body>
   <header class="nav">
@@ -495,10 +495,26 @@
       </span></span>`;
     }
 
+    // A folder of newspapers scrolls as a whole: the tabs and the sheet's top edge go up with the
+    // papers (the sheet is made as tall as its papers and the folder itself scrolls).
+    const sheetEl = document.getElementById('sheet');
+    let paperScroll = 0;
+    function setScrolly(end) {
+      folderEl.classList.remove('scrolly');
+      sheetEl.style.height = '';
+      if (end > 0) {
+        const fill = sheetEl.clientHeight;   // as tall as the folder's normal sheet, at least
+        folderEl.classList.add('scrolly');
+        sheetEl.style.height = Math.max(end, fill) + 'px';
+      }
+      folderEl.scrollTop = 0;
+    }
+
     function renderBoard(tab) {
       const narrow = matchMedia('(max-width: 640px)').matches;
+      setScrolly(0);
       // phones: the cards run down the sheet (it scrolls when there are many)
-      const H = document.getElementById('sheet').clientHeight || innerHeight * 0.8, step = H * 0.26;
+      const H = sheetEl.clientHeight || innerHeight * 0.8, step = H * 0.26;
       const list = projects.filter((p) => p.tab === tab);
       // newspapers are laid out down the folder, overlapping a little, and the folder scrolls:
       // two staggered columns on desktop, one column on phones
@@ -532,12 +548,13 @@
         // room below the last card, so it can be scrolled fully into view
         const end = document.createElement('span');
         end.className = 'board-end';
-        end.style.top = Math.round(papers ? paperAt(list.length - 1).top + ph + 60
+        end.style.top = Math.round(papers ? paperAt(list.length - 1).top + ph
           : H * 0.05 + (list.length - 1) * step + board.clientWidth * 0.66 * 1.4 + 40) + 'px';
         cards.push(end);
       }
       board.replaceChildren(...cards);
       board.scrollTop = 0;
+      if (papers) setScrolly(paperAt(list.length - 1).top + ph + 60);
     }
 
     function showWork(tab = activeTab) {
@@ -594,6 +611,13 @@
           ${p.link?.href ? `<a class="detail-link" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label || 'link')} ↗</a>` : ''}
         </div>`;
       detail.querySelector('.back').appendChild(word('back'));
+      // the detail fills the folder as usual: leave the scrolling layout while it is open
+      if (folderEl.classList.contains('scrolly')) {
+        paperScroll = folderEl.scrollTop;
+        folderEl.classList.remove('scrolly');
+        folderEl.dataset.paperH = sheetEl.style.height;
+        sheetEl.style.height = '';
+      }
       detail.hidden = false;
       board.classList.add('dimmed');
       requestAnimationFrame(() => detail.classList.add('in'));
@@ -602,6 +626,12 @@
       detail.classList.remove('in');
       detail.hidden = true;
       board.classList.remove('dimmed');
+      if (folderEl.dataset.paperH) {
+        folderEl.classList.add('scrolly');
+        sheetEl.style.height = folderEl.dataset.paperH;
+        delete folderEl.dataset.paperH;
+        folderEl.scrollTop = paperScroll;
+      }
     }
 
     // --- Clicks ---------------------------------------------------------------
