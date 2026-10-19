@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=39">
+  <link rel="stylesheet" href="assets/style.css?v=40">
 </head>
 <body>
   <header class="nav">
@@ -505,8 +505,8 @@
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'card' + (p.news ? ' news-card' : '');
-        const pos = !narrow ? p : pile ? { x: 5 + (p.x - 28) * 0.7, y: 0, w: 88 } : { x: i % 2 ? 28 : 5, y: 0, w: 66 };
-        const top = pile ? H * 0.04 + (p.y - 2) * H * 0.018 : H * 0.05 + i * step;
+        const pos = !narrow ? p : pile ? { x: 13 + (p.x - 28) * 0.6, y: 0, w: 72 } : { x: i % 2 ? 28 : 5, y: 0, w: 66 };
+        const top = pile ? H * 0.06 + (p.y - 2) * H * 0.014 : H * 0.05 + i * step;
         card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${p.r}; --z:${i + 1}; --under:${list.length - 1 - i}` +
           (narrow ? `; top:${Math.round(top)}px` : '');
         card.setAttribute('aria-label', p.title);
