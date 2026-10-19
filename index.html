@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=35">
+  <link rel="stylesheet" href="assets/style.css?v=37">
 </head>
 <body>
   <header class="nav">
@@ -469,7 +469,8 @@
       const n = p.news;
       return `<span class="news"><span class="news-in">
         <span class="news-top"><span>music &amp; culture</span><span>${esc(n.date)}</span></span>
-        <span class="news-mast">${esc(n.outlet)}</span>
+        ${n.logo ? `<span class="news-mast logo"><img src="${esc(n.logo)}" alt="${esc(n.outlet)}" draggable="false"></span>`
+          : `<span class="news-mast">${esc(n.outlet)}</span>`}
         <span class="news-kicker">${esc(n.kicker)}</span>
         <span class="news-head${p.title.length > 70 ? ' long' : ''}">${esc(p.title)}</span>
         <span class="news-by">by ${esc(n.byline)}</span>
@@ -484,13 +485,15 @@
       // phones: the cards run down the sheet (it scrolls when there are many)
       const H = document.getElementById('sheet').clientHeight || innerHeight * 0.8, step = H * 0.26;
       const list = projects.filter((p) => p.tab === tab);
+      const pile = list.length > 0 && list.every((p) => p.news);   // newspapers lie in a pile
       const cards = list.map((p, i) => {
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'card' + (p.news ? ' news-card' : '');
-        const pos = narrow ? { x: i % 2 ? 28 : 5, y: 0, w: 66 } : p;
+        const pos = !narrow ? p : pile ? { x: 12 + (p.x - 38) * 0.9, y: 0, w: 76 } : { x: i % 2 ? 28 : 5, y: 0, w: 66 };
+        const top = pile ? H * 0.03 + (p.y - 2) * H * 0.012 : H * 0.05 + i * step;
         card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${p.r}; --z:${i + 1}` +
-          (narrow ? `; top:${Math.round(H * 0.05 + i * step)}px` : '');
+          (narrow ? `; top:${Math.round(top)}px` : '');
         card.setAttribute('aria-label', p.title);
         card.innerHTML = p.news
           ? `${newsPage(p)}<span class="caption">${esc(p.news.outlet)}</span>`
@@ -499,7 +502,7 @@
         makeDraggable(card);
         return card;
       });
-      if (narrow && list.length) {
+      if (narrow && list.length && !pile) {
         // room below the last card, so it can be scrolled fully into view
         const end = document.createElement('span');
         end.className = 'board-end';

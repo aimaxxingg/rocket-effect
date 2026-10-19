@@ -56,23 +56,7 @@
   ],
   "projects": [
     {
-      "tab": "press release",
-      "img": "assets/work/trill-ryan-hypefresh-mvfmbjbm.jpg",
-      "title": "Trill Ryan -  HYPEFRESH",
-      "client": "Trill Ryan",
-      "year": "2023",
-      "text": "Project description goes here: the brief, what we did and the results.",
-      "link": {
-        "href": "https://www.hypefresh.com/trill-ryan-releases-new-single-she-gon-go/?fbclid=PAZXh0bgNhZW0CMTEAcGRvZgRzcnRjBmFwcF9pZAwyNTYyODEwNDA1NTgAAaddMsmdy6ovTv5ULlbrysOhrKWRqWOSYUY8z1YnP7dVyR6BHQuHwopNmr-RYQ_aem_0O60BpOP_mwyYVO6UgKNfA",
-        "label": "link"
-      },
-      "x": 6,
-      "y": 10,
-      "w": 34,
-      "r": -3
-    },
-    {
-      "tab": "press release",
+      "tab": "pr",
       "img": "assets/work/placeholder.png",
       "title": "Project two",
       "client": "Client",
@@ -84,7 +68,7 @@
       "r": 2
     },
     {
-      "tab": "press release",
+      "tab": "pr",
       "img": "assets/work/placeholder.png",
       "title": "Project three",
       "client": "Client",
@@ -184,7 +168,7 @@
       "r": 2
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/wavee-hiphopdose.jpg",
       "title": "Brooklyn’s Wavee Delivers Real-Life Energy And Raw Storytelling On “Afties”",
       "client": "Wavee",
@@ -199,15 +183,16 @@
         "kicker": "Music",
         "date": "June 1, 2026",
         "byline": "minneetellsitall",
-        "caption": "Wavee, whose single “Afties” is out now."
+        "caption": "Wavee, whose single “Afties” is out now.",
+        "logo": "assets/work/pr/logos/hiphopdose.png"
       },
-      "x": 3,
-      "y": 1,
-      "w": 17,
-      "r": -3
+      "x": 33,
+      "y": 9,
+      "w": 24,
+      "r": -7
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/wavee-rollinghype.jpg",
       "title": "Wavee Elevates Brooklyn Sound With A Global Vision, Led by His Latest Release and Standout Single “Afties”",
       "client": "Wavee",
@@ -222,15 +207,16 @@
         "kicker": "Music",
         "date": "May 29, 2026",
         "byline": "Minnee Martinez",
-        "caption": "Brooklyn’s Wavee."
+        "caption": "Brooklyn’s Wavee.",
+        "logo": "assets/work/pr/logos/rollinghype.svg"
       },
-      "x": 22,
-      "y": 4,
-      "w": 17,
-      "r": 2
+      "x": 42,
+      "y": 7,
+      "w": 24,
+      "r": 5
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/trilla-thesource.jpg",
       "title": "Trilla FOREVER: Bridging East Coast Nostalgia with West Coast Waves",
       "client": "NellzSoTrilla",
@@ -247,13 +233,13 @@
         "byline": "DN News Desk",
         "caption": "NellzSoTrilla under the Space Needle, Seattle."
       },
-      "x": 41,
-      "y": 0,
-      "w": 17,
-      "r": -1.5
+      "x": 35,
+      "y": 5,
+      "w": 24,
+      "r": -3
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/l3ta-thesource.jpg",
       "title": "L3TA Is Bridging Hip-Hop Culture And Dance Music With A Global Vision",
       "client": "L3TA",
@@ -270,13 +256,13 @@
         "byline": "Shawn Grant",
         "caption": "L3TA, whose new single “Euphoria” is out now."
       },
-      "x": 60,
-      "y": 5,
-      "w": 17,
-      "r": 2.5
+      "x": 44,
+      "y": 8,
+      "w": 24,
+      "r": 8
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/l3ta-euphoria-cover.jpg",
       "title": "L3TA shares energizing new single “Euphoria”",
       "client": "L3TA",
@@ -291,15 +277,16 @@
         "kicker": "Electronic · House",
         "date": "March 24, 2026",
         "byline": "Jacob Saltzberg",
-        "caption": "“Euphoria” by L3TA."
+        "caption": "“Euphoria” by L3TA.",
+        "logo": "assets/work/pr/logos/earmilk.png"
       },
-      "x": 79,
-      "y": 1,
-      "w": 17,
-      "r": -2
+      "x": 32,
+      "y": 3,
+      "w": 24,
+      "r": 3
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/l3ta-closeup.jpg",
       "title": "Afroman, Nas, Cleotrapa, Hotboii, DaniLeigh, Ludacris + MORE New Music You Might Have Missed This Week",
       "client": "L3TA",
@@ -314,15 +301,16 @@
         "kicker": "New Music",
         "date": "March 19, 2026",
         "byline": "Bryson “Boom” Paul",
-        "caption": "L3TA, in Hot 97’s weekly new-music roundup."
+        "caption": "L3TA, in Hot 97’s weekly new-music roundup.",
+        "logo": "assets/work/pr/logos/hot97.png"
       },
-      "x": 10,
-      "y": 36,
-      "w": 17,
-      "r": 1.5
+      "x": 40,
+      "y": 6,
+      "w": 24,
+      "r": -5
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/trillryan-earmilk.jpg",
       "title": "Trill Ryan is “For Real” on new single",
       "client": "Trill Ryan",
@@ -337,15 +325,16 @@
         "kicker": "Hip-Hop · Pop",
         "date": "January 29, 2023",
         "byline": "Jacob Saltzberg",
-        "caption": "Trill Ryan, whose latest single “For Real” is out now."
+        "caption": "Trill Ryan, whose latest single “For Real” is out now.",
+        "logo": "assets/work/pr/logos/earmilk.png"
       },
-      "x": 29,
-      "y": 39,
-      "w": 17,
-      "r": -2.5
+      "x": 36,
+      "y": 2,
+      "w": 24,
+      "r": 6
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/top-talent-laweekly.jpg",
       "title": "Top Talent to Follow in 2023",
       "client": "Trill Ryan",
@@ -360,15 +349,16 @@
         "kicker": "Music",
         "date": "January 27, 2023",
         "byline": "In partnership with ICY Network",
-        "caption": "Artists to watch in 2023, Trill Ryan among them."
+        "caption": "Artists to watch in 2023, Trill Ryan among them.",
+        "logo": "assets/work/pr/logos/laweekly.svg"
       },
-      "x": 48,
-      "y": 35,
-      "w": 17,
-      "r": 1
+      "x": 43,
+      "y": 4,
+      "w": 24,
+      "r": -2
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/trillryan-forreal-cover.jpg",
       "title": "Trill Ryan – “For Real”",
       "client": "Trill Ryan",
@@ -383,15 +373,16 @@
         "kicker": "Songs",
         "date": "2023",
         "byline": "Tobbylola",
-        "caption": "“For Real” by Trill Ryan."
+        "caption": "“For Real” by Trill Ryan.",
+        "logo": "assets/work/pr/logos/lyricallemonade.png"
       },
-      "x": 66,
-      "y": 39,
-      "w": 17,
-      "r": -1
+      "x": 34,
+      "y": 5,
+      "w": 24,
+      "r": 2
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/pr/trillryan-hypefresh.jpg",
       "title": "Trill Ryan Releases New Single “She Gon Go”",
       "client": "Trill Ryan",
@@ -406,12 +397,13 @@
         "kicker": "Hip Hop",
         "date": "July 5, 2023",
         "byline": "Bryson “Boom” Paul",
-        "caption": "Trill Ryan."
+        "caption": "Trill Ryan.",
+        "logo": "assets/work/pr/logos/hypefresh.png"
       },
-      "x": 82,
-      "y": 36,
-      "w": 17,
-      "r": 3
+      "x": 38,
+      "y": 3,
+      "w": 24,
+      "r": -1
     }
   ],
   "about": [
