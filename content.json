@@ -56,7 +56,23 @@
   ],
   "projects": [
     {
-      "tab": "pr",
+      "tab": "press release",
+      "img": "assets/work/trill-ryan-hypefresh-mvfmbjbm.jpg",
+      "title": "Trill Ryan -  HYPEFRESH",
+      "client": "Trill Ryan",
+      "year": "2023",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "link": {
+        "href": "https://www.hypefresh.com/trill-ryan-releases-new-single-she-gon-go/?fbclid=PAZXh0bgNhZW0CMTEAcGRvZgRzcnRjBmFwcF9pZAwyNTYyODEwNDA1NTgAAaddMsmdy6ovTv5ULlbrysOhrKWRqWOSYUY8z1YnP7dVyR6BHQuHwopNmr-RYQ_aem_0O60BpOP_mwyYVO6UgKNfA",
+        "label": "link"
+      },
+      "x": 6,
+      "y": 10,
+      "w": 34,
+      "r": -3
+    },
+    {
+      "tab": "press release",
       "img": "assets/work/placeholder.png",
       "title": "Project two",
       "client": "Client",
@@ -68,7 +84,7 @@
       "r": 2
     },
     {
-      "tab": "pr",
+      "tab": "press release",
       "img": "assets/work/placeholder.png",
       "title": "Project three",
       "client": "Client",
@@ -105,11 +121,15 @@
     },
     {
       "tab": "content seeding",
-      "img": "assets/work/placeholder.png",
-      "title": "Project six",
+      "img": "assets/work/project-six-mvfpf0aw.jpg",
+      "title": "LinkUpTv - Press Machine II",
       "client": "Client",
-      "year": "2026",
-      "text": "Project description goes here: the brief, what we did and the results.",
+      "year": "2025",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DSKgOXrglZN/?img_index=5",
+        "label": "Instagram"
+      },
       "x": 8,
       "y": 8,
       "w": 32,
@@ -117,11 +137,15 @@
     },
     {
       "tab": "content seeding",
-      "img": "assets/work/placeholder.png",
-      "title": "Project seven",
+      "img": "assets/work/here-s-whats-dropping-tonight-who-gettin-mvfp72ml.jpg",
+      "title": "MyMixtapez - Press Machine II",
       "client": "Client",
-      "year": "2026",
-      "text": "Project description goes here: the brief, what we did and the results.",
+      "year": "2025",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DR233hvEVB9/?img_index=2",
+        "label": "Instagram"
+      },
       "x": 40,
       "y": 20,
       "w": 32,
@@ -129,13 +153,145 @@
     },
     {
       "tab": "content seeding",
-      "img": "assets/work/placeholder.png",
-      "title": "Project eight",
+      "img": "assets/work/project-eight-mvfp452b.jpg",
+      "title": "KidsTakeOver - Press Machine II",
       "client": "Client",
       "year": "2025",
-      "text": "Project description goes here: the brief, what we did and the results.",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DR2phLRE0m1/?utm_source=ig_web_copy_link&mdxt=NTc4MTIwNjQ2YQ==",
+        "label": "Instagram"
+      },
       "x": 62,
       "y": 46,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/kidstakeover-press-machine-ii-copy-mvfpiw10.jpg",
+      "title": "Kollege Kidd - Press Machine II",
+      "client": "Client",
+      "year": "2025",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DSLWnGmj7RU/?img_index=1",
+        "label": "Instagram"
+      },
+      "x": 66,
+      "y": 50,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/what-nyc-sounds-like-press-machine-ii-mvfppapr.jpg",
+      "title": "What NYC Sounds Like - Press Machine II",
+      "client": "Client",
+      "year": "2025",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DSLsI6-ji0l/",
+        "label": "Instagram"
+      },
+      "x": 70,
+      "y": 54,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/what-nyc-sounds-like-press-machine-ii-co-mvfpqyoa.jpg",
+      "title": "Strappedent - Press Machine II",
+      "client": "Client",
+      "year": "2025",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DSVsOl_EoeI/",
+        "label": "Instagram"
+      },
+      "x": 74,
+      "y": 58,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/rap-direct-press-machine-ii-copy-mvfpu5sc.jpg",
+      "title": "Rap Direct - Press Machine II",
+      "client": "Client",
+      "year": "2025",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DSWAHvcEvwM/?utm_source=ig_web_copy_link&srtk=NTc4MTIwNjQ2YQ==",
+        "label": "Instagram"
+      },
+      "x": 78,
+      "y": 62,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/rap-direct-press-machine-ii-copy-mvfpz1v6.jpg",
+      "title": "RapMusic- Press Machine II",
+      "client": "Client",
+      "year": "2025",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DR3MydQjTE7/?img_index=2",
+        "label": "Instagram"
+      },
+      "x": 80,
+      "y": 66,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/rapmusic-press-machine-ii-mvfq0l1w.jpg",
+      "title": "RapCzn - Bundog \"Enemies\"",
+      "client": "Client",
+      "year": "2024",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DDVVaFQsFyP/",
+        "label": "Instagram"
+      },
+      "x": 80,
+      "y": 70,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/torontos-bfrbundog-dropping-heat-on-his--mvfq3b4l.jpg",
+      "title": "Rap Rising - Bundog \"Enemies\"",
+      "client": "Client",
+      "year": "2024",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DDSsHKHyWVP/",
+        "label": "Instagram"
+      },
+      "x": 80,
+      "y": 74,
+      "w": 30,
+      "r": -1
+    },
+    {
+      "tab": "content seeding",
+      "img": "assets/work/rap-rising-bundog-enemies-copy-mvfq5w82.jpg",
+      "title": "Ny Drill Official - Wavee \"Afties\"",
+      "client": "Client",
+      "year": "2026",
+      "text": "",
+      "link": {
+        "href": "https://www.instagram.com/p/DY-4WT0Rwl4/",
+        "label": "Instagram"
+      },
+      "x": 80,
+      "y": 78,
       "w": 30,
       "r": -1
     },
@@ -168,242 +324,28 @@
       "r": 2
     },
     {
-      "tab": "press release",
-      "img": "assets/work/pr/wavee-hiphopdose.jpg",
-      "title": "Brooklyn’s Wavee Delivers Real-Life Energy And Raw Storytelling On “Afties”",
-      "client": "Wavee",
+      "tab": "pr",
+      "img": "assets/work/placeholder.png",
+      "title": "Project ten",
+      "client": "Client",
       "year": "2026",
-      "text": "HipHopDose spotlights Brooklyn rapper Wavee and his new single “Afties,” a record built on honest, lived-in storytelling rather than image.\n\nThe piece follows his “angel and devil” duality, the earlier standout “Tepee,” listeners across the US, Africa and Europe, and screen work from SNIPES campaigns to Hulu’s Wu-Tang: An American Saga.",
-      "link": {
-        "href": "https://hiphopdose.com/brooklyns-wavee-delivers-real-life-energy-and-raw-storytelling-on-afties/",
-        "label": "read on HipHopDose"
-      },
-      "news": {
-        "outlet": "HipHopDose",
-        "kicker": "Music",
-        "date": "June 1, 2026",
-        "byline": "minneetellsitall",
-        "caption": "Wavee, whose single “Afties” is out now.",
-        "logo": "assets/work/pr/logos/hiphopdose.png"
-      },
-      "x": 34,
-      "y": 17,
-      "w": 40,
-      "r": 6
-    },
-    {
-      "tab": "press release",
-      "img": "assets/work/pr/wavee-rollinghype.jpg",
-      "title": "Wavee Elevates Brooklyn Sound With A Global Vision, Led by His Latest Release and Standout Single “Afties”",
-      "client": "Wavee",
-      "year": "2026",
-      "text": "Rolling Hype profiles Wavee as one of Brooklyn’s most compelling new voices: an artist who turns real life into raw, emotionally unfiltered rap.\n\nIt calls “Afties” a defining record in his growth, and points to an international audience and a résumé that reaches into fashion and TV, including Power Book II: Raising Kanan.",
-      "link": {
-        "href": "https://rollinghype.com/wavee-elevates-brooklyn-sound-with-a-global-vision-led-by-his-latest-release-and-standout-single-afties/",
-        "label": "read on Rolling Hype"
-      },
-      "news": {
-        "outlet": "Rolling Hype",
-        "kicker": "Music",
-        "date": "May 29, 2026",
-        "byline": "Minnee Martinez",
-        "caption": "Brooklyn’s Wavee.",
-        "logo": "assets/work/pr/logos/rollinghype.svg"
-      },
-      "x": 31,
-      "y": 15,
-      "w": 40,
-      "r": -2.5
-    },
-    {
-      "tab": "press release",
-      "img": "assets/work/pr/trilla-thesource.jpg",
-      "title": "Trilla FOREVER: Bridging East Coast Nostalgia with West Coast Waves",
-      "client": "NellzSoTrilla",
-      "year": "2023",
-      "text": "The Source tells the story of NellzSoTrilla, a Seattle-based rapper raised on 90s New York and New Jersey hip-hop, from his first mixtape at 15 to starting his own label, ALLWEGOT.\n\nThe feature introduces his debut album “Trilla FOREVER” and its first single “No Price,” with a video that tours Seattle from Pike Place Market to the Space Needle.",
-      "link": {
-        "href": "https://thesource.com/2023/09/26/trilla-forever-bridging-east-coast-nostalgia-with-west-coast-waves/",
-        "label": "read on The Source"
-      },
-      "news": {
-        "outlet": "The Source",
-        "kicker": "Hip-Hop",
-        "date": "September 26, 2023",
-        "byline": "DN News Desk",
-        "caption": "NellzSoTrilla under the Space Needle, Seattle."
-      },
-      "x": 35,
-      "y": 13,
-      "w": 40,
-      "r": 4
-    },
-    {
-      "tab": "press release",
-      "img": "assets/work/pr/l3ta-thesource.jpg",
-      "title": "L3TA Is Bridging Hip-Hop Culture And Dance Music With A Global Vision",
-      "client": "L3TA",
-      "year": "2026",
-      "text": "The Source looks at L3TA, the Miami-raised, LA-based producer blending hip-hop bounce with house music, whose work has caught the ears of Chief Keef and Fetty Wap.\n\nIt covers his music in activations for Rick and Morty and Five Nights at Freddy’s, and his new single “Euphoria,” built on bright synths and stuttered vocal samples.",
-      "link": {
-        "href": "https://thesource.com/2026/03/24/l3ta-is-bridging-hip-hop-culture-and-dance-music-with-a-global-vision/",
-        "label": "read on The Source"
-      },
-      "news": {
-        "outlet": "The Source",
-        "kicker": "Hip-Hop News",
-        "date": "March 24, 2026",
-        "byline": "Shawn Grant",
-        "caption": "L3TA, whose new single “Euphoria” is out now."
-      },
-      "x": 30,
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 14,
       "y": 12,
-      "w": 40,
-      "r": 1.5
+      "w": 34,
+      "r": 1
     },
     {
-      "tab": "press release",
-      "img": "assets/work/pr/l3ta-euphoria-cover.jpg",
-      "title": "L3TA shares energizing new single “Euphoria”",
-      "client": "L3TA",
-      "year": "2026",
-      "text": "EARMILK premieres “Euphoria,” the new single from L3TA, born Nick Moleta and shaped by Miami’s mix of hip-hop, electronic and international sounds.\n\nThe review hears an atmospheric melodic-house record: rising synths over crisp, hip-hop-leaning drums, building to an energizing climax.",
-      "link": {
-        "href": "https://earmilk.com/2026/03/24/l3ta-shares-energizing-new-single-euphoria/",
-        "label": "read on EARMILK"
-      },
-      "news": {
-        "outlet": "EARMILK",
-        "kicker": "Electronic · House",
-        "date": "March 24, 2026",
-        "byline": "Jacob Saltzberg",
-        "caption": "“Euphoria” by L3TA.",
-        "logo": "assets/work/pr/logos/earmilk.png"
-      },
-      "x": 33,
-      "y": 10,
-      "w": 40,
+      "tab": "pr",
+      "img": "assets/work/placeholder.png",
+      "title": "Project eleven",
+      "client": "Client",
+      "year": "2025",
+      "text": "Project description goes here: the brief, what we did and the results.",
+      "x": 50,
+      "y": 26,
+      "w": 34,
       "r": -3
-    },
-    {
-      "tab": "press release",
-      "img": "assets/work/pr/l3ta-closeup.jpg",
-      "title": "Afroman, Nas, Cleotrapa, Hotboii, DaniLeigh, Ludacris + MORE New Music You Might Have Missed This Week",
-      "client": "L3TA",
-      "year": "2026",
-      "text": "Hot 97’s weekly roundup of new music puts L3TA alongside Nas, Ludacris and Afroman.\n\nUnder “L3TA Finds Euphoria,” the LA artist’s latest is described as a polished, atmospheric house record with a dreamy, uplifting tone and his signature cross-genre edge.",
-      "link": {
-        "href": "https://www.hot97.com/new-hip-hop-music/afroman-nas-cleotrapa-hotboii-danileigh-ludacris-more-new-music-you-might-have-missed-this-week/",
-        "label": "read on HOT 97"
-      },
-      "news": {
-        "outlet": "HOT 97",
-        "kicker": "New Music",
-        "date": "March 19, 2026",
-        "byline": "Bryson “Boom” Paul",
-        "caption": "L3TA, in Hot 97’s weekly new-music roundup.",
-        "logo": "assets/work/pr/logos/hot97.png"
-      },
-      "x": 29,
-      "y": 8,
-      "w": 40,
-      "r": 3
-    },
-    {
-      "tab": "press release",
-      "img": "assets/work/pr/trillryan-earmilk.jpg",
-      "title": "Trill Ryan is “For Real” on new single",
-      "client": "Trill Ryan",
-      "year": "2023",
-      "text": "EARMILK covers “For Real,” the new single from Trill Ryan, who broke out in 2019 with the viral TikTok hit “She Gon Go” and followed it with “Road Runnin’.”\n\nThe track pairs warm samples, guitars and booming 808s with a sharp, confident vocal and a hook that stays with you.",
-      "link": {
-        "href": "https://earmilk.com/2023/01/29/trill-ryan-is-for-real-on-new-single/",
-        "label": "read on EARMILK"
-      },
-      "news": {
-        "outlet": "EARMILK",
-        "kicker": "Hip-Hop · Pop",
-        "date": "January 29, 2023",
-        "byline": "Jacob Saltzberg",
-        "caption": "Trill Ryan, whose latest single “For Real” is out now.",
-        "logo": "assets/work/pr/logos/earmilk.png"
-      },
-      "x": 32,
-      "y": 6,
-      "w": 40,
-      "r": -1.5
-    },
-    {
-      "tab": "press release",
-      "img": "assets/work/pr/top-talent-laweekly.jpg",
-      "title": "Top Talent to Follow in 2023",
-      "client": "Trill Ryan",
-      "year": "2023",
-      "text": "LA Weekly’s list of artists, producers and executives to watch in 2023 includes Trill Ryan.\n\nThe entry calls the Los Angeles lyricist a breakout artist, pointing to the 200 million streams behind “She Gon Go” and the follow-up “Road Runnin’.”",
-      "link": {
-        "href": "https://www.laweekly.com/top-talent-to-follow-in-2023/",
-        "label": "read on LA Weekly"
-      },
-      "news": {
-        "outlet": "LA Weekly",
-        "kicker": "Music",
-        "date": "January 27, 2023",
-        "byline": "In partnership with ICY Network",
-        "caption": "Artists to watch in 2023, Trill Ryan among them.",
-        "logo": "assets/work/pr/logos/laweekly.svg"
-      },
-      "x": 28,
-      "y": 5,
-      "w": 40,
-      "r": 2
-    },
-    {
-      "tab": "press release",
-      "img": "assets/work/pr/trillryan-forreal-cover.jpg",
-      "title": "Trill Ryan – “For Real”",
-      "client": "Trill Ryan",
-      "year": "2023",
-      "text": "Lyrical Lemonade features “For Real” from Trill Ryan, the TikTok sensation turned Los Angeles recording artist.\n\nThe post retraces his rise through “She Gon Go” and “Road Runnin’,” made with platinum producers Scum Beatz and DJ Flippp, and frames “For Real” as a first taste of his 2023.",
-      "link": {
-        "href": "https://blog.lyricallemonade.com/p/trill-ryan-for-real/",
-        "label": "read on Lyrical Lemonade"
-      },
-      "news": {
-        "outlet": "Lyrical Lemonade",
-        "kicker": "Songs",
-        "date": "2023",
-        "byline": "Tobbylola",
-        "caption": "“For Real” by Trill Ryan.",
-        "logo": "assets/work/pr/logos/lyricallemonade.png"
-      },
-      "x": 31,
-      "y": 3,
-      "w": 40,
-      "r": -1
-    },
-    {
-      "tab": "press release",
-      "img": "assets/work/pr/trillryan-hypefresh.jpg",
-      "title": "Trill Ryan Releases New Single “She Gon Go”",
-      "client": "Trill Ryan",
-      "year": "2023",
-      "text": "Hypefresh introduces Los Angeles lyricist Trill Ryan through “She Gon Go,” the 2019 single that went viral on TikTok and passed 200 million streams.\n\nIt follows his run through “Road Runnin’,” with its Fast & Furious-style video, to “For Real,” praised for its bouncy groove and catchy hook.",
-      "link": {
-        "href": "https://www.hypefresh.com/trill-ryan-releases-new-single-she-gon-go/",
-        "label": "read on Hypefresh"
-      },
-      "news": {
-        "outlet": "Hypefresh",
-        "kicker": "Hip Hop",
-        "date": "July 5, 2023",
-        "byline": "Bryson “Boom” Paul",
-        "caption": "Trill Ryan.",
-        "logo": "assets/work/pr/logos/hypefresh.png"
-      },
-      "x": 28,
-      "y": 2,
-      "w": 40,
-      "r": 0
     }
   ],
   "about": [
