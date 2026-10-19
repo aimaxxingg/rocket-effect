@@ -215,6 +215,8 @@ body.folder-open .hero { opacity: 0; }
 /* Cards: freeform, draggable */
 .board { position: absolute; inset: 0; transition: opacity 0.3s, filter 0.3s; }
 .board.dimmed { opacity: 0.25; filter: blur(2px); pointer-events: none; }
+.board.papers { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.25) transparent; }
+.board.papers .card { touch-action: pan-y; }
 .card {
   position: absolute;
   left: calc(var(--x) * 1%);
@@ -311,7 +313,6 @@ body.folder-open .hero { opacity: 0; }
     0.5px 1px 0 #e3e1da, 1px 2px 0 #f5f4ef, 1.5px 3px 0 #dad8d0, 2px 4px 0 #eeede7, 2.5px 5px 0 #d1cfc7,
     3px 6px 0 rgba(0, 0, 0, 0.06), 0 10px 26px rgba(0, 0, 0, 0.16);
 }
-.card.news-card .news::after { content: ""; position: absolute; inset: 0; background: rgba(40, 40, 36, calc(var(--under, 0) * 0.012)); pointer-events: none; }
 .board-end { position: absolute; left: 0; width: 1px; height: 1px; }
 /* in the detail view the page is shown as large as the screen allows */
 .detail-media .news { width: min(100%, calc((100svh - 300px) * 1.32)); margin: 0 auto; }
@@ -509,7 +510,6 @@ body.folder-open .hero { opacity: 0; }
   /* a folder with many cards scrolls; cards can still be dragged sideways */
   .board { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
   .card { touch-action: pan-y; }
-  .card.news-card { touch-action: none; }   /* papers in the pile can be dragged any way */
   .detail-media .news { width: 100%; }
   .sheet:has(.detail:not([hidden])) { overflow: auto; }
   .detail { position: relative; grid-template-columns: 1fr; padding: 56px 18px 40px; gap: 22px; }

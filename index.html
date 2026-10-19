@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=40">
+  <link rel="stylesheet" href="assets/style.css?v=41">
 </head>
 <body>
   <header class="nav">
@@ -500,15 +500,26 @@
       // phones: the cards run down the sheet (it scrolls when there are many)
       const H = document.getElementById('sheet').clientHeight || innerHeight * 0.8, step = H * 0.26;
       const list = projects.filter((p) => p.tab === tab);
-      const pile = list.length > 0 && list.every((p) => p.news);   // newspapers lie in a pile
+      // newspapers are laid out down the folder, overlapping a little, and the folder scrolls:
+      // two staggered columns on desktop, one column on phones
+      const papers = list.length > 0 && list.every((p) => p.news);
+      if (papers) list.reverse();   // the newest piece first
+      const BW = board.clientWidth || innerWidth;
+      const pw = narrow ? 74 : 37, ph = (BW * pw) / 100 / 1.32;
+      const paperAt = (i) => narrow
+        ? { x: 13 + (i % 2 ? 1.5 : -1.5), top: 24 + i * ph * 0.82 }
+        : { x: i % 2 ? 51 : 12, top: 36 + Math.floor(i / 2) * ph * 0.96 + (i % 2) * ph * 0.48 };
+      board.classList.toggle('papers', papers);
       const cards = list.map((p, i) => {
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'card' + (p.news ? ' news-card' : '');
-        const pos = !narrow ? p : pile ? { x: 13 + (p.x - 28) * 0.6, y: 0, w: 72 } : { x: i % 2 ? 28 : 5, y: 0, w: 66 };
-        const top = pile ? H * 0.06 + (p.y - 2) * H * 0.014 : H * 0.05 + i * step;
-        card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${p.r}; --z:${i + 1}; --under:${list.length - 1 - i}` +
-          (narrow ? `; top:${Math.round(top)}px` : '');
+        const at = papers && paperAt(i);
+        const pos = papers ? { x: at.x, y: 0, w: pw } : !narrow ? p : { x: i % 2 ? 28 : 5, y: 0, w: 66 };
+        const top = papers ? at.top : H * 0.05 + i * step;
+        const r = papers ? [-1.2, 0.8, -0.4, 1.3, -0.9, 0.5][i % 6] : p.r;
+        card.style.cssText = `--x:${pos.x}; --y:${pos.y}; --w:${pos.w}; --r:${r}; --z:${i + 1}` +
+          (narrow || papers ? `; top:${Math.round(top)}px` : '');
         card.setAttribute('aria-label', p.title);
         card.innerHTML = p.news
           ? `${newsPage(p)}<span class="caption">${esc(p.news.outlet)}</span>`
@@ -517,11 +528,12 @@
         makeDraggable(card);
         return card;
       });
-      if (narrow && list.length && !pile) {
+      if (list.length && (narrow || papers)) {
         // room below the last card, so it can be scrolled fully into view
         const end = document.createElement('span');
         end.className = 'board-end';
-        end.style.top = Math.round(H * 0.05 + (list.length - 1) * step + board.clientWidth * 0.66 * 1.4 + 40) + 'px';
+        end.style.top = Math.round(papers ? paperAt(list.length - 1).top + ph + 60
+          : H * 0.05 + (list.length - 1) * step + board.clientWidth * 0.66 * 1.4 + 40) + 'px';
         cards.push(end);
       }
       board.replaceChildren(...cards);
