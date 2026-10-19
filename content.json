@@ -1,8 +1,8 @@
 {
   "site": {
-    "title": "rocket effect marketing",
+    "title": "Rocket Effect Marketing",
     "description": "rocket effect marketing — press release, digital ads, content seeding, art, pr.",
-    "email": "info@wavefoundation.co",
+    "email": "p@rocketeffect.xyz",
     "instagram": "https://www.instagram.com/rocket.effect"
   },
   "hero": [
@@ -43,7 +43,9 @@
     "holdOff": 450,
     "easing": "quick in",
     "order": "scatter",
-    "offOrder": "same", "spawn": true, "drift": false
+    "offOrder": "same",
+    "spawn": true,
+    "drift": false
   },
   "tabs": [
     "press release",
@@ -55,11 +57,15 @@
   "projects": [
     {
       "tab": "press release",
-      "img": "assets/work/placeholder.png",
-      "title": "Project one",
-      "client": "Client",
-      "year": "2026",
+      "img": "assets/work/trill-ryan-hypefresh-mvfmbjbm.jpg",
+      "title": "Trill Ryan -  HYPEFRESH",
+      "client": "Trill Ryan",
+      "year": "2023",
       "text": "Project description goes here: the brief, what we did and the results.",
+      "link": {
+        "href": "https://www.hypefresh.com/trill-ryan-releases-new-single-she-gon-go/?fbclid=PAZXh0bgNhZW0CMTEAcGRvZgRzcnRjBmFwcF9pZAwyNTYyODEwNDA1NTgAAaddMsmdy6ovTv5ULlbrysOhrKWRqWOSYUY8z1YnP7dVyR6BHQuHwopNmr-RYQ_aem_0O60BpOP_mwyYVO6UgKNfA",
+        "label": "link"
+      },
       "x": 6,
       "y": 10,
       "w": 34,
