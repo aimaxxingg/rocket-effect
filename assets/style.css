@@ -309,6 +309,9 @@ body.folder-open .hero { opacity: 0; }
 .news-mast { font-family: "Playfair Display", Georgia, serif; font-weight: 900; font-size: 5.2cqw; line-height: 1; text-align: center; }
 .news .news-mast.logo { display: flex; align-items: center; justify-content: center; height: 6.6cqw; overflow: hidden; }
 .news .news-mast.logo img { display: block; flex: none; width: auto; height: 6.6cqw; max-width: 34cqw; max-height: none; object-fit: contain; box-shadow: none; }
+/* a round badge (HOT 97) needs more height than a wordmark to read at the same size */
+.news .news-mast.logo:has(img[src*="hot97"]) { overflow: visible; }
+.news .news-mast.logo img[src*="hot97"] { height: 10.5cqw; margin: -1.9cqw 0; }
 .news .news-main { display: grid; grid-template-columns: auto 1fr; gap: 2.2cqw; margin-top: 0.45cqw; padding-top: 1.2cqw; border-top: 0.1cqw solid #23221f; }
 .news .news-photo { position: relative; height: 30cqw; overflow: hidden; }
 .news .news-photo img { display: block; width: auto; height: 30cqw; min-width: 24cqw; max-width: 50cqw; max-height: none; object-fit: cover; object-position: 35% 30%; box-shadow: none; }

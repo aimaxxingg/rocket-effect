@@ -372,7 +372,7 @@
         "date": "May 29, 2026",
         "byline": "Minnee Martinez",
         "caption": "Brooklyn’s Wavee.",
-        "logo": "assets/work/pr/logos/rollinghype.svg"
+        "logo": "assets/work/pr/logos/rollinghype.png"
       },
       "x": 31,
       "y": 15,
@@ -395,7 +395,8 @@
         "kicker": "Hip-Hop",
         "date": "September 26, 2023",
         "byline": "DN News Desk",
-        "caption": "NellzSoTrilla under the Space Needle, Seattle."
+        "caption": "NellzSoTrilla under the Space Needle, Seattle.",
+        "logo": "assets/work/pr/logos/thesource.png"
       },
       "x": 35,
       "y": 13,
@@ -418,7 +419,8 @@
         "kicker": "Hip-Hop News",
         "date": "March 24, 2026",
         "byline": "Shawn Grant",
-        "caption": "L3TA, whose new single “Euphoria” is out now."
+        "caption": "L3TA, whose new single “Euphoria” is out now.",
+        "logo": "assets/work/pr/logos/thesource.png"
       },
       "x": 30,
       "y": 12,
