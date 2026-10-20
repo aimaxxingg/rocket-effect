@@ -291,9 +291,9 @@ body.folder-open .hero { opacity: 0; }
   aspect-ratio: 1.32;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(70, 70, 66, 0.07) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .3 0 0 0 0 .29 0 0 0 .28 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-    #f7f6f1;
+    radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(80, 72, 60, 0.1) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .3 0 0 0 0 .27 0 0 0 .42 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    #f4f2ec;
   color: #23221f;
   font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
   text-transform: none;
@@ -313,7 +313,10 @@ body.folder-open .hero { opacity: 0; }
 .news .news-photo { position: relative; height: 30cqw; overflow: hidden; }
 .news .news-photo img { display: block; width: auto; height: 30cqw; min-width: 24cqw; max-width: 50cqw; max-height: none; object-fit: cover; object-position: 35% 30%; box-shadow: none; }
 /* old print: photos a little faded and warm */
-.news .news-photo::after, .news .news-thumb::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse, transparent 55%, rgba(30, 30, 28, 0.22)), rgba(240, 238, 232, 0.12); mix-blend-mode: normal; pointer-events: none; }
+.news .news-photo::after, .news .news-thumb::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse, transparent 50%, rgba(30, 28, 25, 0.3)), rgba(236, 233, 226, 0.1); mix-blend-mode: normal; pointer-events: none; }
+/* old print: the photos come out in a halftone screen, ink a little washed out */
+.news .news-photo::before, .news .news-thumb::before { content: ""; position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle, rgba(20, 18, 15, 0.32) 32%, transparent 38%) 0 0 / 0.42cqw 0.42cqw; mix-blend-mode: multiply; pointer-events: none; }
+.news .news-photo img, .news .news-thumb img { opacity: 0.95; }
 .news .news-lead { display: flex; flex-direction: column; height: 30cqw; overflow: hidden; padding-left: 2.2cqw; border-left: 0.1cqw solid #8a8884; }
 .news-kicker { color: #a8302a; font-size: 0.9cqw; letter-spacing: 0.2em; text-transform: uppercase; text-align: center; }
 .news-head { margin: 0.6cqw 0 0.8cqw; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 700; font-style: normal; font-size: 3.3cqw; line-height: 1.04; letter-spacing: -0.02em; text-align: center; text-wrap: balance; }
@@ -337,18 +340,18 @@ body.folder-open .hero { opacity: 0; }
 .news::before {
   content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
   background:
-    linear-gradient(90deg, transparent 49.2%, rgba(0, 0, 0, 0.07) 49.8%, rgba(255, 255, 255, 0.55) 50.2%, transparent 50.9%),
-    linear-gradient(0deg, transparent 46%, rgba(0, 0, 0, 0.045) 49.6%, rgba(255, 255, 255, 0.4) 50.3%, transparent 54%),
-    linear-gradient(116deg, transparent 18%, rgba(0, 0, 0, 0.045) 27%, transparent 31%, rgba(255, 255, 255, 0.3) 36%, transparent 44%),
-    linear-gradient(64deg, transparent 56%, rgba(0, 0, 0, 0.05) 63%, transparent 66.5%, rgba(255, 255, 255, 0.32) 71%, transparent 78%),
-    linear-gradient(158deg, transparent 68%, rgba(0, 0, 0, 0.045) 79%, transparent 86%),
-    linear-gradient(28deg, transparent 6%, rgba(255, 255, 255, 0.28) 12%, transparent 19%, rgba(0, 0, 0, 0.035) 24%, transparent 30%),
-    /* facets: flat planes meeting at the points where the paper was crushed */
-    conic-gradient(from 15deg at 27% 36%, rgba(0, 0, 0, 0.06) 0 70deg, rgba(255, 255, 255, 0.22) 70deg 150deg, transparent 150deg 230deg, rgba(0, 0, 0, 0.04) 230deg 300deg, transparent 300deg),
-    conic-gradient(from 200deg at 72% 64%, rgba(255, 255, 255, 0.2) 0 60deg, rgba(0, 0, 0, 0.055) 60deg 135deg, transparent 135deg 250deg, rgba(0, 0, 0, 0.035) 250deg 320deg, transparent 320deg),
-    conic-gradient(from 110deg at 55% 18%, transparent 0 90deg, rgba(0, 0, 0, 0.04) 90deg 160deg, rgba(255, 255, 255, 0.18) 160deg 210deg, transparent 210deg),
-    radial-gradient(ellipse at 18% 82%, rgba(0, 0, 0, 0.05), transparent 42%),
-    radial-gradient(ellipse at 84% 22%, rgba(255, 255, 255, 0.3), transparent 38%);
+    linear-gradient(90deg, transparent 48.9%, rgba(40, 34, 26, 0.13) 49.7%, rgba(255, 255, 255, 0.7) 50.25%, transparent 51.1%),
+    linear-gradient(0deg, transparent 45.5%, rgba(40, 34, 26, 0.09) 49.5%, rgba(255, 255, 255, 0.55) 50.3%, transparent 54.5%),
+    linear-gradient(116deg, transparent 18%, rgba(40, 34, 26, 0.08) 27%, transparent 30.5%, rgba(255, 255, 255, 0.42) 35%, transparent 43%),
+    linear-gradient(64deg, transparent 56%, rgba(40, 34, 26, 0.09) 63%, transparent 66%, rgba(255, 255, 255, 0.45) 70.5%, transparent 78%),
+    linear-gradient(158deg, transparent 67%, rgba(40, 34, 26, 0.08) 78.5%, transparent 85%),
+    linear-gradient(28deg, transparent 6%, rgba(255, 255, 255, 0.4) 12%, transparent 18.5%, rgba(40, 34, 26, 0.07) 23.5%, transparent 30%),
+    linear-gradient(141deg, transparent 38%, rgba(255, 255, 255, 0.3) 43%, transparent 46%, rgba(40, 34, 26, 0.06) 50%, transparent 55%),
+    radial-gradient(ellipse at 18% 82%, rgba(40, 34, 26, 0.09), transparent 42%),
+    radial-gradient(ellipse at 84% 22%, rgba(255, 255, 255, 0.4), transparent 38%),
+    /* worn, handled edges */
+    radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(70, 60, 48, 0.16) 100%);
+  box-shadow: inset 0 0 0 0.5px rgba(70, 60, 48, 0.25), inset 0 0 2.5cqw rgba(70, 60, 48, 0.1);
 }
 .card:nth-child(2n) .news::before { transform: scaleX(-1); }
 .card:nth-child(3n) .news::before { transform: scaleY(-1); }
@@ -357,22 +360,8 @@ body.folder-open .hero { opacity: 0; }
 .card.news-card .news {
   box-shadow:
     0.5px 1px 0 #e3e1da, 1px 2px 0 #f5f4ef, 1.5px 3px 0 #dad8d0, 2px 4px 0 #eeede7, 2.5px 5px 0 #d1cfc7,
-    3px 6px 0 rgba(0, 0, 0, 0.08);
+    3px 6px 0 rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.12), 0 22px 40px -8px rgba(0, 0, 0, 0.32);
 }
-/* crumpled: the sheet is no longer a clean rectangle (ragged, a corner bent over) and sits a little
-   tilted in depth; the facets and creases below shade it */
-.card.news-card .news { clip-path: polygon(0.5% 2.9%, 2.2% 0.5%, 11.1% 0.9%, 22.2% 0.8%, 33.3% 0.3%, 44.4% 0.5%, 55.6% 0.5%, 66.7% 0.7%, 77.8% 0.9%, 88.9% 0.1%, 100.0% 0.0%, 99.1% 11.1%, 99.5% 22.2%, 99.2% 33.3%, 100.0% 44.4%, 99.5% 55.6%, 99.2% 66.7%, 99.7% 77.8%, 99.0% 88.9%, 99.0% 100.0%, 88.9% 100.0%, 77.8% 100.0%, 66.7% 99.4%, 55.6% 99.0%, 44.4% 99.6%, 33.3% 99.8%, 22.2% 99.5%, 11.1% 100.0%, 0.0% 99.8%, 0.5% 88.9%, 0.5% 77.8%, 0.3% 66.7%, 0.3% 55.6%, 0.2% 44.4%, 0.5% 33.3%, 0.3% 22.2%, 0.0% 11.1%); transform: perspective(1400px) rotateX(5deg) rotateY(-4deg) rotateZ(0.3deg); }
-.card.news-card:nth-child(4n + 2) .news { clip-path: polygon(0.0% 1.1%, 11.1% 1.0%, 22.2% 0.1%, 33.3% 0.1%, 44.4% 0.9%, 55.6% 0.8%, 66.7% 0.7%, 77.8% 0.3%, 88.9% 0.7%, 100.0% 0.7%, 99.4% 11.1%, 99.8% 22.2%, 99.5% 33.3%, 99.6% 44.4%, 99.2% 55.6%, 98.9% 66.7%, 99.0% 77.8%, 99.4% 88.9%, 99.5% 100.0%, 88.9% 99.7%, 77.8% 100.0%, 66.7% 100.0%, 55.6% 99.5%, 44.4% 99.6%, 33.3% 99.6%, 22.2% 99.0%, 11.1% 99.4%, 3.1% 99.4%, 0.6% 95.9%, 0.3% 88.9%, 0.0% 77.8%, 0.4% 66.7%, 0.2% 55.6%, 0.6% 44.4%, 1.1% 33.3%, 0.7% 22.2%, 0.2% 11.1%); transform: perspective(1400px) rotateX(-4deg) rotateY(5deg); }
-.card.news-card:nth-child(4n + 3) .news { clip-path: polygon(0.0% 0.3%, 11.1% 0.6%, 22.2% 0.4%, 33.3% 0.7%, 44.4% 0.7%, 55.6% 0.1%, 66.7% 0.0%, 77.8% 0.9%, 88.9% 0.3%, 100.0% 0.3%, 98.9% 11.1%, 99.5% 22.2%, 99.1% 33.3%, 99.5% 44.4%, 99.3% 55.6%, 99.8% 66.7%, 99.3% 77.8%, 99.0% 88.9%, 99.4% 97.3%, 98.0% 99.4%, 88.9% 99.2%, 77.8% 99.3%, 66.7% 99.9%, 55.6% 99.2%, 44.4% 99.3%, 33.3% 99.7%, 22.2% 100.0%, 11.1% 99.0%, 0.0% 99.5%, 0.8% 88.9%, 1.0% 77.8%, 0.8% 66.7%, 1.0% 55.6%, 0.4% 44.4%, 0.9% 33.3%, 0.5% 22.2%, 1.0% 11.1%); transform: perspective(1400px) rotateX(6deg) rotateY(3deg); }
-.card.news-card:nth-child(4n + 4) .news { clip-path: polygon(0.0% 0.3%, 11.1% 0.1%, 22.2% 0.4%, 33.3% 0.2%, 44.4% 0.1%, 55.6% 0.4%, 66.7% 1.0%, 77.8% 0.9%, 88.9% 0.8%, 100.0% 0.2%, 99.4% 11.1%, 99.7% 22.2%, 99.8% 33.3%, 99.9% 44.4%, 99.8% 55.6%, 99.0% 66.7%, 99.1% 77.8%, 99.1% 88.9%, 99.4% 96.4%, 97.3% 99.4%, 88.9% 99.8%, 77.8% 99.7%, 66.7% 99.3%, 55.6% 99.2%, 44.4% 99.1%, 33.3% 99.0%, 22.2% 99.9%, 11.1% 99.3%, 0.0% 99.3%, 0.6% 88.9%, 0.2% 77.8%, 0.5% 66.7%, 0.1% 55.6%, 1.0% 44.4%, 1.0% 33.3%, 0.6% 22.2%, 0.3% 11.1%); transform: perspective(1400px) rotateX(-5deg) rotateY(-5deg); }
-.detail-media .news { clip-path: polygon(0.0% 0.5%, 11.1% 0.4%, 22.2% 0.2%, 33.3% 1.0%, 44.4% 0.0%, 55.6% 0.6%, 66.7% 1.0%, 77.8% 0.1%, 88.9% 0.6%, 100.0% 0.7%, 100.0% 11.1%, 99.6% 22.2%, 99.2% 33.3%, 99.5% 44.4%, 99.2% 55.6%, 99.8% 66.7%, 99.7% 77.8%, 99.9% 88.9%, 99.4% 100.0%, 88.9% 99.0%, 77.8% 99.4%, 66.7% 99.1%, 55.6% 99.6%, 44.4% 99.2%, 33.3% 99.9%, 22.2% 99.7%, 11.1% 99.3%, 2.0% 99.4%, 0.6% 97.4%, 0.5% 88.9%, 0.1% 77.8%, 0.3% 66.7%, 0.2% 55.6%, 0.3% 44.4%, 0.9% 33.3%, 0.2% 22.2%, 1.0% 11.1%); transform: perspective(2200px) rotateX(3deg) rotateY(-2deg); }
-/* the cast shadow sits on the card (outside the filter, so it isn't cut off); the card is its own
-   layer, so the page is drawn once and just moves when the folder scrolls */
-.card.news-card { will-change: transform; }
-.card.news-card::before { content: ""; position: absolute; inset: 2% 1% 1%; z-index: -1; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 22px 40px -8px rgba(0, 0, 0, 0.32); pointer-events: none; }
-.detail-media .news { box-shadow: none; }
-.detail-media:has(.news) { filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.22)); }
-.detail-media { position: relative; }
 .board-end { position: absolute; left: 0; width: 1px; height: 1px; }
 /* in the detail view the page is shown as large as the screen allows */
 .detail-media .news { width: min(100%, calc((100svh - 300px) * 1.32)); margin: 0 auto; }
