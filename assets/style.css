@@ -336,26 +336,24 @@ body.folder-open .hero { opacity: 0; }
 /* the story text, drawn as lines of small print */
 .news .news-lines { flex: 1; min-height: 0; height: auto; background: repeating-linear-gradient(#a5a39d 0 0.3cqw, transparent 0.3cqw 1.05cqw); opacity: 0.8; }
 .card.news-card .caption { display: none; }
-/* crumpled paper: a centre fold, a cross fold and a few soft creases, light and shade (flipped per paper) */
+/* folded newspaper: real folds only, with light and shade */
 .news::before {
   content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
   background:
-    linear-gradient(90deg, transparent 48.9%, rgba(40, 34, 26, 0.13) 49.7%, rgba(255, 255, 255, 0.7) 50.25%, transparent 51.1%),
-    linear-gradient(0deg, transparent 45.5%, rgba(40, 34, 26, 0.09) 49.5%, rgba(255, 255, 255, 0.55) 50.3%, transparent 54.5%),
-    linear-gradient(116deg, transparent 18%, rgba(40, 34, 26, 0.08) 27%, transparent 30.5%, rgba(255, 255, 255, 0.42) 35%, transparent 43%),
-    linear-gradient(64deg, transparent 56%, rgba(40, 34, 26, 0.09) 63%, transparent 66%, rgba(255, 255, 255, 0.45) 70.5%, transparent 78%),
-    linear-gradient(158deg, transparent 67%, rgba(40, 34, 26, 0.08) 78.5%, transparent 85%),
-    linear-gradient(28deg, transparent 6%, rgba(255, 255, 255, 0.4) 12%, transparent 18.5%, rgba(40, 34, 26, 0.07) 23.5%, transparent 30%),
-    linear-gradient(141deg, transparent 38%, rgba(255, 255, 255, 0.3) 43%, transparent 46%, rgba(40, 34, 26, 0.06) 50%, transparent 55%),
-    radial-gradient(ellipse at 18% 82%, rgba(40, 34, 26, 0.09), transparent 42%),
-    radial-gradient(ellipse at 84% 22%, rgba(255, 255, 255, 0.4), transparent 38%),
+    /* folded the way papers are: in half across (above / below the fold), then in half down the middle.
+       Each fold is a crisp line with a shaded valley on one side and a lit ridge on the other */
+    linear-gradient(90deg, transparent 47%, rgba(40, 34, 26, 0.05) 49%, rgba(40, 34, 26, 0.16) 49.85%, rgba(255, 255, 255, 0.75) 50.15%, rgba(255, 255, 255, 0.18) 51.2%, transparent 53.5%),
+    linear-gradient(180deg, transparent 46.5%, rgba(255, 255, 255, 0.16) 48.8%, rgba(255, 255, 255, 0.6) 49.85%, rgba(40, 34, 26, 0.13) 50.15%, rgba(40, 34, 26, 0.04) 51.5%, transparent 54%),
+    /* the four panels sit at slightly different angles to the light */
+    linear-gradient(90deg, rgba(40, 34, 26, 0.05), transparent 30% 70%, rgba(255, 255, 255, 0.12)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 25% 75%, rgba(40, 34, 26, 0.05)),
+    /* paper worn thin where the folds cross */
+    radial-gradient(circle at 50% 50%, rgba(40, 34, 26, 0.09), transparent 6%),
     /* worn, handled edges */
     radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(70, 60, 48, 0.16) 100%);
   box-shadow: inset 0 0 0 0.5px rgba(70, 60, 48, 0.25), inset 0 0 2.5cqw rgba(70, 60, 48, 0.1);
 }
-.card:nth-child(2n) .news::before { transform: scaleX(-1); }
-.card:nth-child(3n) .news::before { transform: scaleY(-1); }
-.card:nth-child(5n) .news::before { transform: scale(-1, -1); }   /* the masthead already says where it ran */
+
 /* in the pile: folded papers, a few sheets thick at their edges; the ones further down a touch darker */
 .card.news-card .news {
   box-shadow:
