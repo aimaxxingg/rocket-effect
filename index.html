@@ -410,6 +410,19 @@
       return `M0,${h} L${left[0][0]},${left[0][1]}` + smooth(left) + ` L${right[0][0]},${right[0][1]}` + smooth(right) +
         ` L${W},${h} L${W},${H} L0,${H} Z`;
     }
+    // The address keeps where you are, so a refresh comes back to the same place:
+    // #about, #work (the phone's folder stack), #work/<tab>, #work/<tab>/<item>
+    const slug = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    let shown = null;   // the project open in the detail view
+    function syncHash() {
+      let h = '';
+      if (mode === 'about') h = '#about';
+      else if (mode === 'work') {
+        h = useStack() && overlay.classList.contains('stacked') ? '#work' : '#work/' + encodeURIComponent(activeTab);
+        if (shown && !detail.hidden) h += '/' + slug(shown.title);
+      }
+      if (h !== location.hash) history.replaceState(null, '', h || location.pathname + location.search);
+    }
     function showStack() {
       closeDetail();
       clearTimeout(stackTimer);
@@ -417,6 +430,7 @@
       overlay.classList.remove('stack-anim');
       overlay.classList.add('stacked');
       renderStack();
+      syncHash();
     }
     const EASE = 'cubic-bezier(.24, 1, .29, 1)';
     const slot = (f) => `translateY(${f.offsetTop}px) rotate(${f.style.getPropertyValue('--rot')}deg)`;
@@ -426,6 +440,7 @@
       showWork(tabs[i]);
       overlay.classList.add('stack-anim');
       overlay.classList.remove('stacked');
+      syncHash();
       f.style.visibility = 'hidden';
       els.forEach((g, j) => { if (j !== i) { g.style.setProperty('--d', Math.abs(j - i)); g.classList.add('away', j < i ? 'up' : 'down'); } });
       folderEl.style.zIndex = 1000;
@@ -462,6 +477,7 @@
         if (mode !== 'work') return;
         overlay.classList.replace('stack-anim', 'stacked');
         f.style.visibility = '';
+        syncHash();
         // its papers ease in, rather than popping up as the open folder hands over to it
         f.querySelectorAll('.sheet-peek').forEach((el) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out' }));
         a.cancel();
@@ -572,6 +588,7 @@
       closeDetail();
       board.hidden = false;
       aboutEl.hidden = true;
+      syncHash();
     }
     function showAbout() {
       renderTabs(['about'], 'about');
@@ -579,6 +596,7 @@
       closeDetail();
       board.hidden = true;
       aboutEl.hidden = false;
+      syncHash();
     }
 
     function open(which, tab) {
@@ -605,6 +623,7 @@
       document.body.classList.remove('folder-open');
       overlay.setAttribute('aria-hidden', 'true');
       closeTimer = setTimeout(() => overlay.classList.remove('closing'), 450);
+      syncHash();
     }
 
     // --- Project detail ------------------------------------------------------
@@ -630,6 +649,8 @@
       board.classList.add('dimmed');
       requestAnimationFrame(() => detail.classList.add('in'));
       setTimeout(() => { if (!detail.hidden) detail.classList.add('in'); }, 80);   // in case a frame is late
+      shown = p;
+      syncHash();
     }
     function closeDetail() {
       detail.classList.remove('in');
@@ -641,6 +662,8 @@
         delete folderEl.dataset.paperH;
         folderEl.scrollTop = paperScroll;
       }
+      shown = null;
+      if (mode) syncHash();
     }
 
     // --- Clicks ---------------------------------------------------------------
@@ -663,19 +686,27 @@
       else if (mode === 'work' && useStack() && !overlay.classList.contains('stacked')) backToStack();
       else close();
     });
-    let resizeTimer;
+    let resizeTimer, lastW = innerWidth;
     addEventListener('resize', () => {
+      // on phones the toolbars slide in and out while scrolling, which only changes the height:
+      // re-laying out then closed whatever was open, so only a change of width counts
+      if (innerWidth === lastW) return;
+      lastW = innerWidth;
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
+        const keep = !detail.hidden && shown;
         if (mode === 'work' && useStack() && overlay.classList.contains('stacked')) showStack();
-        else if (mode === 'work') { overlay.classList.remove('stacked', 'stack-anim'); showWork(activeTab); }
+        else if (mode === 'work') { overlay.classList.remove('stacked', 'stack-anim'); showWork(activeTab); if (keep) openDetail(keep); }
         else if (mode === 'about') showAbout();
       }, 150);
     });
     // #work opens the folder; #work/<tab> opens it on that tab (e.g. #work/art)
+    // and #work/<tab>/<item> opens that item
     if (location.hash.startsWith('#work')) {
-      const t = decodeURIComponent(location.hash.slice(6));
+      const [t, item] = location.hash.slice(6).split('/').map(decodeURIComponent);
       open('work', tabs.includes(t) ? t : undefined);
+      const p = item && projects.find((o) => o.tab === t && slug(o.title) === item);
+      if (p) openDetail(p);
     }
     if (location.hash === '#about') open('about');
 
