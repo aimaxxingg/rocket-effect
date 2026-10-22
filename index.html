@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=55">
+  <link rel="stylesheet" href="assets/style.css?v=56">
 </head>
 <body>
   <header class="nav">
@@ -533,34 +533,56 @@
       folderEl.scrollTop = keepScroll ? y : 0;
     }
 
-    // Some folders have a look of their own: content seeding is an old Pinterest board,
+    // Some folders have a look of their own: content seeding is a Pinterest board,
     // art is a set of folded cards (they open in the detail view to show the note inside).
     const BOARD_STYLE = { 'content seeding': 'pins', art: 'postcards' };
     const handle = (title) => String(title).split(/\s+[-–]\s+/)[0];
     function renderPins(tab, list) {
       const wrap = document.createElement('div');
       wrap.className = 'pinboard';
-      wrap.innerHTML = `<header class="pin-head"><h3>${esc(tab)}</h3>
-          <p>rocket effect · ${list.length} pins</p><span class="pin-follow">follow board</span></header>
+      wrap.innerHTML = `<header class="pin-head">
+          <h3>${esc(tab)}</h3>
+          <p class="pin-owner"><span class="pin-av">re</span><span><b>rocket effect</b></span></p>
+          <p class="pin-count">${list.length} pins</p>
+        </header>
         <div class="pin-cols"></div>`;
-      // pins go into columns in turn (left to right, then the next row), like the old site
+      // a masonry of pins: once the pictures' shapes are known, each goes into the shortest column
       const cols = wrap.querySelector('.pin-cols');
       const narrow = matchMedia('(max-width: 640px)').matches;
-      const n = narrow ? 2 : Math.max(2, Math.min(5, Math.floor((board.clientWidth - 110) / 215)));
+      const n = narrow ? 2 : Math.max(2, Math.min(6, Math.floor((board.clientWidth - 80) / 236)));
       const col = Array.from({ length: n }, () => cols.appendChild(document.createElement('div')));
-      list.forEach((p, i) => {
+      const pins = list.map((p, i) => {
         const pin = document.createElement('button');
         pin.type = 'button';
         pin.className = 'pin';
         pin.style.setProperty('--z', i + 1);
         pin.setAttribute('aria-label', p.title);
-        pin.innerHTML = `<span class="pin-acts"><span>repin</span><span>like</span><span>comment</span></span>
-          <img src="${esc(p.img)}" alt="" draggable="false" loading="lazy">
-          <span class="pin-desc">${esc(p.title)}</span>
-          <span class="pin-by"><span class="pin-av">${esc(handle(p.title).charAt(0))}</span>
-            <span><b>rocket effect</b> onto <b>${esc(tab)}</b></span></span>`;
+        const [who, what] = String(p.title).split(/\s+[-–]\s+/);
+        pin.innerHTML = `<span class="pin-img"><img src="${esc(p.img)}" alt="" draggable="false" loading="lazy">
+            <span class="pin-save">save</span>
+            ${p.link?.href ? `<span class="pin-site">↗ ${esc(String(p.link.label || '').replace(/^view on\s+/i, '') || 'open')}</span>` : ''}</span>
+          <span class="pin-title">${esc(what || p.title)}</span>
+          <span class="pin-by"><span class="pin-av">${esc(String(who).charAt(0))}</span><span>${esc(who)}</span></span>`;
         pin.addEventListener('click', () => openDetail(p));
         col[i % n].appendChild(pin);
+        return pin;
+      });
+      const shape = (src) => new Promise((done) => {
+        const im = new Image();
+        im.onload = () => done(im.naturalWidth ? im.naturalHeight / im.naturalWidth : 1.25);
+        im.onerror = () => done(1.25);
+        im.src = src;
+        setTimeout(() => done(1.25), 2500);
+      });
+      Promise.all(list.map((p) => shape(p.img))).then((ratios) => {
+        if (!wrap.isConnected) return;
+        const h = new Array(n).fill(0);
+        pins.forEach((pin, i) => {
+          const k = h.indexOf(Math.min(...h));
+          col[k].appendChild(pin);
+          h[k] += ratios[i] + 0.3;   // the picture plus its caption
+        });
+        fit(true);
       });
       board.replaceChildren(wrap);
       board.scrollTop = 0;
