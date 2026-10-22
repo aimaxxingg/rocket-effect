@@ -8,8 +8,8 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&family=Caveat:wght@500;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=53">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&display=swap">
+  <link rel="stylesheet" href="assets/style.css?v=55">
 </head>
 <body>
   <header class="nav">
@@ -534,7 +534,7 @@
     }
 
     // Some folders have a look of their own: content seeding is an old Pinterest board,
-    // art is a set of postcards (they turn over in the detail view to show the writing on the back).
+    // art is a set of folded cards (they open in the detail view to show the note inside).
     const BOARD_STYLE = { 'content seeding': 'pins', art: 'postcards' };
     const handle = (title) => String(title).split(/\s+[-–]\s+/)[0];
     function renderPins(tab, list) {
@@ -568,22 +568,27 @@
       fit(false);
       wrap.querySelectorAll('img').forEach((im) => im.addEventListener('load', () => fit(true), { once: true }));
     }
-    const postcardFront = (p) => `<span class="pc-face pc-front"><img src="${esc(p.img)}" alt="" draggable="false"></span>`;
-    function postcard(p) {
-      const yr = esc(p.year || '');
-      return `<span class="postcard"><span class="pc-inner">
-        ${postcardFront(p)}
-        <span class="pc-face pc-back">
-          <span class="pc-head">post card</span>
-          <span class="pc-msg">
-            <span class="pc-title">${esc(p.title)}</span>
-            ${paragraphs(p.text).map((t) => `<span class="pc-p">${esc(t)}</span>`).join('')}
-            ${p.link?.href ? `<a class="pc-link" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label || 'link')} ↗</a>` : ''}
-          </span>
-          <span class="pc-side">
-            <span class="pc-stamp"><img src="${esc(p.img)}" alt="" draggable="false"></span>
-            <span class="pc-mark">rocket effect<br>★ ${yr} ★</span>
-            <span class="pc-lines"><span>${esc(p.client || '')}</span><span>${esc(p.tab)} dept.</span><span>rocket effect marketing</span></span>
+    // Art: folded cards. Closed, the cover is the artwork; opened (from the middle, like a book) the
+    // inside shows the credits on the left and a note about the work on the right. Phones open it
+    // upwards (a top-fold card), so the inside pages stay readable.
+    const cardCover = (p) => `<span class="gc-face gc-cover"><img src="${esc(p.img)}" alt="" draggable="false"></span>`;
+    function greetingCard(p) {
+      const v = matchMedia('(max-width: 640px)').matches;
+      const row = (k, val) => val ? `<span class="gc-row"><span>${k}</span><span>${esc(val)}</span></span>` : '';
+      const [name, work] = String(p.title).split(/\s+[-–]\s+/);
+      return `<span class="gc${v ? ' v' : ''}"><span class="gc-spread">
+        <span class="gc-page gc-right">
+          <span class="gc-note">${paragraphs(p.text).map((t) => `<span class="gc-p">${esc(t)}</span>`).join('')}</span>
+          <span class="gc-sign">— rocket effect</span>
+          ${p.link?.href ? `<a class="gc-link" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label || 'link')} →</a>` : ''}
+        </span>
+        <span class="gc-leaf">
+          ${cardCover(p)}
+          <span class="gc-face gc-page gc-left">
+            <span class="gc-kicker">rocket effect · ${esc(p.tab)}</span>
+            <span class="gc-title">${esc(work ? work : p.title)}</span>
+            ${work ? `<span class="gc-by">for ${esc(name)}</span>` : ''}
+            <span class="gc-meta">${row('client', p.client)}${row('year', p.year)}${row('work', p.tab)}</span>
           </span>
         </span>
       </span></span>`;
@@ -623,7 +628,7 @@
         card.innerHTML = p.news
           ? `${newsPage(p)}<span class="caption">${esc(p.news.outlet)}</span>`
           : style === 'postcards'
-          ? `<span class="postcard">${postcardFront(p)}</span><span class="caption">${esc(p.title)}</span>`
+          ? `<span class="gc-closed">${cardCover(p)}</span><span class="caption">${esc(p.title)}</span>`
           : `<img src="${esc(p.img)}" alt="" draggable="false"><span class="caption">${esc(p.title)}</span>`;
         card.project = p;
         makeDraggable(card);
@@ -692,7 +697,7 @@
     function openDetail(p) {
       detail.innerHTML = `
         <button class="back" type="button" aria-label="back"></button>
-        <div class="detail-media">${p.news ? newsPage(p) : BOARD_STYLE[p.tab] === 'postcards' ? postcard(p) : `<img src="${esc(p.img)}" alt="${esc(p.title)}">`}</div>
+        <div class="detail-media">${p.news ? newsPage(p) : BOARD_STYLE[p.tab] === 'postcards' ? greetingCard(p) : `<img src="${esc(p.img)}" alt="${esc(p.title)}">`}</div>
         <div class="detail-info">
           <p class="meta">${esc(p.tab)} · ${esc(p.client)} · ${esc(p.year)}</p>
           <h2>${esc(p.title)}</h2>
@@ -700,11 +705,11 @@
           ${p.link?.href ? `<a class="detail-link" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label || 'link')} ↗</a>` : ''}
         </div>`;
       detail.querySelector('.back').appendChild(word('back'));
-      const pc = detail.querySelector('.postcard');
-      detail.classList.toggle('pc', !!pc);
-      if (pc) {
-        setTimeout(() => pc.classList.add('flip'), 650);
-        pc.addEventListener('click', (e) => { if (!e.target.closest('a')) pc.classList.toggle('flip'); });
+      const gc = detail.querySelector('.gc');
+      detail.classList.toggle('pc', !!gc);
+      if (gc) {
+        setTimeout(() => gc.classList.add('open'), 600);
+        gc.addEventListener('click', (e) => { if (!e.target.closest('a')) gc.classList.toggle('open'); });
       }
       // the detail fills the folder as usual: leave the scrolling layout while it is open
       if (folderEl.classList.contains('scrolly')) {

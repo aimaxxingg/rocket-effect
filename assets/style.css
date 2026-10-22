@@ -413,33 +413,74 @@ body.folder-open .hero { opacity: 0; }
 .pin:hover .pin-acts { opacity: 1; }
 .pin:hover { box-shadow: 0 1px 3px rgba(34, 25, 25, 0.55), 0 0 0 1px rgba(34, 25, 25, 0.05); }
 
-/* ---- art: postcards ---------------------------------------------------------------------- */
-.postcard { position: relative; display: block; container-type: inline-size; aspect-ratio: 3 / 2; perspective: 2400px; text-transform: none; letter-spacing: 0; }
-.pc-inner { position: absolute; inset: 0; display: block; transform-style: preserve-3d; -webkit-transform-style: preserve-3d; transition: transform 1s cubic-bezier(.3, .9, .25, 1); }
-.postcard.flip .pc-inner { transform: rotateY(180deg); }
-.pc-face { position: absolute; inset: 0; display: block; -webkit-backface-visibility: hidden; backface-visibility: hidden;
-  background: #f7f3ea radial-gradient(ellipse at 50% 45%, transparent 60%, rgba(120, 100, 70, 0.12)); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), 0 14px 34px rgba(0, 0, 0, 0.2); }
-.pc-front { display: flex; align-items: center; justify-content: center; padding: 4.5cqw; }
-.postcard .pc-front img { display: block; width: auto; height: 100%; max-width: 100%; max-height: none; object-fit: contain; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06); }
-.card.pc-card .postcard .pc-face { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15), 0 10px 24px rgba(0, 0, 0, 0.18); }
-.pc-back { transform: rotateY(180deg); display: grid; grid-template-columns: 1.15fr 1fr; padding: 7cqw 4.5cqw 4.5cqw; color: #2d3550; font-family: Caveat, "Bradley Hand", cursive; }
-.pc-head { position: absolute; top: 2.2cqw; left: 0; right: 0; text-align: center; font-family: "Libre Baskerville", Georgia, serif; font-size: 2.2cqw; letter-spacing: 0.5em; text-transform: uppercase; color: #6d6656; }
-.pc-msg { display: flex; flex-direction: column; gap: 1.2cqw; padding-right: 3.5cqw; border-right: 0.2cqw solid #b8ae9a; overflow: auto; font-size: 3.4cqw; line-height: 1.15; }
-.pc-title { font-weight: 700; font-size: 4.6cqw; line-height: 1; margin-bottom: 0.6cqw; }
-.pc-p { display: block; }
-.pc-link { margin-top: auto; align-self: flex-start; font-weight: 700; color: #2d3550; border-bottom: 0.25cqw solid currentColor; }
-.pc-side { position: relative; display: flex; flex-direction: column; padding-left: 3.5cqw; }
-.pc-stamp { align-self: flex-end; width: 13cqw; aspect-ratio: 4 / 5; padding: 0.9cqw; background: #fff; rotate: 3deg; box-shadow: 0 0 0 0.25cqw #fff, 0 0.3cqw 0.8cqw rgba(0, 0, 0, 0.25); outline: 0.3cqw dotted #f7f3ea; outline-offset: -0.1cqw; }
-.postcard .pc-stamp img { display: block; width: 100%; height: 100%; max-height: none; object-fit: cover; box-shadow: none; }
-.pc-mark { position: absolute; top: 3cqw; right: 10cqw; display: grid; place-items: center; width: 13cqw; height: 13cqw; border: 0.35cqw double rgba(45, 53, 80, 0.55); border-radius: 50%; rotate: -14deg;
-  font-family: "Libre Baskerville", Georgia, serif; font-size: 1.5cqw; line-height: 1.4; letter-spacing: 0.15em; text-transform: uppercase; text-align: center; color: rgba(45, 53, 80, 0.6); }
-.pc-mark::after { content: ""; position: absolute; left: 95%; top: 30%; width: 14cqw; height: 40%; background: repeating-linear-gradient(transparent 0 0.8cqw, rgba(45, 53, 80, 0.4) 0.8cqw 1.1cqw); border-radius: 40%; }
-.pc-lines { margin-top: auto; display: flex; flex-direction: column; gap: 0.6cqw; font-size: 3.4cqw; }
-.pc-lines span { display: block; padding: 0 0 0.3cqw 1cqw; border-bottom: 0.2cqw solid #b8ae9a; line-height: 1.1; text-transform: lowercase; }
-/* the detail view: just the postcard, as large as fits; tap to turn it over */
+/* ---- art: folded cards -------------------------------------------------------------------
+   Sizes are in --pu, one hundredth of a page's width (half the spread side by side, the whole
+   width when a phone opens it upwards). */
+.gc-closed, .gc { text-transform: none; letter-spacing: 0; }
+.gc-face { display: block; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.gc-cover { position: relative; overflow: hidden; background: #1d1c1a; }
+.gc .gc-cover img, .gc-closed .gc-cover img { display: block; width: 100%; height: 100%; max-height: none; object-fit: cover; box-shadow: none; }
+/* a hairline inset frame and soft sheen, like a printed card */
+.gc-cover::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  background: linear-gradient(100deg, rgba(0, 0, 0, 0.22), transparent 7%, transparent 70%, rgba(255, 255, 255, 0.06)); }
+/* on the board: a closed card standing a little proud of the folder (its pages show at the edge) */
+.gc-closed { position: relative; display: block; aspect-ratio: 1; }
+.gc-closed .gc-cover { position: absolute; inset: 0; }
+.gc-closed { box-shadow: 1px 1px 0 #ebe7df, 2px 2px 0 #faf8f3, 3px 3px 0 #e2ddd3, 4px 4px 0 #f6f3ec, 0 6px 10px rgba(0, 0, 0, 0.12), 0 22px 36px -10px rgba(0, 0, 0, 0.35); }
+.card.pc-card img { box-shadow: none; }
+
+.gc { position: relative; display: block; container-type: inline-size; aspect-ratio: 2 / 1; --pu: 0.5cqw; perspective: 3000px; cursor: pointer; }
+.gc.v { aspect-ratio: 1 / 2; --pu: 1cqw; }
+.gc-spread { position: absolute; inset: 0; display: block; transform: translateX(-25%); transition: transform 1.1s cubic-bezier(.45, 0, .2, 1); transform-style: preserve-3d; }
+.gc.v .gc-spread { transform: translateY(-25%); }
+.gc.open .gc-spread { transform: none; }
+.gc-page {
+  position: absolute; display: flex; flex-direction: column;
+  padding: calc(var(--pu) * 9);
+  background: radial-gradient(ellipse at 50% 45%, transparent 60%, rgba(90, 80, 60, 0.07)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .3 0 0 0 0 .27 0 0 0 .42 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"), #faf8f3;
+  color: #2a2723; font-family: "Cormorant Garamond", Georgia, serif;
+}
+.gc-right { left: 50%; top: 0; width: 50%; height: 100%; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 30px 50px -18px rgba(0, 0, 0, 0.4); }
+.gc.v .gc-right { left: 0; top: 50%; width: 100%; height: 50%; }
+/* the leaf: the cover on its front, the inside-left page on its back; hinged at the spine */
+.gc-leaf { position: absolute; left: 50%; top: 0; width: 50%; height: 100%; display: block; transform-origin: 0 50%; transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+  transition: transform 1.1s cubic-bezier(.45, 0, .2, 1); z-index: 2; }
+.gc.v .gc-leaf { left: 0; top: 50%; width: 100%; height: 50%; transform-origin: 50% 0; }
+.gc.open .gc-leaf { transform: rotateY(-180deg); }
+.gc.v.open .gc-leaf { transform: rotateX(180deg); }
+.gc-leaf > .gc-face { position: absolute; inset: 0; }
+.gc-leaf > .gc-cover { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 30px 50px -18px rgba(0, 0, 0, 0.45); }
+.gc-left { transform: rotateY(180deg); }
+/* which side of the leaf shows is switched half-way through the turn as well, so it is right even
+   where backface-visibility isn't honoured */
+.gc-leaf > .gc-left, .gc.open .gc-leaf > .gc-cover { visibility: hidden; transition: visibility 0s linear 0.5s; }
+.gc.open .gc-leaf > .gc-left, .gc-leaf > .gc-cover { visibility: visible; transition: visibility 0s linear 0.5s; }
+.gc.v .gc-left { transform: rotateX(180deg); }
+/* the fold: a soft valley either side of the spine */
+.gc-right::before, .gc-left::before { content: ""; position: absolute; top: 0; bottom: 0; width: 12%; pointer-events: none; }
+.gc-right::before { left: 0; background: linear-gradient(90deg, rgba(60, 50, 35, 0.16), transparent); }
+.gc-left::before { right: 0; background: linear-gradient(270deg, rgba(60, 50, 35, 0.12), transparent); }
+.gc.v .gc-right::before { left: 0; right: 0; top: 0; bottom: auto; width: auto; height: 12%; background: linear-gradient(rgba(60, 50, 35, 0.16), transparent); }
+.gc.v .gc-left::before { left: 0; right: 0; bottom: 0; top: auto; width: auto; height: 12%; background: linear-gradient(0deg, rgba(60, 50, 35, 0.12), transparent); }
+/* inside left: the credits */
+.gc-kicker { font-family: "Inter Tight", Helvetica, Arial, sans-serif; font-size: calc(var(--pu) * 2.6); font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: #8a8273; padding-bottom: calc(var(--pu) * 3); border-bottom: 1px solid #d9d3c6; }
+.gc-title { margin-top: auto; font-weight: 600; font-size: calc(var(--pu) * 10); line-height: 0.95; letter-spacing: -0.01em; }
+.gc-by { margin-top: calc(var(--pu) * 2.5); font-style: italic; font-size: calc(var(--pu) * 5); color: #5b554b; }
+.gc-meta { margin-top: auto; display: block; border-top: 1px solid #d9d3c6; }
+.gc-row { display: flex; justify-content: space-between; gap: 1em; padding: calc(var(--pu) * 1.8) 0; border-bottom: 1px solid #e6e1d6; font-size: calc(var(--pu) * 3.8); }
+.gc-row > span:first-child { font-family: "Inter Tight", Helvetica, Arial, sans-serif; font-size: calc(var(--pu) * 2.4); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #8a8273; align-self: center; }
+.gc-row > span:last-child { text-transform: lowercase; }
+/* inside right: the note */
+.gc-note { display: flex; flex-direction: column; gap: calc(var(--pu) * 3); margin-top: calc(var(--pu) * 6); overflow: auto; font-style: italic; font-size: calc(var(--pu) * 6); line-height: 1.25; }
+.gc-p:first-child::first-letter { font-style: normal; font-weight: 600; font-size: 1.9em; line-height: 0.8; float: left; padding: 0.08em 0.08em 0 0; }
+.gc-sign { margin-top: calc(var(--pu) * 4); font-family: Caveat, "Bradley Hand", cursive; font-size: calc(var(--pu) * 6.5); color: #3b3a5a; align-self: flex-end; }
+.gc-link { margin-top: auto; align-self: flex-start; font-family: "Inter Tight", Helvetica, Arial, sans-serif; font-size: calc(var(--pu) * 2.8); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #2a2723; padding-bottom: 0.3em; border-bottom: 1px solid currentColor; }
+.gc-link:hover { opacity: 0.6; }
+/* the detail view: just the card, as large as fits; tap to close and open it again */
 .detail.pc { grid-template-columns: 1fr; align-content: center; justify-items: center; }
 .detail.pc .detail-info { display: none; }
-.detail.pc .detail-media { width: min(100%, calc((100svh - 300px) * 1.5)); cursor: pointer; }
+.detail.pc .detail-media { width: min(100%, calc((100svh - 300px) * 2)); }
 .board-end { position: absolute; left: 0; width: 1px; height: 1px; }
 /* in the detail view the page is shown as large as the screen allows */
 .detail-media .news { width: min(100%, calc((100svh - 300px) * 1.32)); margin: 0 auto; }
