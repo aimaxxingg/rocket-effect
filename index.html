@@ -8,8 +8,8 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=52">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&family=Caveat:wght@500;700&display=swap">
+  <link rel="stylesheet" href="assets/style.css?v=53">
 </head>
 <body>
   <header class="nav">
@@ -521,7 +521,8 @@
     // papers (the sheet is made as tall as its papers and the folder itself scrolls).
     const sheetEl = document.getElementById('sheet');
     let paperScroll = 0;
-    function setScrolly(end) {
+    function setScrolly(end, keepScroll) {
+      const y = folderEl.scrollTop;
       folderEl.classList.remove('scrolly');
       sheetEl.style.height = '';
       if (end > 0) {
@@ -529,7 +530,63 @@
         folderEl.classList.add('scrolly');
         sheetEl.style.height = Math.max(end, fill) + 'px';
       }
-      folderEl.scrollTop = 0;
+      folderEl.scrollTop = keepScroll ? y : 0;
+    }
+
+    // Some folders have a look of their own: content seeding is an old Pinterest board,
+    // art is a set of postcards (they turn over in the detail view to show the writing on the back).
+    const BOARD_STYLE = { 'content seeding': 'pins', art: 'postcards' };
+    const handle = (title) => String(title).split(/\s+[-–]\s+/)[0];
+    function renderPins(tab, list) {
+      const wrap = document.createElement('div');
+      wrap.className = 'pinboard';
+      wrap.innerHTML = `<header class="pin-head"><h3>${esc(tab)}</h3>
+          <p>rocket effect · ${list.length} pins</p><span class="pin-follow">follow board</span></header>
+        <div class="pin-cols"></div>`;
+      // pins go into columns in turn (left to right, then the next row), like the old site
+      const cols = wrap.querySelector('.pin-cols');
+      const narrow = matchMedia('(max-width: 640px)').matches;
+      const n = narrow ? 2 : Math.max(2, Math.min(5, Math.floor((board.clientWidth - 110) / 215)));
+      const col = Array.from({ length: n }, () => cols.appendChild(document.createElement('div')));
+      list.forEach((p, i) => {
+        const pin = document.createElement('button');
+        pin.type = 'button';
+        pin.className = 'pin';
+        pin.style.setProperty('--z', i + 1);
+        pin.setAttribute('aria-label', p.title);
+        pin.innerHTML = `<span class="pin-acts"><span>repin</span><span>like</span><span>comment</span></span>
+          <img src="${esc(p.img)}" alt="" draggable="false" loading="lazy">
+          <span class="pin-desc">${esc(p.title)}</span>
+          <span class="pin-by"><span class="pin-av">${esc(handle(p.title).charAt(0))}</span>
+            <span><b>rocket effect</b> onto <b>${esc(tab)}</b></span></span>`;
+        pin.addEventListener('click', () => openDetail(p));
+        col[i % n].appendChild(pin);
+      });
+      board.replaceChildren(wrap);
+      board.scrollTop = 0;
+      const fit = (keep) => setScrolly(wrap.offsetHeight + 40, keep);
+      fit(false);
+      wrap.querySelectorAll('img').forEach((im) => im.addEventListener('load', () => fit(true), { once: true }));
+    }
+    const postcardFront = (p) => `<span class="pc-face pc-front"><img src="${esc(p.img)}" alt="" draggable="false"></span>`;
+    function postcard(p) {
+      const yr = esc(p.year || '');
+      return `<span class="postcard"><span class="pc-inner">
+        ${postcardFront(p)}
+        <span class="pc-face pc-back">
+          <span class="pc-head">post card</span>
+          <span class="pc-msg">
+            <span class="pc-title">${esc(p.title)}</span>
+            ${paragraphs(p.text).map((t) => `<span class="pc-p">${esc(t)}</span>`).join('')}
+            ${p.link?.href ? `<a class="pc-link" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label || 'link')} ↗</a>` : ''}
+          </span>
+          <span class="pc-side">
+            <span class="pc-stamp"><img src="${esc(p.img)}" alt="" draggable="false"></span>
+            <span class="pc-mark">rocket effect<br>★ ${yr} ★</span>
+            <span class="pc-lines"><span>${esc(p.client || '')}</span><span>${esc(p.tab)} dept.</span><span>rocket effect marketing</span></span>
+          </span>
+        </span>
+      </span></span>`;
     }
 
     function renderBoard(tab) {
@@ -539,6 +596,9 @@
       // phones: the cards run down the sheet (it scrolls when there are many)
       const H = sheetEl.clientHeight || innerHeight * 0.8, step = H * 0.26;
       const list = projects.filter((p) => p.tab === tab);
+      const style = BOARD_STYLE[tab];
+      board.classList.toggle('pins', style === 'pins');
+      if (style === 'pins') { board.classList.remove('papers'); return renderPins(tab, list); }
       // newspapers are laid out down the folder, overlapping a little, and the folder scrolls:
       // two staggered columns on desktop, one column on phones
       const papers = list.length > 0 && list.every((p) => p.news);
@@ -552,7 +612,7 @@
       const cards = list.map((p, i) => {
         const card = document.createElement('button');
         card.type = 'button';
-        card.className = 'card' + (p.news ? ' news-card' : '');
+        card.className = 'card' + (p.news ? ' news-card' : '') + (style === 'postcards' ? ' pc-card' : '');
         const at = papers && paperAt(i);
         const pos = papers ? { x: at.x, y: 0, w: pw } : !narrow ? p : { x: i % 2 ? 28 : 5, y: 0, w: 66 };
         const top = papers ? at.top : H * 0.05 + i * step;
@@ -562,6 +622,8 @@
         card.setAttribute('aria-label', p.title);
         card.innerHTML = p.news
           ? `${newsPage(p)}<span class="caption">${esc(p.news.outlet)}</span>`
+          : style === 'postcards'
+          ? `<span class="postcard">${postcardFront(p)}</span><span class="caption">${esc(p.title)}</span>`
           : `<img src="${esc(p.img)}" alt="" draggable="false"><span class="caption">${esc(p.title)}</span>`;
         card.project = p;
         makeDraggable(card);
@@ -630,7 +692,7 @@
     function openDetail(p) {
       detail.innerHTML = `
         <button class="back" type="button" aria-label="back"></button>
-        <div class="detail-media">${p.news ? newsPage(p) : `<img src="${esc(p.img)}" alt="${esc(p.title)}">`}</div>
+        <div class="detail-media">${p.news ? newsPage(p) : BOARD_STYLE[p.tab] === 'postcards' ? postcard(p) : `<img src="${esc(p.img)}" alt="${esc(p.title)}">`}</div>
         <div class="detail-info">
           <p class="meta">${esc(p.tab)} · ${esc(p.client)} · ${esc(p.year)}</p>
           <h2>${esc(p.title)}</h2>
@@ -638,6 +700,12 @@
           ${p.link?.href ? `<a class="detail-link" href="${esc(p.link.href)}" target="_blank" rel="noopener">${esc(p.link.label || 'link')} ↗</a>` : ''}
         </div>`;
       detail.querySelector('.back').appendChild(word('back'));
+      const pc = detail.querySelector('.postcard');
+      detail.classList.toggle('pc', !!pc);
+      if (pc) {
+        setTimeout(() => pc.classList.add('flip'), 650);
+        pc.addEventListener('click', (e) => { if (!e.target.closest('a')) pc.classList.toggle('flip'); });
+      }
       // the detail fills the folder as usual: leave the scrolling layout while it is open
       if (folderEl.classList.contains('scrolly')) {
         paperScroll = folderEl.scrollTop;
