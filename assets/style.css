@@ -10,6 +10,11 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body { height: 100%; }
+@media (hover: none) {
+  body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  img, svg { -webkit-user-drag: none; -webkit-touch-callout: none; }
+  input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text; }
+}
 
 body {
   background: var(--bg);
@@ -384,10 +389,10 @@ body.folder-open .hero { opacity: 0; }
 .detail.in { opacity: 1; translate: 0 0; }
 .detail-media img { width: 100%; height: auto; max-height: 100%; object-fit: contain; display: block; box-shadow: 0 14px 40px rgba(0,0,0,0.2); }
 .detail-info { align-self: end; text-transform: lowercase; }
-/* the title in the Rocket Effect typeface; the text stays in the plain, readable face */
-.detail-info h2 { font-family: Thermochrome, "Inter Tight", "Helvetica Neue", Arial, sans-serif; font-weight: 400; letter-spacing: 0; }
 .detail-info .meta { font-size: 13px; font-weight: 600; opacity: 0.6; margin-bottom: 10px; }
 .detail-info h2 { font-size: clamp(28px, 3.4vw, 54px); font-weight: 700; letter-spacing: -0.06em; line-height: 0.95; margin-bottom: 18px; }
+/* the title in the Rocket Effect typeface: it is a heavy face, so its letters and words get room to breathe */
+.detail-info h2 { font-family: Thermochrome, "Inter Tight", "Helvetica Neue", Arial, sans-serif; font-weight: 400; font-synthesis: none; letter-spacing: 0.045em; word-spacing: 0.1em; line-height: 1.12; }
 .detail-info p { font-size: 17px; line-height: 1.4; letter-spacing: -0.02em; max-width: 42ch; }
 .detail-link { display: inline-block; margin-top: 22px; font-weight: 700; border-bottom: 2px solid currentColor; }
 .back {
