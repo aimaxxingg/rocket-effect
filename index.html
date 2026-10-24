@@ -8,8 +8,8 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&family=Caveat:wght@500;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=61">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
+  <link rel="stylesheet" href="assets/style.css?v=62">
 </head>
 <body>
   <header class="nav">
@@ -573,7 +573,7 @@
       const wrap = document.createElement('div');
       wrap.className = 'notes';
       const narrow = matchMedia('(max-width: 640px)').matches;
-      const n = narrow ? 2 : Math.max(2, Math.min(5, Math.floor((board.clientWidth - 80) / 250)));
+      const n = narrow ? 1 : Math.max(2, Math.min(4, Math.floor((board.clientWidth - 80) / 400)));
       const col = Array.from({ length: n }, () => wrap.appendChild(document.createElement('div')));
       const notes = list.map((p, i) => {
         const note = document.createElement('button');
@@ -900,6 +900,18 @@
       }
       detail.hidden = false;
       board.classList.add('dimmed');
+      // phones: the detail runs on down the folder, which then scrolls (again once its pictures are in)
+      if (matchMedia('(max-width: 640px)').matches) {
+        const fit = () => {
+          if (detail.hidden) return;
+          folderEl.classList.add('scrolly');
+          folderEl.dataset.detailScroll = '1';
+          sheetEl.style.height = Math.max(detail.offsetHeight + 40, folderEl.clientHeight - 30) + 'px';
+        };
+        fit();
+        folderEl.scrollTop = 0;
+        detail.querySelectorAll('img').forEach((im) => im.addEventListener('load', fit, { once: true }));
+      }
       requestAnimationFrame(() => detail.classList.add('in'));
       setTimeout(() => { if (!detail.hidden) detail.classList.add('in'); }, 80);   // in case a frame is late
       shown = p;
@@ -909,6 +921,12 @@
       detail.classList.remove('in');
       detail.hidden = true;
       board.classList.remove('dimmed');
+      if (folderEl.dataset.detailScroll) {
+        delete folderEl.dataset.detailScroll;
+        folderEl.classList.remove('scrolly');
+        sheetEl.style.height = '';
+        folderEl.scrollTop = 0;
+      }
       if (folderEl.dataset.paperH) {
         folderEl.classList.add('scrolly');
         sheetEl.style.height = folderEl.dataset.paperH;
