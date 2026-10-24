@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&family=Caveat:wght@500;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=59">
+  <link rel="stylesheet" href="assets/style.css?v=60">
 </head>
 <body>
   <header class="nav">
@@ -614,7 +614,7 @@
       const wall = document.createElement('div');
       wall.className = 'wall';
       wall.innerHTML = `<div class="wall-in"></div><div class="wall-shade"></div>
-        <p class="wall-hint">${narrow ? 'tap to open · drag to rip' : 'click to open · drag to rip'}</p>
+        <p class="wall-hint"><span>${narrow ? 'tap to open · drag to rip' : 'click to open · drag to rip'}</span></p>
         <button type="button" class="wall-reset" hidden>paste them back</button>`;
       board.replaceChildren(wall);
       setScrolly(0);
@@ -634,10 +634,11 @@
         reset.hidden = true;
         let seed = 7;
         const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
-        const W = wall.clientWidth, H = wall.clientHeight;
-        // the cluster: a rounded patch in the middle of the wall, a little narrower than it
-        const cw = Math.min(W * (narrow ? 0.96 : 0.82), H * 1.45), ch = H * 0.8;
-        const cols = narrow ? 3 : 6, cell = cw / cols, rows = Math.ceil(ch / (cell * 0.95)) + 1;
+        // on phones the folder runs below the screen: fit the cluster to the part you can see
+        const W = wall.clientWidth, H = Math.min(wall.clientHeight, Math.max(300, innerHeight - 110 - (narrow ? 64 : 0)));
+        // the posters cover the folder's sheet, side to side, with a ragged rim
+        const cw = W * (narrow ? 0.9 : 0.86), ch = H * (narrow ? 0.8 : 0.8);
+        const cols = narrow ? 4 : 8, cell = cw / cols, rows = Math.ceil(ch / (cell * 0.95)) + 1;
         const x0 = (W - cw) / 2, y0 = (H - ch) / 2;
         const spots = [];
         // older layers: every cell covered, pictures cycling, overlapping their neighbours
@@ -645,16 +646,16 @@
           for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
             const cx = x0 + (c + 0.5 + (layer ? 0.5 : 0)) * cell + (rnd() - 0.5) * cell * 0.4;
             const cy = y0 + (r + 0.3 + (layer ? 0.45 : 0)) * cell * 0.95 + (rnd() - 0.5) * cell * 0.4;
-            // keep to a rounded patch, ragged at its rim
+            // keep to the sheet (a squarish patch), ragged at its rim
             const nx = (cx - W / 2) / (cw / 2), ny = (cy - H / 2) / (ch / 2);
-            if (nx * nx + ny * ny > 1.08 + rnd() * 0.25) continue;
+            if (nx ** 4 + ny ** 4 > 0.9 + rnd() * 0.25) continue;
             spots.push({ cx, cy, w: cell * (0.95 + rnd() * 0.5), layer, i: Math.floor(rnd() * list.length) });
           }
         }
         // the top layer: each piece once, a bit bigger, spread over the cluster
         list.forEach((p, i) => {
-          const a = (i / list.length) * Math.PI * 2 + rnd(), rad = list.length > 1 ? 0.18 + rnd() * 0.22 : 0;
-          spots.push({ cx: W / 2 + Math.cos(a) * cw * rad, cy: H / 2 + Math.sin(a) * ch * rad * 0.9, w: cell * (narrow ? 1.35 : 1.5), layer: 2, i });
+          const a = (i / list.length) * Math.PI * 2 + rnd(), rad = list.length > 1 ? 0.22 + rnd() * 0.18 : 0;
+          spots.push({ cx: W / 2 + Math.cos(a) * cw * rad, cy: H / 2 + Math.sin(a) * ch * rad * 0.8, w: cell * (narrow ? 1.35 : 1.5), layer: 2, i });
         });
         spots.forEach((sp, k) => {
           const p = list[sp.i], ratio = ratios[sp.i];
@@ -666,7 +667,7 @@
           const torn = rnd() < 0.45 ? ragged(rnd() < 0.5 ? 96 : 4, 1.6, k + 5) : null;
           el.style.cssText = `left:${sp.cx - sp.w / 2}px; top:${sp.cy - h / 2}px; width:${sp.w}px; height:${h}px;` +
             `--r:${((rnd() - 0.5) * (sp.layer === 2 ? 5 : 8)).toFixed(2)}deg; z-index:${sp.layer * 100 + Math.floor(rnd() * 90)};` +
-            `--shade:${sp.layer === 2 ? 1 : sp.layer ? 0.86 : 0.74}; --z:${k};` +
+            `--shade:${sp.layer === 2 ? 1 : sp.layer ? 0.93 : 0.85}; --z:${k};` +
             (torn ? `clip-path:${poly(torn[0][1] > 50 ? [[0, 0], [100, 0], ...torn.slice().reverse()] : [...torn, [100, 100], [0, 100]])};` : '');
           el.innerHTML = `<span class="poster-paper"><img src="${esc(p.img)}" alt="" draggable="false"></span>`;
           el.project = p;
