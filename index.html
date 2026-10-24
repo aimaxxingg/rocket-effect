@@ -666,21 +666,20 @@
         lastY = y;
         if (!down) return;
         const edge = folderEl.getBoundingClientRect().top + 40;
-        inner.querySelectorAll('.poster:not(.ripped)').forEach((el, k) => {
+        inner.querySelectorAll('.poster:not(.ripped):not(.rip-piece)').forEach((el, k) => {
           const r = el.getBoundingClientRect(), out = (edge - r.top) / r.height;
           // (a fast flick can carry a poster well past the edge between two scroll events: still tear it)
           if (out < 0.12 || out > 0.85) return;
-          const cut = Math.min(92, out * 100 + 6);
-          // the piece stays inside the folder, so it passes under the header strip. Flat transforms, no flips
-          // and no filter: WebKit can blank the whole folder while such a piece animates
-          const piece = startRip(el, k, cut + 14, true, true), dir = k % 2 ? 1 : -1;
-          piece.style.filter = 'none';
+          // torn just as a hand would: grabbed in the middle of what's still showing and pulled down,
+          // so the tear runs a little above that and the lower part comes away, hangs, then drops
+          const grab = Math.min(96, out * 100 + (100 - out * 100) / 2);
+          const piece = startRip(el, k, grab, true, true), side = k % 2 ? 1 : -1, dy = 90;
           reset.hidden = false;
           piece.animate([
-            { transform: 'none', offset: 0 },
-            { transform: `translateY(14px) rotate(${dir * 3}deg)`, offset: 0.2 },
-            { transform: `translate(${dir * 50}px, ${innerHeight * 0.8}px) rotate(${dir * 22}deg)`, opacity: 0, offset: 1 },
-          ], { duration: 1200, easing: 'cubic-bezier(.45, 0, .85, .5)', fill: 'forwards' }).finished.then(() => piece.remove(), () => piece.remove());
+            { transform: 'translate(0px, 0px) perspective(900px) rotateX(0deg) rotate(0deg) scale(1)', easing: 'ease-out' },
+            { transform: `translate(${side * 12}px, ${dy}px) perspective(900px) rotateX(-${(dy / 260) * 28}deg) rotate(${side * 0.6}deg) scale(${1 + (dy / 260) * 0.04})`, offset: 0.22, easing: 'cubic-bezier(.45, 0, .9, .55)' },
+            { transform: `translate(${side * (12 * 1.6 + 120)}px, ${dy + innerHeight}px) perspective(900px) rotateX(-40deg) rotate(${side * 50}deg) scale(1)` },
+          ], { duration: 1150, fill: 'forwards' }).finished.then(() => piece.remove(), () => piece.remove());
         });
       };
       folderEl.addEventListener('scroll', onScroll, { passive: true });
