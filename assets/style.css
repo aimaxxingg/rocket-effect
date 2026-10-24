@@ -220,8 +220,8 @@ body.folder-open .hero { opacity: 0; }
 /* Cards: freeform, draggable */
 .board { position: absolute; inset: 0; transition: opacity 0.3s, filter 0.3s; }
 .board.dimmed { opacity: 0.25; filter: blur(2px); pointer-events: none; }
-/* closing a folder: the cards slip down into it and fade, one after another, instead of vanishing */
-.board.tucking .card {
+/* closing a folder: the cards (and notes, posters) slip down into it and fade, one after another, instead of vanishing */
+.board.tucking .card, .board.tucking .note, .board.tucking .poster, .board.tucking .wall-bar {
   animation: none;
   pointer-events: none;
   opacity: 0;
