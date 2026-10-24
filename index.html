@@ -658,8 +658,8 @@
         setScrolly(H + 20, true);
         lastY = folderEl.scrollTop;
       }
-      // scrolling down: as a poster's top reaches the top of the folder (still in view), its upper part
-      // tears off along a ragged line, flaps forward and drops away down the screen
+      // scrolling down: once a poster starts going up out of the folder, the part that has left stays
+      // pasted to the wall (and scrolls away with it); the rest tears off along a ragged line and drops
       const onScroll = () => {
         if (!wall.isConnected) return folderEl.removeEventListener('scroll', onScroll);
         const y = folderEl.scrollTop, down = y > lastY;
@@ -668,19 +668,19 @@
         const edge = folderEl.getBoundingClientRect().top + 40;
         inner.querySelectorAll('.poster:not(.ripped)').forEach((el, k) => {
           const r = el.getBoundingClientRect(), out = (edge - r.top) / r.height;
-          // (a fast flick can carry a poster well past the edge between two scroll events: still tear it, lower down)
-          if (out < -0.06 || out > 0.8) return;
-          const cut = Math.max(28, Math.min(92, out * 100 + 38));
+          // (a fast flick can carry a poster well past the edge between two scroll events: still tear it)
+          if (out < 0.12 || out > 0.85) return;
+          const cut = Math.min(92, out * 100 + 6);
           // the piece stays inside the folder, so it passes under the header strip. Flat transforms, no flips
           // and no filter: WebKit can blank the whole folder while such a piece animates
-          const piece = startRip(el, k, cut - 14, false, true), dir = k % 2 ? 1 : -1;
+          const piece = startRip(el, k, cut + 14, true, true), dir = k % 2 ? 1 : -1;
           piece.style.filter = 'none';
           reset.hidden = false;
           piece.animate([
             { transform: 'none', offset: 0 },
-            { transform: `translateY(4px) skewX(${dir * 4}deg) scaleY(0.6)`, offset: 0.25 },
-            { transform: `translate(${dir * 60}px, ${innerHeight * 0.7}px) rotate(${dir * 24}deg) scaleY(0.45)`, opacity: 0, offset: 1 },
-          ], { duration: 1300, easing: 'cubic-bezier(.4, 0, .8, .6)', fill: 'forwards' }).finished.then(() => piece.remove(), () => piece.remove());
+            { transform: `translateY(14px) rotate(${dir * 3}deg)`, offset: 0.2 },
+            { transform: `translate(${dir * 50}px, ${innerHeight * 0.8}px) rotate(${dir * 22}deg)`, opacity: 0, offset: 1 },
+          ], { duration: 1200, easing: 'cubic-bezier(.45, 0, .85, .5)', fill: 'forwards' }).finished.then(() => piece.remove(), () => piece.remove());
         });
       };
       folderEl.addEventListener('scroll', onScroll, { passive: true });
