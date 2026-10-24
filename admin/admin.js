@@ -148,7 +148,7 @@ async function publish() {
     const ref = await gh(`git/ref/heads/${encodeURIComponent(conn.branch)}`);
     const head = await gh(`git/commits/${ref.object.sha}`);
     const tree = [];
-    const used = new Set(content.projects.map((p) => p.img));
+    const used = new Set(content.projects.flatMap((p) => [p.img, ...(p.images || []), p.news?.logo].filter(Boolean)));
     for (const [path, { b64 }] of Object.entries(pending)) {
       if (!used.has(path)) continue;   // uploaded then replaced: skip
       const blob = await gh('git/blobs', { method: 'POST', body: { content: b64, encoding: 'base64' } });
@@ -289,7 +289,18 @@ $('#proj-add').addEventListener('click', () => {
 });
 
 // Project editor dialog
-let editing = -1, editImg = '';
+const NEWS_TAB = 'press release';
+let editing = -1, editImg = '', editGallery = [], editLogo = '', libMode = 'main';
+function renderGallery() {
+  $('#p-gal').innerHTML = editGallery.map((p, i) => `<div class="gal-item" style="background-image:url('${esc(imgURL(p))}')">
+    ${i ? `<button type="button" class="left" data-left="${i}" title="Move earlier">‹</button>` : ''}
+    <button type="button" data-rm="${i}" title="Remove">×</button></div>`).join('');
+}
+function setLogo(path) {
+  editLogo = path;
+  $('#p-logo-prev').style.backgroundImage = path ? `url('${imgURL(path)}')` : '';
+}
+function syncNewsFields() { $('#p-news').hidden = pform.tab.value !== NEWS_TAB; }
 const dlg = $('#dlg'), pform = $('#pform');
 function setPrev(path) {
   editImg = path;
@@ -308,6 +319,16 @@ function editProject(i) {
   pform.linkHref.value = p.link?.href || '';
   pform.linkLabel.value = p.link?.label || '';
   setPrev(p.img);
+  editGallery = Array.isArray(p.images) ? [...p.images] : [];
+  renderGallery();
+  const n = p.news || {};
+  pform.nOutlet.value = n.outlet || '';
+  pform.nDate.value = n.date || '';
+  pform.nKicker.value = n.kicker || '';
+  pform.nByline.value = n.byline || '';
+  pform.nCaption.value = n.caption || '';
+  setLogo(n.logo || '');
+  syncNewsFields();
   $('#p-img-libbox').hidden = true;
   $('#p-del').hidden = i < 0;
   $('#dlg-title').textContent = i < 0 ? 'New project' : 'Edit project';
@@ -336,6 +357,16 @@ pform.addEventListener('submit', (e) => {
     ...pos,
   };
   if (!f.linkHref.value.trim()) delete p.link;
+  if (editGallery.length) p.images = [...editGallery]; else delete p.images;
+  // the newspaper page (press release only; without an outlet the site guesses one from the link)
+  if (p.tab === NEWS_TAB && f.nOutlet.value.trim()) {
+    p.news = {
+      ...(prev?.news || {}),
+      outlet: f.nOutlet.value.trim(), date: f.nDate.value.trim(), kicker: f.nKicker.value.trim(),
+      byline: f.nByline.value.trim(), caption: f.nCaption.value.trim(),
+    };
+    if (editLogo) p.news.logo = editLogo; else delete p.news.logo;
+  } else delete p.news;
   if (editing >= 0) content.projects[editing] = p; else content.projects.push(p);
   dlg.close();
   changed(); renderProjects();
@@ -347,15 +378,61 @@ $('#p-del').addEventListener('click', () => {
   dlg.close();
   changed(); renderProjects();
 });
+$('#p-tab').addEventListener('change', syncNewsFields);
+$('#p-gal').addEventListener('click', (e) => {
+  const rm = e.target.closest('[data-rm]'), left = e.target.closest('[data-left]');
+  if (rm) editGallery.splice(+rm.dataset.rm, 1);
+  if (left) { const i = +left.dataset.left; [editGallery[i - 1], editGallery[i]] = [editGallery[i], editGallery[i - 1]]; }
+  renderGallery();
+});
+$('#p-gal-lib').addEventListener('click', () => { libMode = 'gal'; openLib(); });
+$('#p-gal-file').addEventListener('change', async (e) => {
+  const files = [...e.target.files];
+  e.target.value = '';
+  for (const file of files) {
+    try {
+      const { b64, dataUrl, ext } = await prepareImage(file);
+      const path = `assets/work/${slug(pform.title.value || 'gallery')}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}.${ext}`;
+      pending[path] = { b64, dataUrl };
+      library.push(path);
+      editGallery.push(path);
+    } catch (err) { toast('Couldn’t read ' + file.name + ': ' + err.message, true); }
+  }
+  renderGallery();
+  changed();
+});
+$('#p-logo-file').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+  try {
+    const { b64, dataUrl, ext } = await prepareImage(file);
+    const path = `assets/work/pr/logos/${slug(pform.nOutlet.value || file.name.replace(/\.[^.]+$/, ''))}-${Date.now().toString(36)}.${ext}`;
+    pending[path] = { b64, dataUrl };
+    setLogo(path);
+    changed();
+  } catch (err) { toast('Couldn’t read this image: ' + err.message, true); }
+});
+$('#p-logo-clear').addEventListener('click', () => setLogo(''));
+function openLib() {
+  const box = $('#p-img-libbox');
+  box.hidden = false;
+  box.innerHTML = library.length ? library.map((p) => `<button type="button" data-p="${esc(p)}" title="${esc(p)}" style="background-image:url('${esc(imgURL(p))}')"></button>`).join('')
+    : '<small>No images found.</small>';
+}
 $('#p-img-lib').addEventListener('click', () => {
   const box = $('#p-img-libbox');
+  libMode = 'main';
   box.hidden = !box.hidden;
   box.innerHTML = library.length ? library.map((p) => `<button type="button" data-p="${esc(p)}" title="${esc(p)}" style="background-image:url('${esc(imgURL(p))}')"></button>`).join('')
     : '<small>No images found.</small>';
 });
 $('#p-img-libbox').addEventListener('click', (e) => {
   const b = e.target.closest('[data-p]');
-  if (b) { setPrev(b.dataset.p); $('#p-img-libbox').hidden = true; }
+  if (!b) return;
+  if (libMode === 'gal') { editGallery.push(b.dataset.p); renderGallery(); }
+  else setPrev(b.dataset.p);
+  $('#p-img-libbox').hidden = true;
 });
 $('#p-img-file').addEventListener('change', async (e) => {
   const file = e.target.files[0];
@@ -762,7 +839,11 @@ $('#btn-discard').addEventListener('click', () => {
 $('#btn-preview').addEventListener('click', () => {
   // the site reads this when opened with ?preview (this browser only)
   const c = structuredClone(content);
-  c.projects.forEach((p) => { if (pending[p.img]) p.img = pending[p.img].dataUrl; });
+  c.projects.forEach((p) => {
+    if (pending[p.img]) p.img = pending[p.img].dataUrl;
+    if (p.images) p.images = p.images.map((i) => pending[i]?.dataUrl || i);
+    if (p.news?.logo && pending[p.news.logo]) p.news.logo = pending[p.news.logo].dataUrl;
+  });
   try { localStorage.setItem(DRAFT_KEY, JSON.stringify(c)); }
   catch { toast('New images are too big for the preview; it opens without them.', true);
     c.projects.forEach((p) => { if (p.img.startsWith('data:')) p.img = PROTECTED_IMAGES[0]; });

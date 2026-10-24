@@ -205,6 +205,20 @@ legend { font-size: 13px; color: var(--muted); padding: 0 6px; }
 .img-lib { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 240px; overflow: auto; }
 .img-lib button { padding: 0; border: 2px solid transparent; border-radius: 6px; aspect-ratio: 1; background: #e8e6e3 center / cover no-repeat; }
 .img-lib button:hover { border-color: var(--ink); }
+.gal { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+.gal-label { font-size: 13px; font-weight: 600; }
+.gal-label small { font-weight: 400; opacity: .6; }
+.gal-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.gal-list:empty { display: none; }
+.gal-item { position: relative; aspect-ratio: 1; border-radius: 6px; background: #e8e6e3 center / cover no-repeat; }
+.gal-item button { position: absolute; top: 2px; right: 2px; width: 22px; height: 22px; padding: 0; border-radius: 50%; background: rgba(0,0,0,.7); color: #fff; font-size: 14px; line-height: 22px; }
+.gal-item button.left { right: auto; left: 2px; }
+.news-fields { display: flex; flex-direction: column; gap: 12px; margin: 6px 0 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
+.news-fields legend { padding: 0 6px; font-size: 13px; font-weight: 600; }
+.news-fields legend small { font-weight: 400; opacity: .6; }
+.logo-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.logo-prev { width: 140px; height: 44px; border-radius: 6px; background: #fff center / contain no-repeat; border: 1px solid var(--line); }
+.logo-prev:not([style*="url"])::after { content: "no logo"; display: grid; place-items: center; height: 100%; font-size: 12px; opacity: .5; }
 
 
 .toast {

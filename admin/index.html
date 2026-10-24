@@ -175,6 +175,12 @@
           <label class="ghost file-btn">Upload new image<input type="file" id="p-img-file" accept="image/*" hidden></label>
           <button type="button" class="ghost" id="p-img-lib">Choose an existing image</button>
           <div class="img-lib" id="p-img-libbox" hidden></div>
+          <div class="gal">
+            <span class="gal-label">More pictures <small>(shown as a gallery when the item is opened)</small></span>
+            <div class="gal-list" id="p-gal"></div>
+            <label class="ghost file-btn">Add pictures<input type="file" id="p-gal-file" accept="image/*" multiple hidden></label>
+            <button type="button" class="ghost" id="p-gal-lib">Add from existing images</button>
+          </div>
         </div>
         <div class="form">
           <label>Tab<select name="tab" id="p-tab"></select></label>
@@ -188,6 +194,23 @@
             <label>Link (optional)<input name="linkHref" type="url" placeholder="https://"></label>
             <label>Link text<input name="linkLabel" placeholder="view on instagram"></label>
           </div>
+          <fieldset class="news-fields" id="p-news" hidden>
+            <legend>Newspaper page <small>(press release)</small></legend>
+            <div class="two">
+              <label>Outlet<input name="nOutlet" placeholder="HipHopDose"></label>
+              <label>Date<input name="nDate" placeholder="June 1, 2026"></label>
+            </div>
+            <div class="two">
+              <label>Section<input name="nKicker" placeholder="Music"></label>
+              <label>Writer<input name="nByline" placeholder="Jane Doe"></label>
+            </div>
+            <label>Photo caption<input name="nCaption" placeholder="Wavee, whose single “Afties” is out now."></label>
+            <div class="logo-pick">
+              <div class="logo-prev" id="p-logo-prev"></div>
+              <label class="ghost file-btn">Upload the outlet's logo<input type="file" id="p-logo-file" accept="image/*" hidden></label>
+              <button type="button" class="ghost" id="p-logo-clear">No logo (outlet name as text)</button>
+            </div>
+          </fieldset>
         </div>
       </div>
       <div class="dlg-foot">
