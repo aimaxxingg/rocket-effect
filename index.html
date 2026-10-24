@@ -530,7 +530,8 @@
     function setScrolly(end, keepScroll) {
       const y = folderEl.scrollTop;
       // a scrolling folder starts right under the header, which then gets a solid ground
-      document.documentElement.style.setProperty('--nav-h', Math.round(document.querySelector('.nav .left').getBoundingClientRect().bottom + 12) + 'px');
+      // (the bar's own height: the logo can still be flying in from the intro, so its position can't be used)
+      document.documentElement.style.setProperty('--nav-h', Math.min(100, document.querySelector('.nav').offsetHeight || 60) + 'px');
       folderEl.classList.remove('scrolly');
       sheetEl.style.height = '';
       if (end > 0) {
@@ -657,25 +658,29 @@
         setScrolly(H + 20, true);
         lastY = folderEl.scrollTop;
       }
-      // scrolling down: a poster that has mostly gone up out of the folder is torn off at the edge
+      // scrolling down: as a poster's top reaches the top of the folder (still in view), its upper part
+      // tears off along a ragged line, flaps forward and drops away down the screen
       const onScroll = () => {
         if (!wall.isConnected) return folderEl.removeEventListener('scroll', onScroll);
         const y = folderEl.scrollTop, down = y > lastY;
         lastY = y;
         if (!down) return;
-        const edge = folderEl.getBoundingClientRect().top + 30;
+        const edge = folderEl.getBoundingClientRect().top + 40;
         inner.querySelectorAll('.poster:not(.ripped)').forEach((el, k) => {
           const r = el.getBoundingClientRect(), out = (edge - r.top) / r.height;
-          if (out < 0.35 || out > 0.9) return;
-          const piece = startRip(el, k, out * 100 - 14, false), dir = k % 2 ? 1 : -1;
-          // it goes under the header strip, not over it
-          piece.style.zIndex = '0';
-          document.querySelector('.overlay').appendChild(piece);
+          // (a fast flick can carry a poster well past the edge between two scroll events: still tear it, lower down)
+          if (out < -0.06 || out > 0.8) return;
+          const cut = Math.max(28, Math.min(92, out * 100 + 38));
+          // the piece stays inside the folder, so it passes under the header strip. Flat transforms, no flips
+          // and no filter: WebKit can blank the whole folder while such a piece animates
+          const piece = startRip(el, k, cut - 14, false, true), dir = k % 2 ? 1 : -1;
+          piece.style.filter = 'none';
           reset.hidden = false;
           piece.animate([
-            { transform: 'none', opacity: 1 },
-            { transform: `translate(${dir * 90}px, -160px) perspective(900px) rotateX(55deg) rotate(${dir * 18}deg)`, opacity: 0 },
-          ], { duration: 750, easing: 'cubic-bezier(.3, 0, .7, 1)', fill: 'forwards' }).finished.then(() => piece.remove(), () => piece.remove());
+            { transform: 'none', offset: 0 },
+            { transform: `translateY(4px) skewX(${dir * 4}deg) scaleY(0.6)`, offset: 0.25 },
+            { transform: `translate(${dir * 60}px, ${innerHeight * 0.7}px) rotate(${dir * 24}deg) scaleY(0.45)`, opacity: 0, offset: 1 },
+          ], { duration: 1300, easing: 'cubic-bezier(.4, 0, .8, .6)', fill: 'forwards' }).finished.then(() => piece.remove(), () => piece.remove());
         });
       };
       folderEl.addEventListener('scroll', onScroll, { passive: true });
@@ -730,7 +735,8 @@
     }
     // Split a poster along a ragged line near where it was grabbed: the far side stays pasted up,
     // the side you hold becomes a loose piece.
-    function startRip(el, k, grabY, dirDown) {
+    // inPlace: the piece stays on the wall beside the poster (scrolls with it) instead of floating over the page
+    function startRip(el, k, grabY, dirDown, inPlace) {
       const y = Math.max(8, Math.min(92, grabY + (dirDown ? -14 : 14)));
       const edge = ragged(y, 2.4, k + 31);
       const keep = dirDown ? [[0, 0], [100, 0], ...edge.slice().reverse()] : [...edge, [100, 100], [0, 100]];
@@ -738,9 +744,10 @@
       const r = el.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
       const piece = el.cloneNode(true);
       piece.classList.add('rip-piece');
-      piece.style.cssText += `; position: fixed; left: ${r.left + (r.width - w) / 2}px; top: ${r.top + (r.height - h) / 2}px; width: ${w}px; height: ${h}px;` +
-        `z-index: 3000; clip-path: ${poly(gone)}; transform-origin: 50% ${dirDown ? y : y}%;`;
-      document.body.appendChild(piece);
+      piece.style.cssText += (inPlace ? '; z-index: 900;'
+        : `; position: fixed; left: ${r.left + (r.width - w) / 2}px; top: ${r.top + (r.height - h) / 2}px; width: ${w}px; height: ${h}px; z-index: 3000;`) +
+        `clip-path: ${poly(gone)}; transform-origin: 50% ${y}%;`;
+      (inPlace ? el.parentNode : document.body).appendChild(piece);
       el.dataset.clip = el.style.clipPath || '';
       el.style.clipPath = poly(keep);
       el.classList.add('ripped');
