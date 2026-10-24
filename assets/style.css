@@ -235,12 +235,12 @@ body.folder-open .hero { opacity: 0; }
   overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  height: calc(100svh - 76px); padding-top: 24px;
+  height: calc(100svh - var(--nav-h, 62px) + 14px); padding-top: 24px;
 }
 .folder-fade { display: none; }
 .overlay:has(.folder.scrolly) .folder-fade {
-  display: block; position: absolute; left: 0; right: 0; top: 90px; height: 34px; z-index: 1;
-  background: linear-gradient(var(--bg), transparent); pointer-events: none;
+  display: block; position: absolute; left: 0; right: 0; top: 0; height: calc(var(--nav-h, 62px) + 34px); z-index: 1;
+  background: linear-gradient(var(--bg) var(--nav-h, 62px), transparent); pointer-events: none;
 }
 .overlay:has(.folder.scrolly) .folder { z-index: 0; }
 .folder.scrolly::-webkit-scrollbar { display: none; }
@@ -383,29 +383,29 @@ body.folder-open .hero { opacity: 0; }
 }
 .note:hover { rotate: 0deg; translate: 0 -3px; }
 .note-paper {
-  position: relative; display: block; padding: 34px 16px 30px 16px;
+  position: relative; display: flex; flex-direction: column; aspect-ratio: 1; padding: 34px 16px 14px 16px;
   clip-path: var(--edge);
   background:
-    linear-gradient(transparent 0 33px, rgba(120, 110, 85, 0.35) 33px 34px, transparent 34px) 0 0 / 100% 100% no-repeat,
-    repeating-linear-gradient(transparent 0 23px, rgba(120, 110, 85, 0.28) 23px 24px) 0 50px / 100% 100%,
     radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(150, 125, 70, 0.14)),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .3 0 0 0 0 .27 0 0 0 .42 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
     #ece3c6;
 }
 .note-head { position: absolute; top: 14px; left: 16px; right: 16px; display: flex; justify-content: space-between; font-family: "Inter Tight", Arial, sans-serif; font-size: 7px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(110, 100, 80, 0.75); }
 .note-hole { position: absolute; top: 46px; right: 22px; width: 7px; height: 7px; border-radius: 50%; background: #2b2a26; box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6); }
-.note-pic { display: block; margin: 16px 0 10px; padding: 5px; background: #fbfaf6; box-shadow: 0 1px 2px rgba(40, 34, 20, 0.25); rotate: calc(var(--r) * -0.6); }
-.note-pic img { display: block; width: 100%; height: auto; }
+.note-pic { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; margin: 4px 0 8px; rotate: calc(var(--r) * -0.6); }
+.note-pic img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; padding: 4px; background: #fbfaf6; box-shadow: 0 1px 2px rgba(40, 34, 20, 0.25); }
+.note-hand { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .note-hand { display: block; font-family: Caveat, "Bradley Hand", cursive; font-weight: 700; font-size: 21px; line-height: 24px; color: #26324f; text-transform: lowercase; }
 .note-hand.small { font-weight: 500; font-size: 17px; color: #4a4f63; }
-/* a strip of yellow tape over the top edge */
+/* a strip of pale paper tape over the top edge */
 .note-tape { position: absolute; top: -12px; left: 50%; width: 38%; height: 30px; translate: -50% 0; rotate: var(--tape);
-  background: linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 40%), rgba(236, 178, 22, 0.86);
-  box-shadow: 0 1px 2px rgba(80, 60, 0, 0.25);
+  background: linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 50%), rgba(246, 244, 236, 0.72);
+  box-shadow: 0 1px 1.5px rgba(60, 55, 40, 0.18);
+  backdrop-filter: blur(0.6px); -webkit-backdrop-filter: blur(0.6px);
   clip-path: polygon(0 4%, 6% 0, 13% 6%, 20% 1%, 28% 5%, 36% 0, 45% 4%, 55% 0, 63% 5%, 72% 1%, 80% 6%, 88% 0, 95% 5%, 100% 1%, 100% 96%, 94% 100%, 86% 95%, 78% 100%, 69% 96%, 60% 100%, 50% 95%, 41% 100%, 32% 96%, 23% 100%, 14% 95%, 6% 100%, 0 96%); }
 
-/* ---- art: a city wall, posters pasted up over each other ---------------------------------- */
-.wall { position: absolute; inset: 0; overflow: hidden; touch-action: none;
+/* ---- art: big posters pasted up side by side down the folder -------------------------------- */
+.wall { position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-height: 100%;
   animation: card-in 0.5s var(--ease) backwards; }
 .wall-in { position: absolute; inset: 0; }
 .wall-shade { display: none; }
@@ -413,7 +413,7 @@ body.folder-open .hero { opacity: 0; }
   position: absolute; display: block; padding: 0; border: 0; background: none; cursor: grab;
   rotate: var(--r); filter: brightness(var(--shade));
   animation: card-in 0.6s var(--ease) backwards; animation-delay: calc(var(--z) * 12ms);
-  -webkit-tap-highlight-color: transparent; touch-action: none;
+  -webkit-tap-highlight-color: transparent; touch-action: pan-y;
 }
 .poster:active { cursor: grabbing; }
 .poster-paper { position: absolute; inset: 0; display: block; overflow: hidden; background: #f1efe9; box-shadow: 0 1px 2px rgba(30, 38, 36, 0.35), 0 6px 14px rgba(30, 38, 36, 0.18); }
@@ -435,10 +435,11 @@ body.folder-open .hero { opacity: 0; }
 .poster.tissue .poster-paper { background: rgba(240, 238, 232, 0.7); }
 .poster.ripped { cursor: default; }
 .rip-piece { pointer-events: none; animation: none; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.5)); }
-.wall-hint { position: absolute; left: 0; right: 0; bottom: 14px; z-index: 450; margin: 0; text-align: center; pointer-events: none;
+.wall-bar { position: sticky; bottom: 18px; z-index: 450; display: flex; justify-content: center; align-items: center; gap: 8px; pointer-events: none; }
+.wall-hint { margin: 0; text-align: center; pointer-events: none;
   font: 600 13px/1 "Inter Tight", Arial, sans-serif; letter-spacing: -0.01em; color: var(--ink); }
 .wall-hint span { padding: 7px 14px; border-radius: 999px; background: rgba(179, 185, 183, 0.92); }
-.wall-reset { position: absolute; right: 14px; bottom: 10px; z-index: 450; padding: 9px 16px; border: 0; border-radius: 999px;
+.wall-reset { pointer-events: auto; padding: 7px 14px; border: 0; border-radius: 999px;
   font: 600 13px/1 "Inter Tight", Arial, sans-serif; color: #111; background: rgba(255, 255, 255, 0.88); cursor: pointer; }
 
 /* ---- detail: a little gallery when there are more pictures ------------------------------- */
@@ -551,8 +552,7 @@ body.folder-open .hero { opacity: 0; }
   .hero-word.w2 { top: 50vh; right: 5vw; }
   /* edge to edge, and on past the bottom of the screen (Safari's toolbar floats over it) */
   .folder { width: 100vw; top: 64px; bottom: auto; height: calc(100vh - 30px); height: calc(100lvh - 30px); }
-  .folder.scrolly { top: 40px; height: calc(100svh - 40px); }
-  .overlay:has(.folder.scrolly) .folder-fade { top: 40px; }
+  .folder.scrolly { top: var(--nav-h, 40px); height: calc(100svh - var(--nav-h, 40px)); }
   .folder .tab .blobword { height: calc(var(--u) * 27); top: calc(var(--u) * 13); }
   .folder { transform-origin: 50% 0; }
   .overlay.open .folder.flip { animation: none; opacity: 1; transform: none; }
@@ -663,13 +663,13 @@ body.folder-open .hero { opacity: 0; }
   .detail-media .news { width: 100%; }
   .notes { width: calc(100% - 28px); gap: 16px; margin-top: 22px; }
   .note { margin-bottom: 26px; }
-  .note-paper { padding: 28px 10px 22px; }
+  .note-paper { padding: 28px 10px 8px; }
   .note-head { font-size: 5.5px; top: 11px; left: 10px; right: 10px; letter-spacing: 0.1em; }
   .note-hole { top: 38px; right: 12px; width: 6px; height: 6px; }
   .note-hand { font-size: 17px; line-height: 20px; }
   .note-hand.small { font-size: 14px; }
   .note-tape { height: 22px; top: -9px; }
-  .wall-reset { left: 50%; right: auto; translate: -50% 0; bottom: 34px; }
+  .wall-bar { bottom: 28px; }
   .stage > img, .detail-media:has(.thumbs) .stage > img { max-height: 70svh; width: auto; max-width: 100%; }
   .detail { position: relative; grid-template-columns: 1fr; padding: 56px 18px 40px; gap: 22px; }
   /* the folder runs on past the bottom of the screen (and under Safari's toolbar): keep the credit in view */

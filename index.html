@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&family=Caveat:wght@500;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=60">
+  <link rel="stylesheet" href="assets/style.css?v=61">
 </head>
 <body>
   <header class="nav">
@@ -519,8 +519,7 @@
           </span>
         </span>
         <span class="news-cap">${esc(n.caption || '')}</span>
-        <span class="news-more">${others.map((o, k) => `<span class="news-story"><span class="news-story-h">${esc(o.title)}</span><span class="news-lines"></span>` +
-          (k === (i % 2) + 1 ? `<span class="news-thumb"><img src="${esc(o.img)}" alt="" draggable="false"></span>` : '') + '</span>').join('')}<span class="news-story"><span class="news-lines"></span></span></span>
+        <span class="news-more">${others.map((o, k) => `<span class="news-story"><span class="news-story-h">${esc(o.title)}</span><span class="news-lines"></span></span>`).join('')}<span class="news-story"><span class="news-lines"></span></span></span>
       </span></span>`;
     }
 
@@ -530,6 +529,8 @@
     let paperScroll = 0;
     function setScrolly(end, keepScroll) {
       const y = folderEl.scrollTop;
+      // a scrolling folder starts right under the header, which then gets a solid ground
+      document.documentElement.style.setProperty('--nav-h', Math.round(document.querySelector('.nav .left').getBoundingClientRect().bottom + 12) + 'px');
       folderEl.classList.remove('scrolly');
       sheetEl.style.height = '';
       if (end > 0) {
@@ -606,73 +607,78 @@
       wrap.querySelectorAll('img').forEach((im) => im.addEventListener('load', () => fit(true), { once: true }));
     }
 
-    // Art: a wall in the city, posters pasted up over each other in a dense cluster, older ones
-    // showing underneath. Grab one and pull: it tears off along a ragged line (a scrap stays on the
-    // wall) and comes away with your hand. A tap without pulling opens it.
+    // Art: big posters pasted up side by side down the folder. Grab one and pull: it tears off along
+    // a ragged line (a scrap stays on the wall) and comes away with your hand. Scroll on and the ones
+    // leaving the top of the folder get torn off too. A tap without pulling opens it.
     function renderPosters(tab, list) {
       const narrow = matchMedia('(max-width: 640px)').matches;
       const wall = document.createElement('div');
       wall.className = 'wall';
-      wall.innerHTML = `<div class="wall-in"></div><div class="wall-shade"></div>
-        <p class="wall-hint"><span>${narrow ? 'tap to open · drag to rip' : 'click to open · drag to rip'}</span></p>
-        <button type="button" class="wall-reset" hidden>paste them back</button>`;
+      wall.innerHTML = `<div class="wall-in"></div>
+        <div class="wall-bar"><p class="wall-hint"><span>${narrow ? 'tap to open · swipe sideways to rip' : 'click to open · drag to rip'}</span></p>
+        <button type="button" class="wall-reset" hidden>paste them back</button></div>`;
       board.replaceChildren(wall);
       setScrolly(0);
       const inner = wall.querySelector('.wall-in'), reset = wall.querySelector('.wall-reset');
       // laid out once the wall has its size (it can still be zero while the folder opens)
-      let ratios = null, laidW = 0;
+      let ratios = null, laidW = 0, lastY = 0;
       const ro = new ResizeObserver(() => {
         if (!wall.isConnected) return ro.disconnect();
-        if (ratios && wall.clientHeight > 50 && Math.abs(wall.clientWidth - laidW) > 40) layout();
+        if (ratios && wall.clientWidth > 50 && Math.abs(wall.clientWidth - laidW) > 40) layout();
       });
       ro.observe(wall);
-      Promise.all(list.map((p) => shapeOf(p.img))).then((r) => { ratios = r; if (wall.clientHeight > 50) layout(); });
+      Promise.all(list.map((p) => shapeOf(p.img))).then((r) => { ratios = r; if (wall.clientWidth > 50) layout(); });
       function layout() {
         if (!wall.isConnected || !list.length) return;
-        laidW = wall.clientWidth;
+        const W = laidW = wall.clientWidth;
         inner.replaceChildren();
         reset.hidden = true;
         let seed = 7;
         const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
-        // on phones the folder runs below the screen: fit the cluster to the part you can see
-        const W = wall.clientWidth, H = Math.min(wall.clientHeight, Math.max(300, innerHeight - 110 - (narrow ? 64 : 0)));
-        // each piece once, in loose rows with air between them, sized so they all fit the sheet
-        const cw = W * (narrow ? 0.9 : 0.84), ch = H * 0.86;
-        const n = list.length, tall = Math.max(...ratios.map((r) => Math.min(r, 1.5))), gap = narrow ? 0.1 : 0.14;
-        // as many rows as makes the posters biggest
-        let tr = 1, tc = n, w = 0;
-        for (let r = 1; r <= n; r++) {
-          const c = Math.ceil(n / r), s = Math.min(cw / (c + (c - 1) * gap), ch / (r * tall + (r - 1) * gap));
-          if (s > w) { w = s; tr = r; tc = c; }
-        }
-        const stepX = w * (1 + gap), stepY = w * (tall + gap);
-        const spots = list.map((p, i) => {
-          const r = Math.floor(i / tc), inRow = r === tr - 1 ? n - r * tc : tc, c = i - r * tc + (tc - inRow) / 2;
-          // a little off-line, every other one a touch higher, so it isn't a spreadsheet
-          return {
-            cx: W / 2 + (c - (tc - 1) / 2) * stepX + (rnd() - 0.5) * w * 0.06,
-            cy: H / 2 + (r - (tr - 1) / 2) * stepY + (i % 2 ? -1 : 1) * w * 0.035 + (rnd() - 0.5) * w * 0.04,
-            w, layer: 2, i,
-          };
-        });
-        spots.forEach((sp, k) => {
-          const p = list[sp.i], ratio = ratios[sp.i];
-          const h = sp.w * ratio;
+        // columns of posters with a sliver of folder between them; each goes under the shortest column
+        const n = narrow ? 2 : W > 1000 ? 3 : 2, gap = narrow ? 8 : 16, side = narrow ? 14 : W * 0.07;
+        const w = (W - side * 2 - gap * (n - 1)) / n, colH = new Array(n).fill(narrow ? 16 : 30);
+        list.forEach((p, k) => {
+          const c = colH.indexOf(Math.min(...colH)), h = w * Math.min(ratios[k], 1.6);
           const el = document.createElement('button');
           el.type = 'button';
-          el.className = 'poster' + (rnd() < 0.12 && sp.layer < 2 ? ' tissue' : '');
+          el.className = 'poster';
           el.setAttribute('aria-label', p.title);
-          const torn = rnd() < 0.3 ? ragged(rnd() < 0.5 ? 96 : 4, 1.6, k + 5) : null;
-          el.style.cssText = `left:${sp.cx - sp.w / 2}px; top:${sp.cy - h / 2}px; width:${sp.w}px; height:${h}px;` +
-            `--r:${((rnd() - 0.5) * (sp.layer === 2 ? 4 : 3.5)).toFixed(2)}deg; z-index:${sp.layer * 100 + Math.floor(rnd() * 90)};` +
-            `--shade:${sp.layer === 2 ? 1 : 0.9}; --z:${k};` +
-            (torn ? `clip-path:${poly(torn[0][1] > 50 ? [[0, 0], [100, 0], ...torn.slice().reverse()] : [...torn, [100, 100], [0, 100]])};` : '');
+          el.style.cssText = `left:${side + c * (w + gap) + (rnd() - 0.5) * 6}px; top:${colH[c]}px; width:${w}px; height:${h}px;` +
+            `--r:${((rnd() - 0.5) * 2.2).toFixed(2)}deg; z-index:${10 + k}; --shade:1; --z:${k};`;
           el.innerHTML = `<span class="poster-paper"><img src="${esc(p.img)}" alt="" draggable="false"></span>`;
           el.project = p;
           inner.appendChild(el);
           ripHandlers(el, k, reset);
+          colH[c] += h + gap;
         });
+        const H = Math.max(...colH) + 90;
+        wall.style.height = H + 'px';
+        setScrolly(H + 20, true);
+        lastY = folderEl.scrollTop;
       }
+      // scrolling down: a poster that has mostly gone up out of the folder is torn off at the edge
+      const onScroll = () => {
+        if (!wall.isConnected) return folderEl.removeEventListener('scroll', onScroll);
+        const y = folderEl.scrollTop, down = y > lastY;
+        lastY = y;
+        if (!down) return;
+        const edge = folderEl.getBoundingClientRect().top + 30;
+        inner.querySelectorAll('.poster:not(.ripped)').forEach((el, k) => {
+          const r = el.getBoundingClientRect(), out = (edge - r.top) / r.height;
+          if (out < 0.35 || out > 0.9) return;
+          const piece = startRip(el, k, out * 100 - 14, false), dir = k % 2 ? 1 : -1;
+          // it goes under the header strip, not over it
+          piece.style.zIndex = '0';
+          document.querySelector('.overlay').appendChild(piece);
+          reset.hidden = false;
+          piece.animate([
+            { transform: 'none', opacity: 1 },
+            { transform: `translate(${dir * 90}px, -160px) perspective(900px) rotateX(55deg) rotate(${dir * 18}deg)`, opacity: 0 },
+          ], { duration: 750, easing: 'cubic-bezier(.3, 0, .7, 1)', fill: 'forwards' }).finished.then(() => piece.remove(), () => piece.remove());
+        });
+      };
+      folderEl.addEventListener('scroll', onScroll, { passive: true });
       reset.addEventListener('click', () => {
         inner.querySelectorAll('.poster.ripped').forEach((el) => {
           el.classList.remove('ripped');
@@ -689,14 +695,13 @@
         down = true; sx = e.clientX; sy = e.clientY; pid = e.pointerId;
         const r = el.getBoundingClientRect();
         grabY = ((e.clientY - r.top) / r.height) * 100;
-        e.preventDefault();
-        try { el.setPointerCapture(pid); } catch {}
+        if (e.pointerType === 'mouse') { e.preventDefault(); try { el.setPointerCapture(pid); } catch {} }
       });
       el.addEventListener('pointermove', (e) => {
         if (!down) return;
         const dx = e.clientX - sx, dy = e.clientY - sy;
         if (!piece) {
-          if (Math.hypot(dx, dy) < 10) return;
+          if (Math.hypot(dx, dy) < 10 || (e.pointerType !== 'mouse' && Math.abs(dy) > Math.abs(dx))) return;
           dirDown = dy >= -Math.abs(dx) * 0.3;
           piece = startRip(el, k, grabY, dirDown);
           reset.hidden = false;
