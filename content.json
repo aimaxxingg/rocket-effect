@@ -297,14 +297,14 @@
     },
     {
       "tab": "art",
-      "img": "assets/work/strick-machine.jpg",
-      "title": "Strick - Machine",
-      "client": "Strick",
-      "year": "2025",
-      "text": "Cover art for “Machine” by Strick.",
+      "img": "assets/work/strick-machine-mvlxfkyl.jpg",
+      "title": "\"Time Away\" - Zai1k Cover Art",
+      "client": "Columbia / Sony",
+      "year": "2023",
+      "text": "Creative & Art direction for \"Time Away\" by Zai1k - Cover Art & Motion Cover",
       "link": {
-        "href": "https://www.instagram.com/p/DKe31iBRZjv/",
-        "label": "view on instagram"
+        "href": "https://open.spotify.com/track/6uUwDpAtsPIcUdiXoLsQ95?si=6845e95dc7894302",
+        "label": "Spotify"
       },
       "x": 56,
       "y": 6,
@@ -313,15 +313,59 @@
     },
     {
       "tab": "art",
-      "img": "assets/work/placeholder.png",
-      "title": "Project nine",
-      "client": "Client",
-      "year": "2025",
-      "text": "Project description goes here: the brief, what we did and the results.",
+      "img": "assets/work/project-nine-mvlxpe95.jpg",
+      "title": "\"Old Me\" - Zai1k Cover Art",
+      "client": "Columbia / Sony",
+      "year": "2023",
+      "text": "Creative & Art direction for \"Old Me\" by Zai1k - Cover Art.",
       "x": 8,
       "y": 16,
       "w": 36,
+      "r": 2,
+      "link": {
+        "href": "https://open.spotify.com/track/52eEvdRDtrgK1rH7pSGBz2?si=ada815b494fc4bcc",
+        "label": "Spotify"
+      }
+    },
+    {
+      "tab": "art",
+      "img": "assets/work/old-me-zai1k-copy-mvlxyp5g.jpg",
+      "title": "Pressa - Press Machine II Posters",
+      "client": "Blue Feathers Records",
+      "year": "2025",
+      "text": "Art direction for \"Press Machine II\", Posted around the city of Toronto.",
+      "x": 9,
+      "y": 9,
+      "w": 30,
+      "r": 2.5
+    },
+    {
+      "tab": "art",
+      "img": "assets/work/pressa-press-machine-ii-posters-copy-mvly3613.jpg",
+      "title": "\"Get Back Up\" - Pressa & Fridayy Cover Art",
+      "client": "RCA / Sony",
+      "year": "2025",
+      "text": "Art direction for \"Press Machine II\", Posted around the city of Toronto.",
+      "x": 16,
+      "y": 24,
+      "w": 36,
       "r": 2
+    },
+    {
+      "tab": "art",
+      "img": "assets/work/get-back-up-pressa-fridayy-copy-mvly7y37.jpg",
+      "title": "\"Unfollow Me\" - Pressa Lyric Video & Cover Art",
+      "client": "RCA / Sony",
+      "year": "2025",
+      "text": "Creative & Art Direction for \"Unfollow Me\" by Pressa - Poster, Lyric Video, Cover art, Motion Cover",
+      "x": 20,
+      "y": 28,
+      "w": 36,
+      "r": 2,
+      "link": {
+        "href": "https://youtu.be/kT6WE-Jg1RY?si=Vzi8yI7onAJv2Ubq",
+        "label": "Youtube"
+      }
     },
     {
       "tab": "pr",
