@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&family=Caveat:wght@500;700&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=58">
+  <link rel="stylesheet" href="assets/style.css?v=59">
 </head>
 <body>
   <header class="nav">
@@ -606,88 +606,141 @@
       wrap.querySelectorAll('img').forEach((im) => im.addEventListener('load', () => fit(true), { once: true }));
     }
 
-    // Art: posters pasted up on the wall, side by side and a little over each other. With
-    // "rip some posters" on, dragging a poster tears it off (a ragged strip stays pasted up).
+    // Art: a wall in the city, posters pasted up over each other in a dense cluster, older ones
+    // showing underneath. Grab one and pull: it tears off along a ragged line (a scrap stays on the
+    // wall) and comes away with your hand. A tap without pulling opens it.
     function renderPosters(tab, list) {
-      const wrap = document.createElement('div');
-      wrap.className = 'posters';
       const narrow = matchMedia('(max-width: 640px)').matches;
-      const n = narrow ? 2 : Math.max(2, Math.min(5, Math.floor((board.clientWidth - 80) / 300)));
-      const col = Array.from({ length: n }, () => wrap.appendChild(document.createElement('div')));
-      const posters = list.map((p, i) => {
-        const el = document.createElement('button');
-        el.type = 'button';
-        el.className = 'poster';
-        el.style.cssText = `--z:${i + 1}; --r:${[-1.2, 0.8, -0.5, 1.4, -0.9][i % 5]}deg; --dx:${[0, -6, 4, -3, 6][i % 5]}px`;
-        el.setAttribute('aria-label', p.title);
-        el.innerHTML = `<span class="poster-paper"><img src="${esc(p.img)}" alt="" draggable="false" loading="lazy"></span>`;
-        el.project = p;
-        col[i % n].appendChild(el);
-        return el;
+      const wall = document.createElement('div');
+      wall.className = 'wall';
+      wall.innerHTML = `<div class="wall-in"></div><div class="wall-shade"></div>
+        <p class="wall-hint">${narrow ? 'tap to open · drag to rip' : 'click to open · drag to rip'}</p>
+        <button type="button" class="wall-reset" hidden>paste them back</button>`;
+      board.replaceChildren(wall);
+      setScrolly(0);
+      const inner = wall.querySelector('.wall-in'), reset = wall.querySelector('.wall-reset');
+      // laid out once the wall has its size (it can still be zero while the folder opens)
+      let ratios = null, laidW = 0;
+      const ro = new ResizeObserver(() => {
+        if (!wall.isConnected) return ro.disconnect();
+        if (ratios && wall.clientHeight > 50 && Math.abs(wall.clientWidth - laidW) > 40) layout();
       });
-      const bar = document.createElement('div');
-      bar.className = 'rip-bar';
-      bar.innerHTML = `<button type="button" class="rip-btn">rip some posters</button><button type="button" class="rip-reset" hidden>paste them back</button>`;
-      board.replaceChildren(wrap);
-      overlay.appendChild(bar);   // outside the scrolling folder, so it stays in view
-      board.classList.remove('ripping');
-      const btn = bar.querySelector('.rip-btn'), reset = bar.querySelector('.rip-reset');
-      btn.addEventListener('click', () => {
-        const on = board.classList.toggle('ripping');
-        btn.textContent = on ? 'done ripping' : 'rip some posters';
-      });
+      ro.observe(wall);
+      Promise.all(list.map((p) => shapeOf(p.img))).then((r) => { ratios = r; if (wall.clientHeight > 50) layout(); });
+      function layout() {
+        if (!wall.isConnected || !list.length) return;
+        laidW = wall.clientWidth;
+        inner.replaceChildren();
+        reset.hidden = true;
+        let seed = 7;
+        const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+        const W = wall.clientWidth, H = wall.clientHeight;
+        // the cluster: a rounded patch in the middle of the wall, a little narrower than it
+        const cw = Math.min(W * (narrow ? 0.96 : 0.82), H * 1.45), ch = H * 0.8;
+        const cols = narrow ? 3 : 6, cell = cw / cols, rows = Math.ceil(ch / (cell * 0.95)) + 1;
+        const x0 = (W - cw) / 2, y0 = (H - ch) / 2;
+        const spots = [];
+        // older layers: every cell covered, pictures cycling, overlapping their neighbours
+        for (let layer = 0; layer < 2; layer++) {
+          for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+            const cx = x0 + (c + 0.5 + (layer ? 0.5 : 0)) * cell + (rnd() - 0.5) * cell * 0.4;
+            const cy = y0 + (r + 0.3 + (layer ? 0.45 : 0)) * cell * 0.95 + (rnd() - 0.5) * cell * 0.4;
+            // keep to a rounded patch, ragged at its rim
+            const nx = (cx - W / 2) / (cw / 2), ny = (cy - H / 2) / (ch / 2);
+            if (nx * nx + ny * ny > 1.08 + rnd() * 0.25) continue;
+            spots.push({ cx, cy, w: cell * (0.95 + rnd() * 0.5), layer, i: Math.floor(rnd() * list.length) });
+          }
+        }
+        // the top layer: each piece once, a bit bigger, spread over the cluster
+        list.forEach((p, i) => {
+          const a = (i / list.length) * Math.PI * 2 + rnd(), rad = list.length > 1 ? 0.18 + rnd() * 0.22 : 0;
+          spots.push({ cx: W / 2 + Math.cos(a) * cw * rad, cy: H / 2 + Math.sin(a) * ch * rad * 0.9, w: cell * (narrow ? 1.35 : 1.5), layer: 2, i });
+        });
+        spots.forEach((sp, k) => {
+          const p = list[sp.i], ratio = ratios[sp.i];
+          const h = sp.w * ratio;
+          const el = document.createElement('button');
+          el.type = 'button';
+          el.className = 'poster' + (rnd() < 0.18 && sp.layer < 2 ? ' tissue' : '');
+          el.setAttribute('aria-label', p.title);
+          const torn = rnd() < 0.45 ? ragged(rnd() < 0.5 ? 96 : 4, 1.6, k + 5) : null;
+          el.style.cssText = `left:${sp.cx - sp.w / 2}px; top:${sp.cy - h / 2}px; width:${sp.w}px; height:${h}px;` +
+            `--r:${((rnd() - 0.5) * (sp.layer === 2 ? 5 : 8)).toFixed(2)}deg; z-index:${sp.layer * 100 + Math.floor(rnd() * 90)};` +
+            `--shade:${sp.layer === 2 ? 1 : sp.layer ? 0.86 : 0.74}; --z:${k};` +
+            (torn ? `clip-path:${poly(torn[0][1] > 50 ? [[0, 0], [100, 0], ...torn.slice().reverse()] : [...torn, [100, 100], [0, 100]])};` : '');
+          el.innerHTML = `<span class="poster-paper"><img src="${esc(p.img)}" alt="" draggable="false"></span>`;
+          el.project = p;
+          inner.appendChild(el);
+          ripHandlers(el, k, reset);
+        });
+      }
       reset.addEventListener('click', () => {
-        posters.forEach((el) => { if (el.classList.contains('ripped')) { el.classList.remove('ripped'); el.style.clipPath = ''; el.animate([{ opacity: 0 }, { opacity: 1 }], 400); } });
+        inner.querySelectorAll('.poster.ripped').forEach((el) => {
+          el.classList.remove('ripped');
+          el.style.clipPath = el.dataset.clip || '';
+          el.animate([{ opacity: 0, transform: 'scale(1.04)' }, { opacity: 1, transform: 'none' }], { duration: 450, easing: 'ease-out' });
+        });
         reset.hidden = true;
       });
-      posters.forEach((el, i) => {
-        let sx = 0, sy = 0, down = false;
-        el.addEventListener('pointerdown', (e) => {
-          if (!board.classList.contains('ripping') || el.classList.contains('ripped')) return;
-          down = true; sx = e.clientX; sy = e.clientY;
-          e.preventDefault();
-          try { el.setPointerCapture(e.pointerId); } catch {}
-        });
-        el.addEventListener('pointermove', (e) => {
-          if (!down || Math.hypot(e.clientX - sx, e.clientY - sy) < 18) return;
-          down = false;
-          ripPoster(el, i, e.clientX - sx, e.clientY - sy);
-          reset.hidden = false;
-        });
-        el.addEventListener('pointerup', () => { down = false; });
-        el.addEventListener('click', (e) => {
-          if (board.classList.contains('ripping')) { e.preventDefault(); return; }
-          openDetail(el.project);
-        });
-      });
-      const fit = (keep) => setScrolly(wrap.offsetHeight + 110, keep);
-      fit(false);
-      Promise.all(list.map((p) => shapeOf(p.img))).then((ratios) => {
-        if (!wrap.isConnected) return;
-        const h = new Array(n).fill(0);
-        posters.forEach((el, i) => { const k = h.indexOf(Math.min(...h)); col[k].appendChild(el); h[k] += ratios[i]; });
-        fit(true);
-      });
-      wrap.querySelectorAll('img').forEach((im) => im.addEventListener('load', () => fit(true), { once: true }));
     }
-    // Tear a poster: a ragged strip stays on the wall, the rest comes away with the pull and falls.
-    function ripPoster(el, i, dx, dy) {
-      const cut = 12 + ((i * 37) % 22);   // how much stays pasted up, in % from the top
-      const edge = ragged(cut, 2.2, i + 11);
+    function ripHandlers(el, k, reset) {
+      let sx = 0, sy = 0, down = false, piece = null, pid = 0, grabY = 0, dirDown = true;
+      el.addEventListener('pointerdown', (e) => {
+        if (el.classList.contains('ripped')) return;
+        down = true; sx = e.clientX; sy = e.clientY; pid = e.pointerId;
+        const r = el.getBoundingClientRect();
+        grabY = ((e.clientY - r.top) / r.height) * 100;
+        e.preventDefault();
+        try { el.setPointerCapture(pid); } catch {}
+      });
+      el.addEventListener('pointermove', (e) => {
+        if (!down) return;
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (!piece) {
+          if (Math.hypot(dx, dy) < 10) return;
+          dirDown = dy >= -Math.abs(dx) * 0.3;
+          piece = startRip(el, k, grabY, dirDown);
+          reset.hidden = false;
+        }
+        // the torn piece hangs from your hand: it follows, swings and curls away from the wall
+        const pull = Math.min(1, Math.hypot(dx, dy) / 260);
+        piece.style.transform = `translate(${dx}px, ${dy}px) perspective(900px) rotateX(${(dirDown ? -1 : 1) * pull * 28}deg) rotate(${dx * 0.05}deg) scale(${1 + pull * 0.04})`;
+      });
+      const end = (e) => {
+        if (!down) return;
+        down = false;
+        if (!piece) return;
+        const p = piece; piece = null;
+        const dx = e.clientX - sx, dy = e.clientY - sy, side = Math.sign(dx || 1);
+        p.animate([
+          { transform: p.style.transform },
+          { transform: `translate(${dx * 1.6 + side * 120}px, ${Math.max(dy, 0) + innerHeight}px) perspective(900px) rotateX(-40deg) rotate(${side * 50}deg)` },
+        ], { duration: 900, easing: 'cubic-bezier(.45, 0, .9, .55)', fill: 'forwards' }).finished.then(() => p.remove(), () => p.remove());
+      };
+      el.addEventListener('pointerup', end);
+      el.addEventListener('pointercancel', end);
+      el.addEventListener('click', (e) => {
+        if (Math.hypot(e.clientX - sx, e.clientY - sy) > 10 || el.classList.contains('ripped')) return;
+        openDetail(el.project);
+      });
+    }
+    // Split a poster along a ragged line near where it was grabbed: the far side stays pasted up,
+    // the side you hold becomes a loose piece.
+    function startRip(el, k, grabY, dirDown) {
+      const y = Math.max(8, Math.min(92, grabY + (dirDown ? -14 : 14)));
+      const edge = ragged(y, 2.4, k + 31);
+      const keep = dirDown ? [[0, 0], [100, 0], ...edge.slice().reverse()] : [...edge, [100, 100], [0, 100]];
+      const gone = dirDown ? [...edge, [100, 100], [0, 100]] : [[0, 0], [100, 0], ...edge.slice().reverse()];
       const r = el.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
       const piece = el.cloneNode(true);
       piece.classList.add('rip-piece');
-      piece.style.cssText += `; position: fixed; left: ${r.left + (r.width - w) / 2}px; top: ${r.top + (r.height - h) / 2}px; width: ${w}px; height: ${h}px; margin: 0;` +
-        `clip-path: ${poly([...edge, [100, 100], [0, 100]])}`;
+      piece.style.cssText += `; position: fixed; left: ${r.left + (r.width - w) / 2}px; top: ${r.top + (r.height - h) / 2}px; width: ${w}px; height: ${h}px;` +
+        `z-index: 3000; clip-path: ${poly(gone)}; transform-origin: 50% ${dirDown ? y : y}%;`;
       document.body.appendChild(piece);
-      el.style.clipPath = poly([[0, 0], [100, 0], ...edge.slice().reverse()]);
+      el.dataset.clip = el.style.clipPath || '';
+      el.style.clipPath = poly(keep);
       el.classList.add('ripped');
-      const dir = Math.sign(dx || 1);
-      piece.animate([
-        { transform: 'none', transformOrigin: '50% 0' },
-        { transform: `translate(${dx * 1.4}px, ${Math.max(dy, 20) * 1.4}px) rotate(${dir * 9}deg)`, offset: 0.25 },
-        { transform: `translate(${dx * 2 + dir * 80}px, ${innerHeight}px) rotate(${dir * 38}deg)`, opacity: 0.9 },
-      ], { duration: 1100, easing: 'cubic-bezier(.4, 0, .9, .6)', fill: 'forwards' }).finished.then(() => piece.remove(), () => piece.remove());
+      return piece;
     }
 
     function renderBoard(tab) {
@@ -698,9 +751,7 @@
       const H = sheetEl.clientHeight || innerHeight * 0.8, step = H * 0.26;
       const list = projects.filter((p) => p.tab === tab);
       const style = BOARD_STYLE[tab];
-      overlay.querySelector('.rip-bar')?.remove();
       board.classList.toggle('styled', !!style);
-      board.classList.remove('ripping');
       if (style) { board.classList.remove('papers'); return style === 'notes' ? renderNotes(tab, list) : renderPosters(tab, list); }
       // newspapers are laid out down the folder, overlapping a little, and the folder scrolls:
       // two staggered columns on desktop, one column on phones
@@ -870,8 +921,8 @@
       if (tab && mode === 'work') { useStack() ? backToStack() : showWork(tab.dataset.tab); return; }
       if (e.target.closest('.back')) { closeDetail(); return; }
       // Click outside the folder closes it (header links still work).
-      // (the rip switch sits outside it, and while ripping a pull can end anywhere)
-      if (e.target.closest('.rip-bar') || board.classList.contains('ripping')) return;
+      // (a pull on the poster wall can end anywhere)
+      if (e.target.closest('.wall')) return;
       if (!e.target.closest('#folder') && !e.target.closest('.nav')) close();
     });
     document.addEventListener('keydown', (e) => {
@@ -918,7 +969,6 @@
         navigator.vibrate?.(8);
       };
       card.addEventListener('pointerdown', (e) => {
-        if (board.classList.contains('ripping')) return;
         down = true; moved = false; held = false; dx = dy = 0;
         startX = e.clientX; startY = e.clientY;
         pid = e.pointerId;

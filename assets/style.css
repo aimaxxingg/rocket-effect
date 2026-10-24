@@ -404,43 +404,42 @@ body.folder-open .hero { opacity: 0; }
   box-shadow: 0 1px 2px rgba(80, 60, 0, 0.25);
   clip-path: polygon(0 4%, 6% 0, 13% 6%, 20% 1%, 28% 5%, 36% 0, 45% 4%, 55% 0, 63% 5%, 72% 1%, 80% 6%, 88% 0, 95% 5%, 100% 1%, 100% 96%, 94% 100%, 86% 95%, 78% 100%, 69% 96%, 60% 100%, 50% 95%, 41% 100%, 32% 96%, 23% 100%, 14% 95%, 6% 100%, 0 96%); }
 
-/* ---- art: posters pasted up on the wall -------------------------------------------------- */
-.posters { display: flex; align-items: flex-start; gap: 6px; width: min(1500px, calc(100% - 40px)); margin: 30px auto 0; padding-bottom: 20px; }
-.posters > div { flex: 1; min-width: 0; }
+/* ---- art: a city wall, posters pasted up over each other ---------------------------------- */
+.wall { position: absolute; inset: 18px 18px 18px; overflow: hidden; border-radius: 6px; background: #0d0d0c; touch-action: none;
+  animation: card-in 0.5s var(--ease) backwards; }
+.wall-in { position: absolute; inset: 0; }
+/* dark at the edges, like the light falling off a lit wall */
+.wall-shade { position: absolute; inset: 0; z-index: 400; pointer-events: none; box-shadow: inset 0 0 160px 20px #000; background: rgba(0, 0, 0, 0.08); }
 .poster {
-  position: relative; display: block; width: calc(100% + 16px); margin: 0 -8px -10px; padding: 0; border: 0; background: none;
-  rotate: var(--r); translate: var(--dx) 0; cursor: zoom-in;
-  filter: drop-shadow(0 1px 0.5px rgba(0, 0, 0, 0.3)) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.14));
-  animation: card-in 0.5s var(--ease) backwards; animation-delay: calc(var(--z) * 45ms);
-  -webkit-tap-highlight-color: transparent;
+  position: absolute; display: block; padding: 0; border: 0; background: none; cursor: grab;
+  rotate: var(--r); filter: brightness(var(--shade));
+  animation: card-in 0.6s var(--ease) backwards; animation-delay: calc(var(--z) * 12ms);
+  -webkit-tap-highlight-color: transparent; touch-action: none;
 }
-.poster:nth-child(2n) { z-index: 1; }
-.poster-paper { position: relative; display: block; overflow: hidden; background: #f4f2ec; }
-.poster-paper img { display: block; width: 100%; height: auto; }
-/* wheat-paste: the paper went on wet, so it wrinkles, catches the light along the creases and is a bit glossy */
+.poster:active { cursor: grabbing; }
+.poster-paper { position: absolute; inset: 0; display: block; overflow: hidden; background: #f1efe9; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); }
+.poster-paper img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* wheat-paste: the paper went on wet, so it wrinkles and catches the light along the creases */
 .poster-paper::after { content: ""; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply;
   background:
-    linear-gradient(97deg, transparent 18%, rgba(0, 0, 0, 0.1) 19%, transparent 21%, transparent 62%, rgba(0, 0, 0, 0.08) 63.5%, transparent 65%),
-    linear-gradient(176deg, transparent 30%, rgba(0, 0, 0, 0.09) 31%, transparent 33.5%, transparent 71%, rgba(0, 0, 0, 0.1) 72.5%, transparent 75%),
-    linear-gradient(80deg, transparent 40%, rgba(0, 0, 0, 0.06) 42%, transparent 45%),
-    radial-gradient(ellipse at 30% 20%, transparent 50%, rgba(0, 0, 0, 0.1)),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .3 0 0 0 0 .27 0 0 0 .42 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    linear-gradient(97deg, transparent 18%, rgba(0, 0, 0, 0.14) 19%, transparent 21%, transparent 62%, rgba(0, 0, 0, 0.1) 63.5%, transparent 65%),
+    linear-gradient(176deg, transparent 30%, rgba(0, 0, 0, 0.12) 31%, transparent 33.5%, transparent 71%, rgba(0, 0, 0, 0.12) 72.5%, transparent 75%),
+    linear-gradient(80deg, transparent 40%, rgba(0, 0, 0, 0.08) 42%, transparent 45%),
+    radial-gradient(ellipse at 30% 20%, transparent 45%, rgba(0, 0, 0, 0.18)); }
 .poster-paper::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background:
-    linear-gradient(97deg, transparent 20.5%, rgba(255, 255, 255, 0.13) 21.5%, transparent 23%, transparent 64.5%, rgba(255, 255, 255, 0.1) 65.5%, transparent 67%),
-    linear-gradient(176deg, transparent 33%, rgba(255, 255, 255, 0.1) 34%, transparent 35.5%),
-    linear-gradient(125deg, rgba(255, 255, 255, 0.16), transparent 35%); }
+    linear-gradient(97deg, transparent 20.5%, rgba(255, 255, 255, 0.16) 21.5%, transparent 23%, transparent 64.5%, rgba(255, 255, 255, 0.12) 65.5%, transparent 67%),
+    linear-gradient(176deg, transparent 33%, rgba(255, 255, 255, 0.12) 34%, transparent 35.5%),
+    linear-gradient(125deg, rgba(255, 255, 255, 0.12), transparent 35%); }
+/* thin prints: some posters went up on see-through paper and look washed out */
+.poster.tissue .poster-paper img { opacity: 0.42; filter: grayscale(0.4); }
+.poster.tissue .poster-paper { background: rgba(240, 238, 232, 0.7); }
 .poster.ripped { cursor: default; }
-.rip-piece { z-index: 2000; pointer-events: none; }
-.board.ripping .poster:not(.ripped) { cursor: grab; touch-action: none; }
-.board.ripping .poster:not(.ripped):hover { translate: var(--dx) -2px; }
-/* the rip switch, staying in view at the foot of the folder */
-.rip-bar { position: absolute; left: 0; right: 0; bottom: 22px; z-index: 1001; display: flex; justify-content: center; gap: 8px; pointer-events: none; }
-.overlay:not(.open) .rip-bar, .overlay.stacked .rip-bar, .overlay.stack-anim .rip-bar, .overlay:has(.detail:not([hidden])) .rip-bar, .overlay:has(#board[hidden]) .rip-bar { display: none; }
-.rip-bar button { pointer-events: auto; padding: 11px 20px; border: 0; border-radius: 999px; font: 600 14px/1 "Inter Tight", Arial, sans-serif; letter-spacing: -0.02em;
-  color: #f2f1ee; background: rgba(24, 23, 21, 0.86); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.overlay:has(.board.ripping) .rip-btn { background: #c8281e; }
-.rip-bar .rip-reset { background: rgba(255, 255, 255, 0.85); color: #181715; }
+.rip-piece { pointer-events: none; animation: none; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.5)); }
+.wall-hint { position: absolute; left: 0; right: 0; bottom: 14px; z-index: 450; margin: 0; text-align: center; pointer-events: none;
+  font: 600 13px/1 "Inter Tight", Arial, sans-serif; letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.55); }
+.wall-reset { position: absolute; right: 14px; bottom: 10px; z-index: 450; padding: 9px 16px; border: 0; border-radius: 999px;
+  font: 600 13px/1 "Inter Tight", Arial, sans-serif; color: #111; background: rgba(255, 255, 255, 0.88); cursor: pointer; }
 
 /* ---- detail: a little gallery when there are more pictures ------------------------------- */
 .detail-media { min-width: 0; }
@@ -670,7 +669,9 @@ body.folder-open .hero { opacity: 0; }
   .note-hand { font-size: 17px; line-height: 20px; }
   .note-hand.small { font-size: 14px; }
   .note-tape { height: 22px; top: -9px; }
-  .posters { width: calc(100% - 20px); margin-top: 18px; }
+  .wall { inset: 10px; }
+  .wall-shade { box-shadow: inset 0 0 90px 10px #000; }
+  .wall-reset { left: 50%; right: auto; translate: -50% 0; bottom: 34px; }
   .stage > img, .detail-media:has(.thumbs) .stage > img { max-height: 70svh; width: auto; max-width: 100%; }
   .detail { position: relative; grid-template-columns: 1fr; padding: 56px 18px 40px; gap: 22px; }
   /* the folder runs on past the bottom of the screen (and under Safari's toolbar): keep the credit in view */
