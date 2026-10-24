@@ -280,6 +280,22 @@
       "r": -1
     },
     {
+      "tab": "content seeding",
+      "img": "assets/work/ny-drill-official-wavee-afties-copy-mvlw6yqp.jpg",
+      "title": "Wsju Radio - Nina Woods Artist Discovery",
+      "client": "Client",
+      "year": "2026",
+      "text": "Inclusion post for artist, producer, songwriter Nina Woods.",
+      "link": {
+        "href": "https://www.instagram.com/p/DblzkMMj4UA/?img_index=1",
+        "label": "Instagram"
+      },
+      "x": 80,
+      "y": 80,
+      "w": 30,
+      "r": -1
+    },
+    {
       "tab": "art",
       "img": "assets/work/strick-machine.jpg",
       "title": "Strick - Machine",
