@@ -636,30 +636,24 @@
         const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
         // on phones the folder runs below the screen: fit the cluster to the part you can see
         const W = wall.clientWidth, H = Math.min(wall.clientHeight, Math.max(300, innerHeight - 110 - (narrow ? 64 : 0)));
-        // the posters cover the folder's sheet, side to side, with a ragged rim
-        const cw = W * (narrow ? 0.9 : 0.86), ch = H * (narrow ? 0.8 : 0.8);
-        const cols = narrow ? 3 : 6, cell = cw / cols, rows = Math.max(2, Math.round(ch / (cell * 1.25)));
-        const rowH = ch / rows, x0 = (W - cw) / 2, y0 = (H - ch) / 2;
-        const spots = [];
-        // the older layer: one row-by-row paste-up, pictures in turn, only a little off-line; a corner or two left bare
-        for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-          const corner = (r === 0 || r === rows - 1) && (c === 0 || c === cols - 1);
-          if (corner && rnd() < 0.5) continue;
-          spots.push({
-            cx: x0 + (c + 0.5 + (r % 2 ? 0.12 : -0.12)) * cell + (rnd() - 0.5) * cell * 0.12,
-            cy: y0 + (r + 0.5) * rowH + (rnd() - 0.5) * rowH * 0.12,
-            w: cell * (1.02 + rnd() * 0.1), layer: 0, i: (r * cols + c + r) % list.length,
-          });
+        // each piece once, in loose rows with air between them, sized so they all fit the sheet
+        const cw = W * (narrow ? 0.9 : 0.84), ch = H * 0.86;
+        const n = list.length, tall = Math.max(...ratios.map((r) => Math.min(r, 1.5))), gap = narrow ? 0.1 : 0.14;
+        // as many rows as makes the posters biggest
+        let tr = 1, tc = n, w = 0;
+        for (let r = 1; r <= n; r++) {
+          const c = Math.ceil(n / r), s = Math.min(cw / (c + (c - 1) * gap), ch / (r * tall + (r - 1) * gap));
+          if (s > w) { w = s; tr = r; tc = c; }
         }
-        // the top layer: each piece once, a bit bigger, in a loose grid over the middle
-        const tc = Math.min(list.length, narrow ? 2 : 3), tr = Math.ceil(list.length / tc);
-        list.forEach((p, i) => {
-          const r = Math.floor(i / tc), inRow = r === tr - 1 ? list.length - r * tc : tc, c = i - r * tc;
-          spots.push({
-            cx: W / 2 + (c - (inRow - 1) / 2) * cw * (narrow ? 0.42 : 0.27) + (rnd() - 0.5) * cell * 0.15,
-            cy: H / 2 + (r - (tr - 1) / 2) * ch * (narrow ? 0.34 : 0.42) + (rnd() - 0.5) * cell * 0.15,
-            w: cell * (narrow ? 1.25 : 1.4), layer: 2, i,
-          });
+        const stepX = w * (1 + gap), stepY = w * (tall + gap);
+        const spots = list.map((p, i) => {
+          const r = Math.floor(i / tc), inRow = r === tr - 1 ? n - r * tc : tc, c = i - r * tc + (tc - inRow) / 2;
+          // a little off-line, every other one a touch higher, so it isn't a spreadsheet
+          return {
+            cx: W / 2 + (c - (tc - 1) / 2) * stepX + (rnd() - 0.5) * w * 0.06,
+            cy: H / 2 + (r - (tr - 1) / 2) * stepY + (i % 2 ? -1 : 1) * w * 0.035 + (rnd() - 0.5) * w * 0.04,
+            w, layer: 2, i,
+          };
         });
         spots.forEach((sp, k) => {
           const p = list[sp.i], ratio = ratios[sp.i];
