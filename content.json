@@ -368,6 +368,65 @@
       }
     },
     {
+      "tab": "art",
+      "img": "assets/work/rush-hour-whyg-bundog-cover-art-mvpol00f.jpg",
+      "title": "\"Rush Hour\" WhyG & Bundog - Cover Art",
+      "client": "Blue Feathers Records",
+      "year": "2023",
+      "text": "Art Direction for \"Rush Hour\" by Why G & Bundog - Cover Art, Motion Cover",
+      "x": 24,
+      "y": 32,
+      "w": 36,
+      "r": 2,
+      "images": [
+        "assets/work/rush-hour-whyg-bundog-cover-art-mvpol2fmxra.jpg"
+      ]
+    },
+    {
+      "tab": "art",
+      "img": "assets/work/rush-hour-whyg-bundog-cover-art-copy-mvpphpk1.jpg",
+      "title": "\"Gharibe\" - Pouria K Cover Art",
+      "client": "Wave Foundation Management",
+      "year": "2025",
+      "text": "Creative & Art Direction for \"Gharibe\" by Pouria K - Cover Art",
+      "x": 28,
+      "y": 36,
+      "w": 36,
+      "r": 2,
+      "images": [
+        "assets/work/gharibe-pouria-k-cover-art-mvppjlnfu59.jpg",
+        "assets/work/gharibe-pouria-k-cover-art-mvppk3p8v1z.jpg"
+      ]
+    },
+    {
+      "tab": "art",
+      "img": "assets/work/gharibe-pouria-k-cover-art-copy-mvppt3y9.jpg",
+      "title": "\"Sincerely, Rex\" - Pyrex Cover Art",
+      "client": "Southside Production / Epic Records / Sony",
+      "year": "2024",
+      "text": "Creative & Art Direction for \"Sincerely, Rex\" by Pyrex - Cover Art, Track list, Social Assets",
+      "x": 32,
+      "y": 40,
+      "w": 36,
+      "r": 2,
+      "images": [
+        "assets/work/gharibe-pouria-k-cover-art-copy-mvppt7zzwom.jpg",
+        "assets/work/gharibe-pouria-k-cover-art-copy-mvppt8122hs.jpg"
+      ]
+    },
+    {
+      "tab": "art",
+      "img": "assets/work/sincerely-rex-pyrex-cover-art-copy-mvppz5tq.jpg",
+      "title": "\"Best Album Of 2023\" - Boosie Badazz",
+      "client": "Connect Music / Capeesh LLC",
+      "year": "2023",
+      "text": "Creative & Art Direction for \"Best Album Of 2023\" by Boosie Badazz- Cover Art, Track list",
+      "x": 36,
+      "y": 44,
+      "w": 36,
+      "r": 2
+    },
+    {
       "tab": "pr",
       "img": "assets/work/placeholder.png",
       "title": "Project ten",
