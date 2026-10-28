@@ -337,7 +337,19 @@
       "x": 9,
       "y": 9,
       "w": 30,
-      "r": 2.5
+      "r": 2.5,
+      "images": [
+        "assets/work/pressa-press-machine-ii-posters-mvsgcl7lfjs.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsgcwygq9e.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsgddfupf0.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsgdnghr9d.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsge4tb4kb.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsge4wu9ue.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsge50aao4.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsge50pobu.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsge514x5t.jpg",
+        "assets/work/pressa-press-machine-ii-posters-mvsge555fjx.jpg"
+      ]
     },
     {
       "tab": "art",
