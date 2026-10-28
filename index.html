@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@800;900&display=swap">
-  <link rel="stylesheet" href="assets/style.css?v=64">
+  <link rel="stylesheet" href="assets/style.css?v=65">
 </head>
 <body>
   <header class="nav">
@@ -566,6 +566,8 @@
       }
       return pts;
     }
+    // video files by their extension; the dashboard preview marks its not-yet-published ones with #video
+    const isVideo = (src) => /\.(mp4|webm|mov|m4v)(#.*)?$|#video$/i.test(String(src));
     const poly = (pts) => 'polygon(' + pts.map(([x, y]) => `${x.toFixed(1)}% ${y.toFixed(1)}%`).join(', ') + ')';
 
     // Content seeding: each post printed and taped onto a torn sheet from a lined notepad
@@ -854,13 +856,18 @@
     function openDetail(p) {
       // the main picture (or the newspaper page), then any more pictures as a little gallery
       const pics = [p.img, ...(Array.isArray(p.images) ? p.images : [])].filter(Boolean);
-      const first = newsOf(p) ? newsPage(p) : `<img src="${esc(p.img)}" alt="${esc(p.title)}">`;
+      // a gallery entry can also be a video (it plays inline, with its own controls)
+      const media = (src) => isVideo(src)
+        ? `<video src="${esc(src)}" controls playsinline loop preload="metadata"></video>`
+        : `<img src="${esc(src)}" alt="${esc(p.title)}">`;
+      const first = newsOf(p) ? newsPage(p) : media(p.img);
       const many = pics.length > 1;
       detail.innerHTML = `
         <button class="back" type="button" aria-label="back"></button>
         <div class="detail-media">
           <div class="stage">${first}${many ? `<button type="button" class="nav-prev" aria-label="previous picture">‹</button><button type="button" class="nav-next" aria-label="next picture">›</button>` : ''}</div>
-          ${many ? `<div class="thumbs">${pics.map((src, i) => `<button type="button" class="thumb${i ? '' : ' on'}" data-i="${i}" aria-label="picture ${i + 1}"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
+          ${many ? `<div class="thumbs">${pics.map((src, i) => `<button type="button" class="thumb${i ? '' : ' on'}${isVideo(src) ? ' vid' : ''}" data-i="${i}" aria-label="${isVideo(src) ? 'video' : 'picture'} ${i + 1}">${isVideo(src)
+              ? `<video src="${esc(src)}#t=0.1" muted playsinline preload="metadata"></video>` : `<img src="${esc(src)}" alt="" loading="lazy">`}</button>`).join('')}</div>` : ''}
         </div>
         <div class="detail-info">
           <p class="meta">${esc(p.tab)} · ${esc(p.client)} · ${esc(p.year)}</p>
@@ -874,8 +881,8 @@
         let at = 0;
         const show = (i) => {
           at = (i + pics.length) % pics.length;
-          stage.querySelector('.news, :scope > img')?.remove();
-          stage.insertAdjacentHTML('afterbegin', at === 0 ? first : `<img src="${esc(pics[at])}" alt="${esc(p.title)}">`);
+          stage.querySelector('.news, :scope > img, :scope > video')?.remove();
+          stage.insertAdjacentHTML('afterbegin', at === 0 ? first : media(pics[at]));
           stage.firstElementChild.animate([{ opacity: 0 }, { opacity: 1 }], 250);
           detail.querySelectorAll('.thumb').forEach((t) => t.classList.toggle('on', +t.dataset.i === at));
         };

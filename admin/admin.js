@@ -36,6 +36,11 @@ function toast(msg, err = false, ms = 3200) {
   toast.t = setTimeout(() => t.classList.remove('show'), ms);
 }
 const imgURL = (path) => pending[path]?.dataUrl || (/^(https?:|data:)/.test(path) ? path : '../' + path);
+const isVideo = (path) => /\.(mp4|webm|mov|m4v)$/i.test(path);
+// a library / gallery tile: a still for a picture, the first frame for a video
+const tile = (p) => isVideo(p)
+  ? `<video src="${esc(imgURL(p))}#t=0.1" muted playsinline preload="metadata"></video>`
+  : '';
 const json = (c) => JSON.stringify(c, null, 2) + '\n';
 const utf8ToB64 = (s) => { const b = new TextEncoder().encode(s); let r = ''; for (let i = 0; i < b.length; i += 0x8000) r += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(r); };
 const b64ToUtf8 = (b) => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g, '')), (c) => c.charCodeAt(0)));
@@ -94,7 +99,7 @@ async function loadLibrary() {
   {
     try {
       const files = await gh(`contents/assets/work?ref=${encodeURIComponent(conn.branch)}`);
-      files.filter((f) => f.type === 'file' && /\.(jpe?g|png|gif|webp|avif|svg)$/i.test(f.name)).forEach((f) => set.add(f.path));
+      files.filter((f) => f.type === 'file' && /\.(jpe?g|png|gif|webp|avif|svg|mp4|webm|mov|m4v)$/i.test(f.name)).forEach((f) => set.add(f.path));
     } catch {}
   }
   Object.keys(pending).forEach((p) => set.add(p));
@@ -292,7 +297,7 @@ $('#proj-add').addEventListener('click', () => {
 const NEWS_TAB = 'press release';
 let editing = -1, editImg = '', editGallery = [], editLogo = '', libMode = 'main';
 function renderGallery() {
-  $('#p-gal').innerHTML = editGallery.map((p, i) => `<div class="gal-item" style="background-image:url('${esc(imgURL(p))}')">
+  $('#p-gal').innerHTML = editGallery.map((p, i) => `<div class="gal-item${isVideo(p) ? ' vid' : ''}" style="${isVideo(p) ? '' : `background-image:url('${esc(imgURL(p))}')`}">${tile(p)}
     ${i ? `<button type="button" class="left" data-left="${i}" title="Move earlier">‹</button>` : ''}
     <button type="button" data-rm="${i}" title="Remove">×</button></div>`).join('');
 }
@@ -391,7 +396,7 @@ $('#p-gal-file').addEventListener('change', async (e) => {
   e.target.value = '';
   for (const file of files) {
     try {
-      const { b64, dataUrl, ext } = await prepareImage(file);
+      const { b64, dataUrl, ext } = file.type.startsWith('video/') ? await prepareVideo(file) : await prepareImage(file);
       const path = `assets/work/${slug(pform.title.value || 'gallery')}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}.${ext}`;
       pending[path] = { b64, dataUrl };
       library.push(path);
@@ -414,18 +419,22 @@ $('#p-logo-file').addEventListener('change', async (e) => {
   } catch (err) { toast('Couldn’t read this image: ' + err.message, true); }
 });
 $('#p-logo-clear').addEventListener('click', () => setLogo(''));
+// the picker: the gallery can take videos too, the main picture only pictures
+function libHTML(withVideos) {
+  const list = library.filter((p) => withVideos || !isVideo(p));
+  return list.length ? list.map((p) => `<button type="button" data-p="${esc(p)}" title="${esc(p)}" style="${isVideo(p) ? '' : `background-image:url('${esc(imgURL(p))}')`}">${tile(p)}</button>`).join('')
+    : '<small>No images found.</small>';
+}
 function openLib() {
   const box = $('#p-img-libbox');
   box.hidden = false;
-  box.innerHTML = library.length ? library.map((p) => `<button type="button" data-p="${esc(p)}" title="${esc(p)}" style="background-image:url('${esc(imgURL(p))}')"></button>`).join('')
-    : '<small>No images found.</small>';
+  box.innerHTML = libHTML(true);
 }
 $('#p-img-lib').addEventListener('click', () => {
   const box = $('#p-img-libbox');
   libMode = 'main';
   box.hidden = !box.hidden;
-  box.innerHTML = library.length ? library.map((p) => `<button type="button" data-p="${esc(p)}" title="${esc(p)}" style="background-image:url('${esc(imgURL(p))}')"></button>`).join('')
-    : '<small>No images found.</small>';
+  box.innerHTML = libHTML(false);
 });
 $('#p-img-libbox').addEventListener('click', (e) => {
   const b = e.target.closest('[data-p]');
@@ -449,6 +458,16 @@ $('#p-img-file').addEventListener('change', async (e) => {
     toast('Couldn’t read this image: ' + err.message, true);
   }
 });
+
+// Videos go up as they are (no re-encoding in the browser), so they're kept to a size GitHub takes in one go.
+// Until published, the dashboard (and its preview) plays the file straight from this computer.
+const MAX_VIDEO = 40 * 1024 * 1024;
+async function prepareVideo(file) {
+  if (file.size > MAX_VIDEO) throw new Error(`it's ${(file.size / 1048576).toFixed(0)} MB, videos can be up to 40 MB (try exporting it smaller)`);
+  const raw = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(file); });
+  const ext = /webm/.test(file.type) ? 'webm' : /quicktime/.test(file.type) ? 'mov' : 'mp4';
+  return { dataUrl: URL.createObjectURL(file), b64: raw.split(',')[1], ext };
+}
 
 // Big photos are scaled to 2400px and saved as JPEG; PNGs with transparency, GIFs and SVGs stay as they are.
 async function prepareImage(file) {
@@ -841,7 +860,7 @@ $('#btn-preview').addEventListener('click', () => {
   const c = structuredClone(content);
   c.projects.forEach((p) => {
     if (pending[p.img]) p.img = pending[p.img].dataUrl;
-    if (p.images) p.images = p.images.map((i) => pending[i]?.dataUrl || i);
+    if (p.images) p.images = p.images.map((i) => pending[i] ? pending[i].dataUrl + (isVideo(i) ? '#video' : '') : i);
     if (p.news?.logo && pending[p.news.logo]) p.news.logo = pending[p.news.logo].dataUrl;
   });
   try { localStorage.setItem(DRAFT_KEY, JSON.stringify(c)); }
