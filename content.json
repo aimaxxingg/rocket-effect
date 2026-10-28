@@ -452,7 +452,10 @@
       "link": {
         "href": "https://www.instagram.com/p/CSmm6VBnzj6/",
         "label": "link"
-      }
+      },
+      "images": [
+        "assets/work/media-for-j-stone-la-show-mvsmox9tuup.mp4"
+      ]
     },
     {
       "tab": "pr",
@@ -468,7 +471,10 @@
       "link": {
         "href": "https://youtu.be/LQHen5pJojo?si=rU4pVZGZNDhmLYgr",
         "label": "Watch On Youtube"
-      }
+      },
+      "images": [
+        "assets/work/power-105-pressa-interview-mvsmqpgjes6.mp4"
+      ]
     },
     {
       "tab": "pr",
@@ -484,7 +490,10 @@
       "link": {
         "href": "https://youtu.be/cm5tkDrivFU?si=4nkEPSRzQSaFmsyG",
         "label": "Watch On Youtube"
-      }
+      },
+      "images": [
+        "assets/work/bag-fuel-pressa-interview-mvsmu8w9727.mp4"
+      ]
     },
     {
       "tab": "press release",
