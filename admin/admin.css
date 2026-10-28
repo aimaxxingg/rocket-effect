@@ -104,6 +104,9 @@ legend { font-size: 13px; color: var(--muted); padding: 0 6px; }
 .list li { display: flex; gap: 8px; align-items: center; background: var(--card); border-radius: var(--radius); padding: 8px 10px; }
 .list li input { flex: 1; }
 .list li .n { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.list li .drag { padding: 4px 2px; color: var(--muted); font-size: 18px; line-height: 1; cursor: grab; touch-action: none; user-select: none; }
+.list li.dragging { opacity: 0.75; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); }
+.list li.dragging .drag { cursor: grabbing; }
 .list li button { padding: 4px 10px; font-size: 13px; border-color: var(--line); }
 .list li .meta { flex: 1; font-size: 13px; }
 .list li .meta small { color: var(--muted); display: block; }

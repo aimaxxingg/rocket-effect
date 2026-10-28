@@ -300,7 +300,9 @@
         return b;
       });
       // Natural width: label plus both sides; then spread across the folder like the photo.
-      const need = els.map((b) => Math.max(labelWidth(b.lastChild, u * (side || phone.matches ? 27 : 20)) / u + 2 * span + 26, 140));
+      const lh = side || phone.matches ? 27 : 20;
+      const labs = els.map((b) => labelWidth(b.lastChild, u * lh) / u);
+      const need = labs.map((l) => Math.max(l + 2 * span + 26, 140));
       const sum = need.reduce((a, b) => a + b, 0);
       let overlap = MIN_OVERLAP, widths = need;
       const spare = len - (sum - overlap * (n - 1));
@@ -308,28 +310,24 @@
       else if (side && spare > 0) widths = need;   // phones: each tab only as long as its label
       else if (spare > 0) widths = need.map((w) => w + spare / n);
       else {
+        // too many to fit at their roomy width (tabs added in the dashboard): first the tabs overlap more
+        // and lose the spare room round their labels; only if that's still not enough do the labels shrink
         overlap = Math.min(span + 6, MIN_OVERLAP - spare / (n - 1));
-        // still too many to fit (tabs added in the dashboard): the labels get smaller, so the row stays inside the folder
-        const fixed = 2 * span + 26, over = sum - overlap * (n - 1) - len;
-        if (over > 0) {
-          const k = Math.max(0.4, 1 - over / (sum - n * fixed));
-          const lh = side || phone.matches ? 27 : 20;
+        const tight = labs.map((l) => l + 2 * span + 6), fixed = 2 * span + 6;
+        const room = len - (tight.reduce((a, b) => a + b, 0) - overlap * (n - 1));
+        if (room >= 0) widths = tight.map((w) => w + room / n);
+        else {
+          const k = Math.max(0.5, 1 + room / labs.reduce((a, b) => a + b, 0));
+          widths = tight.map((w) => (w - fixed) * k + fixed);
+          // and if even that's not enough, the whole row (tabs and labels) narrows to the folder's width
+          const f = Math.min(1, len / (widths.reduce((a, b) => a + b, 0) - overlap * (n - 1)));
+          widths = widths.map((w) => w * f);
+          overlap *= f;
           const mid = side || phone.matches ? 26.5 : 27.5;   // keep the smaller label centred in its tab
           els.forEach((b) => {
-            b.lastChild.style.height = `calc(var(--u) * ${(lh * k).toFixed(2)})`;
-            b.lastChild.style.top = `calc(var(--u) * ${(mid - (lh * k) / 2).toFixed(2)})`;
+            b.lastChild.style.height = `calc(var(--u) * ${(lh * k * f).toFixed(2)})`;
+            b.lastChild.style.top = `calc(var(--u) * ${(mid - (lh * k * f) / 2).toFixed(2)})`;
           });
-          widths = need.map((w) => (w - fixed) * k + fixed);
-          // and if even that's not enough, the whole row (tabs and labels) narrows to the folder's width
-          const f = len / (widths.reduce((a, b) => a + b, 0) - overlap * (n - 1));
-          if (f < 1) {
-            widths = widths.map((w) => w * f);
-            overlap *= f;
-            els.forEach((b) => {
-              b.lastChild.style.height = `calc(var(--u) * ${(lh * k * f).toFixed(2)})`;
-              b.lastChild.style.top = `calc(var(--u) * ${(mid - (lh * k * f) / 2).toFixed(2)})`;
-            });
-          }
         }
       }
       const h = TAB_H * u;

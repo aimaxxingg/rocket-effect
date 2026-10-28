@@ -705,6 +705,7 @@ function renderTabs() {
   $('#tab-list').innerHTML = content.tabs.map((t, i) => {
     const n = content.projects.filter((p) => p.tab === t).length;
     return `<li data-i="${i}">
+      <span class="drag" data-drag title="Drag to reorder" aria-hidden="true">⠿</span>
       <input value="${esc(t)}" dir="auto" data-rename>
       <span class="n">${n} project${n === 1 ? '' : 's'}</span>
       <button type="button" data-move="-1" title="Up">↑</button>
@@ -738,6 +739,30 @@ $('#tab-list').addEventListener('click', (e) => {
     content.projects = content.projects.filter((p) => p.tab !== t);
     changed(); renderAll();
   }
+});
+// drag a tab by its handle to put it somewhere else in the row (mouse or finger)
+$('#tab-list').addEventListener('pointerdown', (e) => {
+  const h = e.target.closest('[data-drag]'); if (!h) return;
+  e.preventDefault();
+  const list = $('#tab-list'), li = h.closest('li');
+  li.classList.add('dragging');
+  try { h.setPointerCapture(e.pointerId); } catch {}
+  const move = (ev) => {
+    const over = [...list.children].find((x) => { const r = x.getBoundingClientRect(); return x !== li && ev.clientY >= r.top && ev.clientY <= r.bottom; });
+    if (!over) return;
+    const r = over.getBoundingClientRect();
+    list.insertBefore(li, ev.clientY < r.top + r.height / 2 ? over : over.nextSibling);
+  };
+  const up = () => {
+    removeEventListener('pointermove', move);
+    li.classList.remove('dragging');
+    const order = [...list.children].map((x) => content.tabs[+x.dataset.i]);
+    if (order.join('|') !== content.tabs.join('|')) { content.tabs = order; changed(); }
+    renderAll();
+  };
+  addEventListener('pointermove', move);
+  addEventListener('pointerup', up, { once: true });
+  addEventListener('pointercancel', up, { once: true });
 });
 $('#tab-add').addEventListener('click', () => {
   const name = $('#tab-new').value.trim().toLowerCase();
