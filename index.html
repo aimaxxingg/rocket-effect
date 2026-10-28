@@ -307,7 +307,31 @@
       if (n === 1) widths = [Math.max(need[0], len * 0.36)];
       else if (side && spare > 0) widths = need;   // phones: each tab only as long as its label
       else if (spare > 0) widths = need.map((w) => w + spare / n);
-      else overlap = Math.min(span + 6, MIN_OVERLAP - spare / (n - 1));
+      else {
+        overlap = Math.min(span + 6, MIN_OVERLAP - spare / (n - 1));
+        // still too many to fit (tabs added in the dashboard): the labels get smaller, so the row stays inside the folder
+        const fixed = 2 * span + 26, over = sum - overlap * (n - 1) - len;
+        if (over > 0) {
+          const k = Math.max(0.4, 1 - over / (sum - n * fixed));
+          const lh = side || phone.matches ? 27 : 20;
+          const mid = side || phone.matches ? 26.5 : 27.5;   // keep the smaller label centred in its tab
+          els.forEach((b) => {
+            b.lastChild.style.height = `calc(var(--u) * ${(lh * k).toFixed(2)})`;
+            b.lastChild.style.top = `calc(var(--u) * ${(mid - (lh * k) / 2).toFixed(2)})`;
+          });
+          widths = need.map((w) => (w - fixed) * k + fixed);
+          // and if even that's not enough, the whole row (tabs and labels) narrows to the folder's width
+          const f = len / (widths.reduce((a, b) => a + b, 0) - overlap * (n - 1));
+          if (f < 1) {
+            widths = widths.map((w) => w * f);
+            overlap *= f;
+            els.forEach((b) => {
+              b.lastChild.style.height = `calc(var(--u) * ${(lh * k * f).toFixed(2)})`;
+              b.lastChild.style.top = `calc(var(--u) * ${(mid - (lh * k * f) / 2).toFixed(2)})`;
+            });
+          }
+        }
+      }
       const h = TAB_H * u;
       // phones: the one tab sits where it was in the stack; "back" goes on the other side
       const tx = phone.matches && n === 1 ? stackX[labels[0]] || 0 : 0;
