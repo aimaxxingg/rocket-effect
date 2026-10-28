@@ -440,27 +440,51 @@
     },
     {
       "tab": "pr",
-      "img": "assets/work/placeholder.png",
-      "title": "Project ten",
-      "client": "Client",
-      "year": "2026",
-      "text": "Project description goes here: the brief, what we did and the results.",
+      "img": "assets/work/project-ten-mvsjymlw.jpg",
+      "title": "Media for J. Stone LA Show",
+      "client": "All Money In / 25/8 No Breaks",
+      "year": "2021",
+      "text": "Media, BTS done for J Stone's Los Angeles Show in partnership with TopCreaseAgency",
       "x": 14,
       "y": 12,
       "w": 34,
-      "r": 1
+      "r": 1,
+      "link": {
+        "href": "https://www.instagram.com/p/CSmm6VBnzj6/",
+        "label": "link"
+      }
     },
     {
       "tab": "pr",
-      "img": "assets/work/placeholder.png",
-      "title": "Project eleven",
-      "client": "Client",
+      "img": "assets/work/power-105-pressa-interview-mvskjzz5.jpg",
+      "title": "Power 105 Pressa Interview",
+      "client": "Blue Feathers Records",
       "year": "2025",
-      "text": "Project description goes here: the brief, what we did and the results.",
+      "text": "Pressa on Dealing with Hate, Leak Music, Toronto & Drake’s Influence on His New Album Press Machine II",
       "x": 50,
       "y": 26,
       "w": 34,
-      "r": -3
+      "r": -3,
+      "link": {
+        "href": "https://youtu.be/LQHen5pJojo?si=rU4pVZGZNDhmLYgr",
+        "label": "Watch On Youtube"
+      }
+    },
+    {
+      "tab": "pr",
+      "img": "assets/work/power-105-pressa-interview-copy-mvsklzq4.jpg",
+      "title": "Bag Fuel Pressa Interview",
+      "client": "Blue Feathers Records",
+      "year": "2025",
+      "text": "Pressa's Bag Fuel interview with Esso, Dj Clue, Hynaken",
+      "x": 54,
+      "y": 30,
+      "w": 34,
+      "r": -3,
+      "link": {
+        "href": "https://youtu.be/cm5tkDrivFU?si=4nkEPSRzQSaFmsyG",
+        "label": "Watch On Youtube"
+      }
     },
     {
       "tab": "press release",
